@@ -217,7 +217,7 @@ build_script:
 
 test:
   assemblies:
-    - *.Test.Unit.dll
+    - '**\*.Test.Unit.dll'
 
   categories:
 

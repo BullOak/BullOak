@@ -71,7 +71,7 @@ image: Visual Studio 2015
 #  - nuget restore
 
 # clone directory
-clone_folder: c:\projects\myproject
+clone_folder: c:\projects\BullOak
 
 # fetch repository as zip archive
 shallow_clone: true                 # default is "false"

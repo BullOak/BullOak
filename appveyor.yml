@@ -219,7 +219,7 @@ test:
   assemblies:
     - '**\*.Test.Unit.dll'
 
-  categories:
+#  categories:
 
 # to run tests from different categories as separate jobs in parallel
 #test:
@@ -339,7 +339,7 @@ deploy:
 #    target_profile: Cloud
 #    artifact: MyPackage.cspkg
 #
-#    # Deploying to NuGet feed
+    # Deploying to NuGet feed
 #  - provider: NuGet
 #    server: https://my.nuget.server/feed
 #    api_key:
@@ -347,7 +347,7 @@ deploy:
 #    skip_symbols: false
 #    symbol_server: https://your.symbol.server/feed
 #    artifact: MyPackage.nupkg
-#
+
 #    # Deploy to GitHub Releases
 #  - provider: GitHub
 #    artifact: /.*\.nupkg/           # upload all NuGet packages to release assets

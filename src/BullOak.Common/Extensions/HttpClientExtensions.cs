@@ -1,8 +1,9 @@
-﻿namespace BullOak.Common.Extensions
+﻿namespace BullOak.Common.WebApi.Extensions
 {
+    using Newtonsoft.Json;
     using System;
     using System.Net.Http;
-    using System.Net.Http.Formatting;
+    using System.Text;
     using System.Threading.Tasks;
 
     public static class HttpClientExtensions
@@ -13,8 +14,10 @@
             if (string.IsNullOrEmpty(requestUri)) throw new ArgumentNullException(nameof(requestUri));
             if (value == null) throw new ArgumentNullException(nameof(value));
 
-            var content = new ObjectContent<T>(value, new JsonMediaTypeFormatter());
-            var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri) { Content = content };
+            var request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUri)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(value), Encoding.UTF8, "application/json"),
+            };
 
             return client.SendAsync(request);
         }

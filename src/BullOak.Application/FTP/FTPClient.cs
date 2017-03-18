@@ -14,9 +14,7 @@
 
         public FTPClient(FTPConfig ftpconfig)
         {
-            if (ftpconfig == null) throw new ArgumentNullException(nameof(ftpconfig));
-
-            config = ftpconfig;
+            config = ftpconfig ?? throw new ArgumentNullException(nameof(ftpconfig));
         }
 
         public async Task<IEnumerable<string>> GetFileListFromFTP()

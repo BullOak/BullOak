@@ -64,7 +64,7 @@ max_jobs: 1
 #---------------------------------#
 
 # Build worker image (VM template)
-image: Visual Studio 2015
+image: Visual Studio 2017
 
 # scripts that are called at very beginning, before repo cloning
 #init:
@@ -123,7 +123,7 @@ cache:
 
 # enable service required for build/tests
 services:
-  - mssql2014           # start SQL Server 2014 Express
+  - mssql2016sp1          # start SQL Server 2014 Express
 #  - mssql2014rs         # start SQL Server 2014 Express and Reporting Services
 #  - mssql2012sp1        # start SQL Server 2012 SP1 Express
 #  - mssql2012sp1rs      # start SQL Server 2012 SP1 Express and Reporting Services

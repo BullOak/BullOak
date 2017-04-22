@@ -20,10 +20,8 @@
 
             request = requestMessage;
         }
+
         public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
-        {
-            var response = request.CreateResponse(HttpStatusCode.Accepted, responseBody);
-            return Task.FromResult(response);
-        }
+            => Task.FromResult(request.CreateResponse(HttpStatusCode.Accepted, responseBody));
     }
 }

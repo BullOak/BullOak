@@ -1,7 +1,6 @@
 ﻿namespace BullOak.Common.WebApi
 {
     using System.Web.Http;
-    using System.Net.Http;
 
     public static class HttpResponseAcceptedExtension
     {

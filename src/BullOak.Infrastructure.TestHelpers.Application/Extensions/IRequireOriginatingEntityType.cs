@@ -3,6 +3,7 @@
     using System;
     using BullOak.Application;
     using BullOak.Common;
+    using BullOak.EventStream;
     using BullOak.Messages;
 
     public interface IRequireOriginatingEntityType<TEvent, TSourceId>

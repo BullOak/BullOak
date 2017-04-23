@@ -72,17 +72,15 @@
                     .DefaultIfEmpty(new ConverterTuple(sourceType, sourceConverter.DestinationType, 1, sourceConverter.Convert)));
         }
 
-        public IEnumerable<IParcelVisionEventEnvelope> UpconvertEvent(IParcelVisionEventEnvelope originalEvent)
+        public IEnumerable<IParcelVisionEvent> UpconvertEvent(IParcelVisionEvent originalEvent)
         {
             ConvertFunction converterFunction;
 
-            if (converters.TryGetValue(originalEvent.Event.GetType(), out converterFunction))
+            if (converters.TryGetValue(originalEvent.GetType(), out converterFunction))
             {
-                foreach (var convertedEvent in converterFunction(originalEvent.Event))
+                foreach (var convertedEvent in converterFunction(originalEvent))
                 {
-                    var cloned = originalEvent.CloneWithEvent(convertedEvent);
-
-                    yield return cloned;
+                    yield return convertedEvent;
                 }
             }
             else

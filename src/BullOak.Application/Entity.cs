@@ -3,6 +3,7 @@
     using System;
     using System.Reflection;
     using BullOak.Common;
+    using BullOak.EventStream;
     using BullOak.Messages;
     using Exceptions;
     using MethodBuilderContainer;

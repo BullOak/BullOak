@@ -10,6 +10,7 @@
     using FluentAssertions;
     using Xunit;
     using BullOak.Application.Exceptions;
+    using BullOak.EventStream;
     using BullOak.Infrastructure.TestHelpers.Application.Stubs;
 
     public class AggregateSutTests

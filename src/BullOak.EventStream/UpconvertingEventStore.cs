@@ -33,7 +33,8 @@
         {
             var originalData = await eventStore.LoadFor(id);
 
-            return new EventStoreData(originalData.EventEnvelopes.SelectMany(recursiveEventUpconverter.UpconvertEvent),
+            return new EventStoreData(originalData.EventEnvelopes.SelectMany(
+                x => recursiveEventUpconverter.UpconvertEvent(x.Event).Select(x.CloneWithEvent)),
                 originalData.ConcurrencyId);
         }
 

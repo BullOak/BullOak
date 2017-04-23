@@ -3,6 +3,7 @@ namespace BullOak.Application
     using System;
     using System.Collections.Generic;
     using BullOak.Common;
+    using BullOak.EventStream;
     using Messages;
     using MethodBuilderContainer;
 

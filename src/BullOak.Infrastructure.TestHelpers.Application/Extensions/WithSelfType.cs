@@ -2,6 +2,7 @@
 {
     using System;
     using BullOak.Common;
+    using BullOak.EventStream;
     using BullOak.Messages;
 
     internal class WithSelfType<TEvent, TSourceId> : IRequireParentIdType<TEvent, TSourceId>

@@ -64,6 +64,8 @@
     <Compile Include="IEventPublisher.cs" />
     <Compile Include="IEventCleaner.cs" />
     <Compile Include="IEventStore.cs" />
+    <Compile Include="IParcelVisionEventEnvelope.cs" />
+    <Compile Include="ParcelVisionEventEnvelope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UpconvertingEventStore.cs" />
   </ItemGroup>

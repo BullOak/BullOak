@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Application
 {
     using System.Collections.Generic;
+    using BullOak.EventStream;
     using Messages;
 
     internal interface IOwnAggregateEventStream

@@ -66,13 +66,11 @@
     <Compile Include="IParcelVisionCommand.cs" />
     <Compile Include="IParcelVisionEvent.cs" />
     <Compile Include="IParcelVisionErrorEvent.cs" />
-    <Compile Include="IParcelVisionEventEnvelope.cs" />
     <Compile Include="IParcelVisionMessage.cs" />
     <Compile Include="Converters\MissingUpconverterException.cs" />
     <Compile Include="ParcelVisionCommand.cs" />
     <Compile Include="ParcelVisionEvent.cs" />
     <Compile Include="ParcelVisionErrorEvent.cs" />
-    <Compile Include="ParcelVisionEventEnvelope.cs" />
     <Compile Include="ParcelVisionMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

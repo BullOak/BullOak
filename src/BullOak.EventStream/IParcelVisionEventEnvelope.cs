@@ -1,6 +1,7 @@
-﻿namespace BullOak.Messages
+﻿namespace BullOak.EventStream
 {
     using System;
+    using BullOak.Messages;
 
     public interface IParcelVisionEventEnvelope
     {

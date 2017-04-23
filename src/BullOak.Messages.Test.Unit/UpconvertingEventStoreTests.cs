@@ -74,16 +74,7 @@
 
         private class Arrangements
         {
-            public ParcelVisionEventEnvelope OriginalEvent { get; } = new ParcelVisionEventEnvelope<EntityId, EntityId, MyEvent1>
-            {
-                SourceId = (EntityId)"SourceId",
-                ParentId = (EntityId)"ParentId",
-                EventRaw = new MyEvent1()
-                { 
-                    MyProperty = "MyOriginalEventProperty"
-                },
-                SourceEntityType = typeof(Arrangements)
-            };
+            public IParcelVisionEvent OriginalEvent { get; } = new MyEvent1();
 
             public RecursiveEventUpconverter SUT { get; }
 
@@ -106,10 +97,7 @@
             var events = arrangements.SUT.UpconvertEvent(arrangements.OriginalEvent);
 
             events.Count().Should().Be(1);
-            events.FirstOrDefault().Event.Should().BeOfType<MyEvent1>();
-            events.FirstOrDefault().As<ParcelVisionEventEnvelope<EntityId, EntityId, MyEvent1>>().SourceId.Should().Be((EntityId) "SourceId");
-            events.FirstOrDefault().As<ParcelVisionEventEnvelope<EntityId, EntityId, MyEvent1>>().ParentId.Should().Be((EntityId) "ParentId");
-            events.FirstOrDefault().SourceEntityType.Should().Be(typeof(Arrangements));
+            events.FirstOrDefault().Should().BeOfType<MyEvent1>();
         }
 
         [Fact]
@@ -120,12 +108,9 @@
             var events = arrangements.SUT.UpconvertEvent(arrangements.OriginalEvent);
 
             events.Count().Should().Be(1);
-            events.FirstOrDefault().Event.Should().BeOfType<MyEvent2>();
-            events.FirstOrDefault().Event.As<MyEvent2>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent.Event).MyProperty);
-            events.FirstOrDefault().Event.CorrelationId.Should().Be(arrangements.OriginalEvent.Event.CorrelationId);
-            events.FirstOrDefault().As<IParcelVisionEventEnvelope<EntityId, EntityId>>().SourceId.Should().Be((EntityId)"SourceId");
-            events.FirstOrDefault().As<IParcelVisionEventEnvelope<EntityId, EntityId>>().ParentId.Should().Be((EntityId)"ParentId");
-            events.FirstOrDefault().SourceEntityType.Should().Be(typeof(Arrangements));
+            events.FirstOrDefault().Should().BeOfType<MyEvent2>();
+            events.FirstOrDefault().As<MyEvent2>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent).MyProperty);
+            events.FirstOrDefault().CorrelationId.Should().Be(arrangements.OriginalEvent.CorrelationId);
         }
 
         [Fact]
@@ -136,12 +121,9 @@
             var events = arrangements.SUT.UpconvertEvent(arrangements.OriginalEvent);
 
             events.Count().Should().Be(1);
-            events.FirstOrDefault().Event.Should().BeOfType<MyEvent3>();
-            events.FirstOrDefault().Event.As<MyEvent3>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent.Event).MyProperty);
-            events.FirstOrDefault().Event.CorrelationId.Should().Be(arrangements.OriginalEvent.Event.CorrelationId);
-            events.FirstOrDefault().As<IParcelVisionEventEnvelope<EntityId, EntityId>>().SourceId.Should().Be((EntityId)"SourceId");
-            events.FirstOrDefault().As<IParcelVisionEventEnvelope<EntityId, EntityId>>().ParentId.Should().Be((EntityId)"ParentId");
-            events.FirstOrDefault().SourceEntityType.Should().Be(typeof(Arrangements));
+            events.FirstOrDefault().Should().BeOfType<MyEvent3>();
+            events.FirstOrDefault().As<MyEvent3>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent).MyProperty);
+            events.FirstOrDefault().CorrelationId.Should().Be(arrangements.OriginalEvent.CorrelationId);
         }
 
         [Fact]
@@ -152,12 +134,12 @@
             var events = arrangements.SUT.UpconvertEvent(arrangements.OriginalEvent);
 
             events.Count().Should().Be(2);
-            events.FirstOrDefault(x => x.Event is MyEvent3).Should().NotBeNull();
-            events.FirstOrDefault(x => x.Event is MyEvent3).Event.As<MyEvent3>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent.Event).MyProperty);
-            events.FirstOrDefault(x => x.Event is MyEvent3).Event.CorrelationId.Should().Be(arrangements.OriginalEvent.Event.CorrelationId);
-            events.FirstOrDefault(x => x.Event is MyEvent4).Should().NotBeNull();
-            events.FirstOrDefault(x => x.Event is MyEvent4).Event.As<MyEvent4>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent.Event).MyProperty);
-            events.FirstOrDefault(x => x.Event is MyEvent4).Event.CorrelationId.Should().Be(arrangements.OriginalEvent.Event.CorrelationId);
+            events.FirstOrDefault(x => x is MyEvent3).Should().NotBeNull();
+            events.FirstOrDefault(x => x is MyEvent3).As<MyEvent3>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent).MyProperty);
+            events.FirstOrDefault(x => x is MyEvent3).CorrelationId.Should().Be(arrangements.OriginalEvent.CorrelationId);
+            events.FirstOrDefault(x => x is MyEvent4).Should().NotBeNull();
+            events.FirstOrDefault(x => x is MyEvent4).As<MyEvent4>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent).MyProperty);
+            events.FirstOrDefault(x => x is MyEvent4).CorrelationId.Should().Be(arrangements.OriginalEvent.CorrelationId);
         }
 
         [Fact]
@@ -176,10 +158,10 @@
             var events = arrangements.SUT.UpconvertEvent(arrangements.OriginalEvent);
 
             events.Count().Should().Be(4);
-            events.FirstOrDefault(x => x.Event is MyEvent4_1).Should().NotBeNull();
-            events.FirstOrDefault(x => x.Event is MyEvent5).Should().NotBeNull();
-            events.FirstOrDefault(x => x.Event is MyEvent6).Should().NotBeNull();
-            events.FirstOrDefault(x => x.Event is MyEvent7).Should().NotBeNull();
+            events.FirstOrDefault(x => x is MyEvent4_1).Should().NotBeNull();
+            events.FirstOrDefault(x => x is MyEvent5).Should().NotBeNull();
+            events.FirstOrDefault(x => x is MyEvent6).Should().NotBeNull();
+            events.FirstOrDefault(x => x is MyEvent7).Should().NotBeNull();
         }
 
         [Fact()]
@@ -193,9 +175,9 @@
             var events = arrangements.SUT.UpconvertEvent(arrangements.OriginalEvent);
 
             events.Count().Should().Be(1);
-            events.FirstOrDefault(x => x.Event is MyEvent2).Should().NotBeNull();
-            events.FirstOrDefault(x => x.Event is MyEvent2).Event.As<MyEvent2>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent.Event).MyProperty);
-            events.FirstOrDefault(x => x.Event is MyEvent2).Event.CorrelationId.Should().Be(arrangements.OriginalEvent.Event.CorrelationId);
+            events.FirstOrDefault(x => x is MyEvent2).Should().NotBeNull();
+            events.FirstOrDefault(x => x is MyEvent2).As<MyEvent2>().MyProperty.Should().Be(((MyEvent1)arrangements.OriginalEvent).MyProperty);
+            events.FirstOrDefault(x => x is MyEvent2).CorrelationId.Should().Be(arrangements.OriginalEvent.CorrelationId);
         }
 
         [Fact()]
@@ -211,9 +193,9 @@
             var events = arrangements.SUT.UpconvertEvent(arrangements.OriginalEvent);
 
             events.Count().Should().Be(1);
-            events.FirstOrDefault(x => x.Event is MyEvent3).Should().NotBeNull();
-            events.FirstOrDefault(x => x.Event is MyEvent3).Event.As<MyEvent3>().MyProperty.Should().Be(propertyValue);
-            events.FirstOrDefault(x => x.Event is MyEvent3).Event.CorrelationId.Should().Be(arrangements.OriginalEvent.Event.CorrelationId);
+            events.FirstOrDefault(x => x is MyEvent3).Should().NotBeNull();
+            events.FirstOrDefault(x => x is MyEvent3).As<MyEvent3>().MyProperty.Should().Be(propertyValue);
+            events.FirstOrDefault(x => x is MyEvent3).CorrelationId.Should().Be(arrangements.OriginalEvent.CorrelationId);
         }
     }
 }

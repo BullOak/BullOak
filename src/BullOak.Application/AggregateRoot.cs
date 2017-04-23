@@ -9,6 +9,7 @@
     using Exceptions;
     using MethodBuilderContainer;
     using BullOak.Common;
+    using BullOak.EventStream;
 
     public abstract class AggregateRoot<TId> : Entity<TId>, IOwnAggregateEventStream
         where TId : IId, IEquatable<TId>

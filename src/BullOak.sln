@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Application", "BullOak.Application\BullOak.Application.csproj", "{FDBEC3D7-4D0E-4D15-BF63-F3A846C34288}"
 EndProject
@@ -66,6 +66,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildsScripts", "BuildsScri
 		..\appveyor.yml = ..\appveyor.yml
 		..\build.fsx = ..\build.fsx
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EndToEndTests", "EndToEndTests", "{C0C8E3D4-5A5D-45C4-BC9B-6B5093F6E964}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Test.EndToEnd", "BullOak.Test.EndToEnd\BullOak.Test.EndToEnd.csproj", "{76145EE3-3F46-4D54-9B55-BFFB40229EDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -251,6 +255,14 @@ Global
 		{6FEAEB1F-0C6E-4952-9AFB-E97EEDEDC370}.Release.Integration|Any CPU.Build.0 = Release.Integration|Any CPU
 		{6FEAEB1F-0C6E-4952-9AFB-E97EEDEDC370}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FEAEB1F-0C6E-4952-9AFB-E97EEDEDC370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76145EE3-3F46-4D54-9B55-BFFB40229EDE}.Debug.Integration|Any CPU.ActiveCfg = Debug|Any CPU
+		{76145EE3-3F46-4D54-9B55-BFFB40229EDE}.Debug.Integration|Any CPU.Build.0 = Debug|Any CPU
+		{76145EE3-3F46-4D54-9B55-BFFB40229EDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76145EE3-3F46-4D54-9B55-BFFB40229EDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76145EE3-3F46-4D54-9B55-BFFB40229EDE}.Release.Integration|Any CPU.ActiveCfg = Release|Any CPU
+		{76145EE3-3F46-4D54-9B55-BFFB40229EDE}.Release.Integration|Any CPU.Build.0 = Release|Any CPU
+		{76145EE3-3F46-4D54-9B55-BFFB40229EDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76145EE3-3F46-4D54-9B55-BFFB40229EDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -280,5 +292,6 @@ Global
 		{6FEAEB1F-0C6E-4952-9AFB-E97EEDEDC370} = {6F04663E-B2B7-41EB-9CC7-B3E30F6E9EC9}
 		{A51AB156-2974-4B61-9C91-D45DC4F41367} = {AE0922CC-D3B9-4084-87DE-9B831201034C}
 		{47483A1E-B967-429D-BACF-9A052F2B81CC} = {8537FFDD-FBA6-4A2D-8AA4-D4CBB4EFD97F}
+		{76145EE3-3F46-4D54-9B55-BFFB40229EDE} = {C0C8E3D4-5A5D-45C4-BC9B-6B5093F6E964}
 	EndGlobalSection
 EndGlobal

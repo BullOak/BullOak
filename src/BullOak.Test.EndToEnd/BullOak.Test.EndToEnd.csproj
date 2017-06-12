@@ -76,11 +76,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DenormalizerSimpleSpecs.feature</DependentUpon>
     </Compile>
-    <Compile Include="StubSystem\CinemaAggregsate\CinemaAggregateRoot.cs" />
+    <Compile Include="StubSystem\CinemaAggregate\CinemaAggregateRoot.cs" />
+    <Compile Include="StubSystem\CinemaAggregate\CinemaAggregateRootId.cs" />
+    <Compile Include="StubSystem\CommonRepository\DictionaryEventStore.cs" />
+    <Compile Include="StubSystem\CommonRepository\Repository.cs" />
+    <Compile Include="StubSystem\Messages\CinemaCreated.cs" />
     <Compile Include="StubSystem\SeatInViewingQuery\SeatInViewingDenormalizer.cs" />
     <Compile Include="StubSystem\SeatInViewingQuery\SeatInViewingVM.cs" />
+    <Compile Include="StubSystem\ViewingAggregate\SeatId.cs" />
     <Compile Include="StubSystem\ViewingAggregate\SeatsInViewing.cs" />
     <Compile Include="StubSystem\ViewingAggregate\ViewingAggregateRoot.cs" />
+    <Compile Include="StubSystem\ViewingAggregate\ViewingId.cs" />
     <Compile Include="StubSystem\ViewingQuery\VewingVM.cs" />
     <Compile Include="StubSystem\ViewingQuery\ViewingDenormalizer.cs" />
   </ItemGroup>
@@ -96,6 +102,23 @@
       <LastGenOutput>DenormalizerSimpleSpecs.feature.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\BullOak.Application\BullOak.Application.csproj">
+      <Project>{fdbec3d7-4d0e-4d15-bf63-f3a846c34288}</Project>
+      <Name>BullOak.Application</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BullOak.Common\BullOak.Common.csproj">
+      <Project>{432e21ec-ef22-490c-b2bb-c2606fff156b}</Project>
+      <Name>BullOak.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BullOak.EventStream\BullOak.EventStream.csproj">
+      <Project>{90e2d13e-b1ca-47ad-87dd-d3707d150b0b}</Project>
+      <Name>BullOak.EventStream</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BullOak.Messages\BullOak.Messages.csproj">
+      <Project>{3a8876f8-ca9a-404d-ab35-4e5ea0081859}</Project>
+      <Name>BullOak.Messages</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

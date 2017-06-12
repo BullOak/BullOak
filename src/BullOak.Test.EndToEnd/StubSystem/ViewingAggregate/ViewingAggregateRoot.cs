@@ -8,5 +8,13 @@
 
     internal class ViewingAggregateRoot
     {
+        private SeatsInViewing[] Seats { get; set; }
+
+        public ViewingAggregateRoot(int numberOfSeats, DateTime timeOfViewing, string movieName)
+        {
+            throw new NotImplementedException(); 
+        }
+
+
     }
 }

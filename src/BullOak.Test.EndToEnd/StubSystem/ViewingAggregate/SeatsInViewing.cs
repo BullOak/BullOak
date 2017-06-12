@@ -1,12 +1,15 @@
 ﻿namespace BullOak.Test.EndToEnd.StubSystem.ViewingAggregate
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     internal class SeatsInViewing
     {
+        public string Id { get; private set; }
+        public bool Reserved { get; private set; }
+
+        public SeatsInViewing(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -3,7 +3,7 @@
     using BullOak.Common;
     using System;
 
-    internal class CinemaAggregateRootId : IId, IEquatable<CinemaAggregateRootId>
+    public class CinemaAggregateRootId : IId, IEquatable<CinemaAggregateRootId>
     {
         public string Name { get; }
 

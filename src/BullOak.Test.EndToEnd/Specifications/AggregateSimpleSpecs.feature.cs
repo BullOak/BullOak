@@ -73,56 +73,46 @@ namespace BullOak.Test.EndToEnd.Specifications
             this.ScenarioTearDown();
         }
         
-        [Xunit.FactAttribute(DisplayName="Storing creation event of aggregate root")]
+        [Xunit.FactAttribute(DisplayName="Creation events get stored when saved")]
         [Xunit.TraitAttribute("FeatureTitle", "AggregateSimpleSpecs")]
-        [Xunit.TraitAttribute("Description", "Storing creation event of aggregate root")]
-        public virtual void StoringCreationEventOfAggregateRoot()
+        [Xunit.TraitAttribute("Description", "Creation events get stored when saved")]
+        public virtual void CreationEventsGetStoredWhenSaved()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Storing creation event of aggregate root", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Creation events get stored when saved", ((string[])(null)));
 #line 11
 this.ScenarioSetup(scenarioInfo);
 #line 12
- testRunner.Given("a cinema with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I creare a cinema named \"MyCinema\" with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 13
- testRunner.When("I create the viewing on 4th of June 2017", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("I save the cinema", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 14
- testRunner.Then("a ViewingCreatedEvent should be in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.FactAttribute(DisplayName="Storing creation event of sub-entities")]
-        [Xunit.TraitAttribute("FeatureTitle", "AggregateSimpleSpecs")]
-        [Xunit.TraitAttribute("Description", "Storing creation event of sub-entities")]
-        public virtual void StoringCreationEventOfSub_Entities()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Storing creation event of sub-entities", ((string[])(null)));
+ testRunner.Then("a CinemaCreatedEvent should exist", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 15
+ testRunner.And("the cinema creation event should have seats set to 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 16
-this.ScenarioSetup(scenarioInfo);
-#line 17
- testRunner.Given("a cinema with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 18
- testRunner.When("I create the viewing on 4th of June 2017", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 19
- testRunner.Then("2 SeatInViewingCreated events should be fired", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And("the cinema creation event should have a cinema name of \"MyCinema\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
         
-        [Xunit.FactAttribute(DisplayName="Aggregate can get reconstituted from events")]
+        [Xunit.FactAttribute(DisplayName="Reconstituting an aggregate populates it with data correctly")]
         [Xunit.TraitAttribute("FeatureTitle", "AggregateSimpleSpecs")]
-        [Xunit.TraitAttribute("Description", "Aggregate can get reconstituted from events")]
-        public virtual void AggregateCanGetReconstitutedFromEvents()
+        [Xunit.TraitAttribute("Description", "Reconstituting an aggregate populates it with data correctly")]
+        public virtual void ReconstitutingAnAggregatePopulatesItWithDataCorrectly()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Aggregate can get reconstituted from events", ((string[])(null)));
-#line 21
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Reconstituting an aggregate populates it with data correctly", ((string[])(null)));
+#line 18
 this.ScenarioSetup(scenarioInfo);
+#line 19
+ testRunner.Given("the \"MyCinema\" cinema with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 20
+ testRunner.When("I load the \"MyCinema\" cinema from the repository", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 21
+ testRunner.Then("the cinema I get should not be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 22
- testRunner.Given("a cinema with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.And("the cinema aggregate should have seats set to 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 23
- testRunner.When("I reserve seat one on viewing on the 4th of June 2017", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 24
- testRunner.Then("AggregateNotFoundError event is not raised", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And("the cinema aggregate should have a cinema name of \"MyCinema\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

@@ -72,43 +72,45 @@ namespace BullOak.Test.EndToEnd.Specifications
             this.ScenarioTearDown();
         }
         
-        [Xunit.FactAttribute(DisplayName="Creating an entity gets stored in the denormalizer")]
+        [Xunit.FactAttribute(DisplayName="Creating an entity gets stored in the denormalizer", Skip="Ignored")]
         [Xunit.TraitAttribute("FeatureTitle", "DenormalizerSimpleSpecs")]
         [Xunit.TraitAttribute("Description", "Creating an entity gets stored in the denormalizer")]
         public virtual void CreatingAnEntityGetsStoredInTheDenormalizer()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Creating an entity gets stored in the denormalizer", ((string[])(null)));
-#line 11
-this.ScenarioSetup(scenarioInfo);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Creating an entity gets stored in the denormalizer", new string[] {
+                        "ignore"});
 #line 12
- testRunner.Given("a cinema with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 13
- testRunner.When("I create the viewing on 4th of June 2017", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("a cinema with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 14
- testRunner.Then("a view is created on the 4th of June 2017", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I create the viewing on 4th of June 2017", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 15
- testRunner.And("A seat view for this viewing for seat number 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Then("a view is created on the 4th of June 2017", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 16
+ testRunner.And("A seat view for this viewing for seat number 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 17
  testRunner.And("a seat view for this viewing for seat number 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
         
-        [Xunit.FactAttribute(DisplayName="Updating an entity updates the denormalizer")]
+        [Xunit.FactAttribute(DisplayName="Updating an entity updates the denormalizer", Skip="Ignored")]
         [Xunit.TraitAttribute("FeatureTitle", "DenormalizerSimpleSpecs")]
         [Xunit.TraitAttribute("Description", "Updating an entity updates the denormalizer")]
         public virtual void UpdatingAnEntityUpdatesTheDenormalizer()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Updating an entity updates the denormalizer", ((string[])(null)));
-#line 18
-this.ScenarioSetup(scenarioInfo);
-#line 19
- testRunner.Given("a cinema with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Updating an entity updates the denormalizer", new string[] {
+                        "ignore"});
 #line 20
- testRunner.When("I create the viewing on 4th of June 2017", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+this.ScenarioSetup(scenarioInfo);
 #line 21
- testRunner.And("seat 2 of the viewing gets reserved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Given("a cinema with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 22
+ testRunner.When("I create the viewing on 4th of June 2017", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 23
+ testRunner.And("seat 2 of the viewing gets reserved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 24
  testRunner.Then("seat view with seat number 2 gets updated to show its reserved", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

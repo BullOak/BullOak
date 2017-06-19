@@ -8,6 +8,7 @@
 #   In a showing the cinema can sell at most tickets equal to the seats it has
 #   The seats get reserved, can get cancelled (which means get unreserved) and no action can be performed after the viewing has happened.
 
+@ignore
 Scenario: Creating an entity gets stored in the denormalizer
 	Given a cinema with 2 seats
 	When I create the viewing on 4th of June 2017
@@ -15,6 +16,7 @@ Scenario: Creating an entity gets stored in the denormalizer
 	And A seat view for this viewing for seat number 1
 	And a seat view for this viewing for seat number 2
 
+@ignore
 Scenario: Updating an entity updates the denormalizer
 	Given a cinema with 2 seats
 	When I create the viewing on 4th of June 2017

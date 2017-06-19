@@ -8,17 +8,17 @@
 #   In a showing the cinema can sell at most tickets equal to the seats it has
 #   The seats get reserved, can get cancelled (which means get unreserved) and no action can be performed after the viewing has happened.
 
-Scenario: Storing creation event of aggregate root
-	Given a cinema with 2 seats
-	When I create the viewing on 4th of June 2017
-	Then a ViewingCreatedEvent should be in the stream
+Scenario: Creation events get stored when saved
+	Given I creare a cinema named "MyCinema" with 2 seats
+	When I save the cinema
+	Then a CinemaCreatedEvent should exist
+	And the cinema creation event should have seats set to 2
+	And the cinema creation event should have a cinema name of "MyCinema"
 
-Scenario: Storing creation event of sub-entities
-	Given a cinema with 2 seats
-	When I create the viewing on 4th of June 2017
-	Then 2 SeatInViewingCreated events should be fired
+Scenario: Reconstituting an aggregate populates it with data correctly
+	Given the "MyCinema" cinema with 2 seats
+	When I load the "MyCinema" cinema from the repository
+	Then the cinema I get should not be null
+	And the cinema aggregate should have seats set to 2
+	And the cinema aggregate should have a cinema name of "MyCinema"
 
-Scenario: Aggregate can get reconstituted from events
-	Given a cinema with 2 seats
-	When I reserve seat one on viewing on the 4th of June 2017
-	Then AggregateNotFoundError event is not raised

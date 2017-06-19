@@ -5,7 +5,7 @@
     using BullOak.EventStream;
     using BullOak.Messages;
 
-    public class EventStoreStub<T> : IEventStore
+    public class EventStoreStub : IEventStore
     {
         private Dictionary<string, List<IParcelVisionEventEnvelope>> memoryStore = new Dictionary<string, List<IParcelVisionEventEnvelope>>();
 
@@ -45,7 +45,7 @@
 
             if (memoryStore.TryGetValue(id, out eventList))
             {
-                if (concurrencyId != eventList.Count) throw new ConcurrencyException(id, typeof(T));
+                if (concurrencyId != eventList.Count) throw new ConcurrencyException(id);
             }
             else
             {

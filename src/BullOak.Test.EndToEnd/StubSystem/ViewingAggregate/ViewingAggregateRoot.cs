@@ -6,7 +6,7 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    internal class ViewingAggregateRoot
+    public class ViewingAggregateRoot
     {
         private SeatsInViewing[] Seats { get; set; }
 

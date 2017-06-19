@@ -31,7 +31,7 @@
 
             public AggregateRootTestRepo Repository { get; set; }
 
-            public EventStoreStub<AggregateRootTestRepo> EventStore { get; set; }
+            public EventStoreStub EventStore { get; set; }
 
             public List<IParcelVisionEventEnvelope> Events => EventStore[AggregateSutId.ToString()];
 
@@ -185,7 +185,7 @@
         {
             var arrangements = new Arrangements()
             {
-                EventStore = new EventStoreStub<AggregateRootTestRepo>(),
+                EventStore = new EventStoreStub(),
             };
 
             arrangements.Repository = new AggregateRootTestRepo(arrangements.EventStore);

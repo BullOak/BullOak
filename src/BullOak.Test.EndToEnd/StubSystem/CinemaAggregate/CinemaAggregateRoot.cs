@@ -5,9 +5,11 @@
     using BullOak.Test.EndToEnd.StubSystem.ViewingAggregate;
     using System;
 
-    internal class CinemaAggregateRoot : AggregateRoot<CinemaAggregateRootId>, IPublish<CinemaCreated>
+    public class CinemaAggregateRoot : AggregateRoot<CinemaAggregateRootId>, IPublish<CinemaCreated>
     {
         public int NumberOfSeats { get; private set; }
+
+        public CinemaAggregateRoot() { } //For use in reconstitution
 
         public CinemaAggregateRoot(Guid correlationId, int capacity, string name)
         {

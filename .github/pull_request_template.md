@@ -15,7 +15,7 @@ An overview of the most important changes done
 Integrity
 ---
 
-- I have run unit tests: [ ]
 - I have had a look on the PR preview for obvious whitespace\formatting issues before actually openned this PR: [ ]
+- I have run unit tests: [ ]
 - I have run all acceptance tests: [ ]
 - I have run all integration tests: [ ]

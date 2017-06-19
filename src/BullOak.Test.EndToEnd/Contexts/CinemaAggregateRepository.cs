@@ -8,10 +8,8 @@
     public class CinemaAggregateRepository : Repository<CinemaAggregateRoot, CinemaAggregateRootId>
     {
         private readonly InMemoryEventStore eventStore;
-        public List<IParcelVisionEventEnvelope> this[string id]
-        {
-            get { return eventStore[id]; }
-        }
+        public List<IParcelVisionEventEnvelope> this[string id] => eventStore[id];
+
         public CinemaAggregateRepository(InMemoryEventStore eventStore) : base(eventStore)
         {
             this.eventStore = eventStore;

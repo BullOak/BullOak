@@ -1,11 +1,9 @@
-﻿using System.Collections.Concurrent;
-
-namespace BullOak.Infrastructure.TestHelpers.Application.Stubs
+﻿namespace BullOak.Infrastructure.TestHelpers.Application.Stubs
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using BullOak.EventStream;
-    using BullOak.Messages;
+    using System.Collections.Concurrent;
 
     public class InMemoryEventStore : IEventStore
     {

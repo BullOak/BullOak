@@ -65,7 +65,7 @@
     <Compile Include="Extensions\WithEventAndIdFactory.cs" />
     <Compile Include="Extensions\WithSelfType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Stubs\EventStoreStub.cs" />
+    <Compile Include="Stubs\InMemoryEventStore.cs" />
     <Compile Include="Stubs\FixedClock.cs" />
   </ItemGroup>
   <ItemGroup>

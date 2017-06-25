@@ -31,7 +31,7 @@
 
             public AggregateRootTestRepo Repository { get; set; }
 
-            public EventStoreStub<AggregateRootTestRepo> EventStore { get; set; }
+            public InMemoryEventStore EventStore { get; set; }
 
             public List<IParcelVisionEventEnvelope> Events => EventStore[AggregateSutId.ToString()];
 
@@ -185,7 +185,7 @@
         {
             var arrangements = new Arrangements()
             {
-                EventStore = new EventStoreStub<AggregateRootTestRepo>(),
+                EventStore = new InMemoryEventStore(),
             };
 
             arrangements.Repository = new AggregateRootTestRepo(arrangements.EventStore);
@@ -332,64 +332,6 @@
             // Assert
             sut.Name.Should().Be("XYZ987");
         }
-
-        //[Fact]
-        //public async Task AggregateSut_DeleteExisting_ExpectDeletedEvent()
-        //{
-        //    // Arrange
-        //    var arrangements = GetArrangements();
-        //    arrangements.AddCreationEvent();
-        //    var correlationId = Guid.NewGuid();
-
-        //    // Act
-        //    var sut = await arrangements.Repository.Load(arrangements.AggregateSutId, true);
-        //    sut.Delete(correlationId);
-        //    await arrangements.Repository.Save(sut);
-
-        //    // Assert
-        //    arrangements.Events.Count.Should().Be(2);
-
-        //    var envelope = arrangements.Events.FirstOrDefault(x => x.Event is AggregateDeleted);
-        //    envelope.Should().NotBeNull();
-        //    envelope.SourceId.Should().Be(arrangements.AggregateSutId);
-        //    envelope.ParentId.Should().Be(arrangements.AggregateSutId);
-        //    envelope.EntityType.Should().Be(typeof(AggregateSut).AssemblyQualifiedName);
-
-        //    var @event = envelope.Event as AggregateDeleted;          
-        //    @event.AggregateSutId.Should().Be(arrangements.AggregateSutId);
-        //    @event.CorrelationId.Should().Be(correlationId);
-        //}
-
-        //[Fact]
-        //public async Task AggregateSut_DeleteExisting_ExpectDeletedAggregate()
-        //{
-        //    // Arrange
-        //    var arrangements = GetArrangements();
-        //    arrangements.AddCreationEvent();
-
-        //    // Act
-        //    var sut = await arrangements.Repository.Load(arrangements.AggregateSutId, true);
-        //    sut.Delete(arrangements.CorrelationId);
-        //    await arrangements.Repository.Save(sut);
-
-        //    // Assert
-        //    sut.IsDeleted.Should().BeTrue();
-        //}
-
-        //[Fact]
-        //public async Task AggregateSut_TryToUpdateDeletedAggregate_ExpectExceptionThrown()
-        //{
-        //    // Arrange
-        //    var arrangements = GetArrangements();
-        //    arrangements.AddCreationEvent();
-        //    arrangements.AddDeletedEvent();
-
-        //    // Act
-        //    // Assert
-        //    var sut = await arrangements.Repository.Load(arrangements.AggregateSutId, true);
-        //    Assert.Throws<AggregateDeletedException>(() => sut.Update("XYZ987", arrangements.CorrelationId))
-        //        .Message.Should().Be($"Aggregate AggregateSut with id {arrangements.AggregateSutId} has been deleted");
-        //}
 
         [Fact]
         public async Task AggregateSut_AddChildEntity_ExpectChildCreationEvent()

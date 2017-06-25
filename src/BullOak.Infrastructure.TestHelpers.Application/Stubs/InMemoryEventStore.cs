@@ -3,11 +3,12 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using BullOak.EventStream;
-    using BullOak.Messages;
+    using System.Collections.Concurrent;
 
-    public class EventStoreStub<T> : IEventStore
+    public class InMemoryEventStore : IEventStore
     {
-        private Dictionary<string, List<IParcelVisionEventEnvelope>> memoryStore = new Dictionary<string, List<IParcelVisionEventEnvelope>>();
+        private ConcurrentDictionary<string, List<IParcelVisionEventEnvelope>> memoryStore = 
+            new ConcurrentDictionary<string, List<IParcelVisionEventEnvelope>>();
 
         public List<IParcelVisionEventEnvelope> this[string id] => GetOrCreateEntryFor(id);
 
@@ -18,6 +19,8 @@
             return Task.FromResult(memoryStore.TryGetValue(id, out entry));
         }
 
+        public void Clear() => memoryStore.Clear();
+
         public Task<EventStoreData> LoadFor(string id)
         {
             var entry = GetOrCreateEntryFor(id);
@@ -26,18 +29,7 @@
         }
 
         private List<IParcelVisionEventEnvelope> GetOrCreateEntryFor(string id)
-        {
-            List<IParcelVisionEventEnvelope> entry;
-
-            if (!memoryStore.TryGetValue(id, out entry))
-            {
-                entry = new List<IParcelVisionEventEnvelope>();
-
-                memoryStore[id] = entry;
-            }
-
-            return entry;
-        }
+            => memoryStore.GetOrAdd(id, _ => new List<IParcelVisionEventEnvelope>());
 
         public Task Store(string id, int concurrencyId, IEnumerable<IParcelVisionEventEnvelope> newEvents)
         {
@@ -45,7 +37,7 @@
 
             if (memoryStore.TryGetValue(id, out eventList))
             {
-                if (concurrencyId != eventList.Count) throw new ConcurrencyException(id, typeof(T));
+                if (concurrencyId != eventList.Count) throw new ConcurrencyException(id);
             }
             else
             {

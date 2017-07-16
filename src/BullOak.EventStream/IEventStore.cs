@@ -1,6 +1,5 @@
 ﻿namespace BullOak.EventStream
 {
-    using BullOak.Messages;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 

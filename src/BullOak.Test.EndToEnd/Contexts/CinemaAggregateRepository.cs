@@ -1,9 +1,10 @@
 ﻿namespace BullOak.Test.EndToEnd.Contexts
 {
-    using BullOak.Test.EndToEnd.StubSystem.CinemaAggregate;
     using BullOak.EventStream;
     using System.Collections.Generic;
     using BullOak.Infrastructure.TestHelpers.Application.Stubs;
+    using BullOak.Test.EndToEnd.Stub.AggregateBased.CinemaAggregate;
+    using BullOak.Test.EndToEnd.Stub.Shared.Ids;
 
     public class CinemaAggregateRepository : Repository<CinemaAggregateRoot, CinemaAggregateRootId>
     {

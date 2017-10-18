@@ -22,3 +22,13 @@ Scenario: Reconstituting an aggregate populates it with data correctly
 	And the cinema aggregate should have seats set to 2
 	And the cinema aggregate should have a cinema name of "MyCinema"
 
+Scenario: Acting on a child entity sends event properly
+	Given a viewing for "Die Hard" with 20 seats in 72 hours from now
+	When I try to reserve seat 1
+	And I save the viewing aggregate
+	Then I should get a seat reserved event for seat 1
+
+Scenario: Creating aggregate with childs creates the childs automatically
+	Given a viewing for "Die Hard" with 20 seats in 72 hours from now
+	When I save the viewing aggregate
+	Then I should have 20 seat created events

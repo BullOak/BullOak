@@ -1,7 +1,7 @@
-﻿namespace BullOak.Test.EndToEnd.Contexts
+﻿namespace BullOak.Test.EndToEnd.Stub.AggregateBased
 {
-    using BullOak.EventStream;
     using System.Collections.Generic;
+    using BullOak.EventStream;
     using BullOak.Infrastructure.TestHelpers.Application.Stubs;
     using BullOak.Test.EndToEnd.Stub.AggregateBased.CinemaAggregate;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;

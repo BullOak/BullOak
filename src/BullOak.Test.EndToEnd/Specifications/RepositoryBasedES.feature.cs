@@ -104,15 +104,33 @@ this.ScenarioSetup(scenarioInfo);
 #line 18
 this.ScenarioSetup(scenarioInfo);
 #line 19
- testRunner.Given("the \"MyCinema\" cinema with 2 seats", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("a cinema creation event with the name \"MyCinema\" and 2 seats in the event stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 20
  testRunner.When("I load the \"MyCinema\" cinema from the repository", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 21
  testRunner.Then("the cinema I get should not be null", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 22
- testRunner.And("the cinema aggregate should have seats set to 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the cinema aggregate state should have seats set to 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 23
- testRunner.And("the cinema aggregate should have a cinema name of \"MyCinema\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the cinema aggregate state should have a cinema name of \"MyCinema\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.FactAttribute(DisplayName="Acting on a child entity sends event properly")]
+        [Xunit.TraitAttribute("FeatureTitle", "RepositoryBasedES")]
+        [Xunit.TraitAttribute("Description", "Acting on a child entity sends event properly")]
+        public virtual void ActingOnAChildEntitySendsEventProperly()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Acting on a child entity sends event properly", ((string[])(null)));
+#line 25
+this.ScenarioSetup(scenarioInfo);
+#line 26
+ testRunner.Given("a viewing for \"Die Hard\" with 20 seats in 72 hours from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 27
+ testRunner.When("I try to reserve seat 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 28
+ testRunner.Then("I should get a seat reserved event for seat 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

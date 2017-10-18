@@ -40,22 +40,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventSourced\BaseHandler.cs" />
-    <Compile Include="EventSourced\BaseSession.cs" />
-    <Compile Include="EventSourced\EventEnvelope.cs" />
-    <Compile Include="EventSourced\Exceptions\EventEnvelopeNotRecognisedException.cs" />
-    <Compile Include="EventSourced\Exceptions\EventHandlerNotFoundException.cs" />
+    <Compile Include="BaseSession.cs" />
+    <Compile Include="EmptyApplier.cs" />
+    <Compile Include="EventApplierContainer.cs" />
+    <Compile Include="EventSourced\EventSourceSession.cs" />
     <Compile Include="EventSourced\FunctionHanlder.cs" />
-    <Compile Include="EventSourced\IHoldEventWithMetadata.cs" />
-    <Compile Include="EventSourced\IReconstituteStateFromEvents.cs" />
-    <Compile Include="IPersistEntities.cs" />
-    <Compile Include="IManageStoreRequestLifetime.cs" />
+    <Compile Include="EventSourced\IManageEventSourceSession.cs" />
+    <Compile Include="FuncEventApplier.cs" />
+    <Compile Include="IApplyEvents.cs" />
+    <Compile Include="ICreateEventAppliers.cs" />
+    <Compile Include="IHoldEventWithMetadata.cs" />
+    <Compile Include="InMemory\InMemoryEventSourcedRepository.cs" />
+    <Compile Include="InMemory\InMemoryEventSourcedSession.cs" />
+    <Compile Include="IManagePersistenceOf.cs" />
+    <Compile Include="IManageSessionOf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="EventAndStateTypeInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BullOak.Common\BullOak.Common.csproj">
       <Project>{432e21ec-ef22-490c-b2bb-c2606fff156b}</Project>
       <Name>BullOak.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BullOak.EventStream\BullOak.EventStream.csproj">
+      <Project>{90e2d13e-b1ca-47ad-87dd-d3707d150b0b}</Project>
+      <Name>BullOak.EventStream</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

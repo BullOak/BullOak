@@ -16,9 +16,13 @@ Scenario: Creation events get stored when saved
 	And the cinema creation event should have a cinema name of "MyCinema"
 
 Scenario: Reconstituting an aggregate populates it with data correctly
-	Given the "MyCinema" cinema with 2 seats
+	Given a cinema creation event with the name "MyCinema" and 2 seats in the event stream
 	When I load the "MyCinema" cinema from the repository
 	Then the cinema I get should not be null
-	And the cinema aggregate should have seats set to 2
-	And the cinema aggregate should have a cinema name of "MyCinema"
+	And the cinema aggregate state should have seats set to 2
+	And the cinema aggregate state should have a cinema name of "MyCinema"
 
+Scenario: Acting on a child entity sends event properly
+	Given a viewing for "Die Hard" with 20 seats in 72 hours from now
+	When I try to reserve seat 1
+	Then I should get a seat reserved event for seat 1

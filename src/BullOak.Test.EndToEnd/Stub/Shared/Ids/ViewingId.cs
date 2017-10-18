@@ -3,7 +3,7 @@
     using System;
     using BullOak.Common;
 
-    internal class ViewingId : IId, IEquatable<ViewingId>
+    public class ViewingId : IId, IEquatable<ViewingId>
     {
         public string MovieName { get; private set; }
         public DateTime ShowingDate { get; private set; }
@@ -20,7 +20,7 @@
         public override int GetHashCode() => MovieName.GetHashCode() ^ ShowingDate.GetHashCode() ^ CinemaId.GetHashCode();
         public bool Equals(ViewingId other) => MovieName == other?.MovieName
                 && ShowingDate == other?.ShowingDate
-                && CinemaId == other?.CinemaId;
+                && Equals(CinemaId, other?.CinemaId);
         public override bool Equals(object obj) => Equals(obj as ViewingId);
     }
 }

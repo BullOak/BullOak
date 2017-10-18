@@ -117,6 +117,44 @@ this.ScenarioSetup(scenarioInfo);
             this.ScenarioCleanup();
         }
         
+        [Xunit.FactAttribute(DisplayName="Acting on a child entity sends event properly")]
+        [Xunit.TraitAttribute("FeatureTitle", "AggregateBasedES")]
+        [Xunit.TraitAttribute("Description", "Acting on a child entity sends event properly")]
+        public virtual void ActingOnAChildEntitySendsEventProperly()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Acting on a child entity sends event properly", ((string[])(null)));
+#line 25
+this.ScenarioSetup(scenarioInfo);
+#line 26
+ testRunner.Given("a viewing for \"Die Hard\" with 20 seats in 72 hours from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 27
+ testRunner.When("I try to reserve seat 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 28
+ testRunner.And("I save the viewing aggregate", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 29
+ testRunner.Then("I should get a seat reserved event for seat 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.FactAttribute(DisplayName="Creating aggregate with childs creates the childs automatically")]
+        [Xunit.TraitAttribute("FeatureTitle", "AggregateBasedES")]
+        [Xunit.TraitAttribute("Description", "Creating aggregate with childs creates the childs automatically")]
+        public virtual void CreatingAggregateWithChildsCreatesTheChildsAutomatically()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Creating aggregate with childs creates the childs automatically", ((string[])(null)));
+#line 31
+this.ScenarioSetup(scenarioInfo);
+#line 32
+ testRunner.Given("a viewing for \"Die Hard\" with 20 seats in 72 hours from now", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 33
+ testRunner.When("I save the viewing aggregate", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 34
+ testRunner.Then("I should have 20 seat created events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
         [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.1.0.0")]
         [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
         public class FixtureData : System.IDisposable

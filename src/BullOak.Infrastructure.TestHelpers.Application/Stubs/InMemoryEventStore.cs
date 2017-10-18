@@ -7,7 +7,7 @@
 
     public class InMemoryEventStore : IEventStore
     {
-        private ConcurrentDictionary<string, List<IParcelVisionEventEnvelope>> memoryStore = 
+        private ConcurrentDictionary<string, List<IParcelVisionEventEnvelope>> memoryStore =
             new ConcurrentDictionary<string, List<IParcelVisionEventEnvelope>>();
 
         public List<IParcelVisionEventEnvelope> this[string id] => GetOrCreateEntryFor(id);

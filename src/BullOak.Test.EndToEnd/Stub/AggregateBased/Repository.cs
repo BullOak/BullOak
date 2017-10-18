@@ -1,8 +1,8 @@
-﻿namespace BullOak.Test.EndToEnd.Contexts
+﻿namespace BullOak.Test.EndToEnd.Stub.AggregateBased
 {
+    using System;
     using BullOak.Application;
     using BullOak.Common;
-    using System;
     using BullOak.EventStream;
 
     public class Repository<TAggregateRoot, TId> : AggregateRepositoryBase<TAggregateRoot, TId>

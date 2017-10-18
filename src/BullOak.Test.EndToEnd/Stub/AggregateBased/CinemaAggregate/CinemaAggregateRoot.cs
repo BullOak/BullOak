@@ -18,7 +18,7 @@
         }
 
         public ViewingAggregateRoot CreateViewing(DateTime timeOfViewing, string movieName)
-            => new ViewingAggregateRoot(NumberOfSeats, timeOfViewing, movieName);
+            => new ViewingAggregateRoot(NumberOfSeats, timeOfViewing, movieName, Id);
 
         void IPublish<CinemaCreated>.Apply(CinemaCreated @event)
         {

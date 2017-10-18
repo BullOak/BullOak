@@ -2,32 +2,25 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using BullOak.Repositories.EventSourced;
     using global::NEventStore;
 
-    internal class NEventStoreSession<TState> : BaseSession<TState>
+    internal class NEventStoreSession<TState> : EventSourceSession<TState, int>
+        where TState : new()
     {
         private readonly IEventStream eventStream;
+        private static readonly Task Done = Task.FromResult(0);
 
-        public NEventStoreSession(Dictionary<Type, IReconstituteStateFromEvents<TState>> eventHandlers,
-            Func<TState> stateFactory,
-            IEventStream eventStream)
-            : base(eventHandlers, stateFactory)
+        public NEventStoreSession(ICreateEventAppliers factory, IEventStream stream)
+            : base(factory)
         {
-            this.eventStream = eventStream ?? throw new ArgumentNullException(nameof(eventStream));
+            eventStream = stream;
         }
 
-        protected override IHoldEventWithMetadata[] LoadEvents() =>
-            eventStream.CommittedEvents
-                .Select(x => x.Body as IHoldEventWithMetadata)
-                .Where(x => x != null)
-                .ToArray();
-
-        protected override Task Save(List<IHoldEventWithMetadata> eventsToStore)
+        protected override Task SaveEvents(List<IHoldEventWithMetadata> newEvents, int concurrency)
         {
-            foreach (var @event in eventsToStore)
+            foreach (var @event in newEvents)
             {
                 eventStream.Add(new EventMessage()
                 {
@@ -36,7 +29,8 @@
             }
 
             eventStream.CommitChanges(Guid.NewGuid());
-            return Task.FromResult(0);
+
+            return Done;
         }
     }
 }

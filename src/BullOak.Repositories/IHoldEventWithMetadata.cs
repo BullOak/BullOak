@@ -1,4 +1,4 @@
-﻿namespace BullOak.Repositories.EventSourced
+﻿namespace BullOak.Repositories
 {
     using System;
     using System.Collections.Generic;

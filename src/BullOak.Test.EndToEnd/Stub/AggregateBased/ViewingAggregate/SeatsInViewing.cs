@@ -1,15 +1,38 @@
 ﻿namespace BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate
 {
-    using System;
+    using BullOak.Application;
+    using BullOak.Test.EndToEnd.Stub.Shared.Ids;
+    using BullOak.Test.EndToEnd.Stub.Shared.Messages;
 
-    internal class SeatsInViewing
+    public class SeatsInViewing : ChildEntity<SeatId, ViewingAggregateRoot>,
+        IPublish<SeatInViewingInitialized>,
+        IPublish<SeatReservedEvent>
     {
-        public string Id { get; private set; }
         public bool Reserved { get; private set; }
+
+        //Needed by framework
+        public SeatsInViewing()
+        { }
 
         public SeatsInViewing(int id)
         {
-            throw new NotImplementedException();
+            ApplyEvent(new SeatInViewingInitialized(new SeatId((ushort)id)));
+        }
+
+        public void Reserve()
+        {
+            ApplyEvent(new SeatReservedEvent(this.Parent.Id, Id));
+        }
+
+        public void Apply(SeatInViewingInitialized @event)
+        {
+            Id = @event.SeatId;
+            Reserved = false;
+        }
+
+        public void Apply(SeatReservedEvent @event)
+        {
+            Reserved = true;
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿namespace BullOak.Test.EndToEnd.StepDefinitions
 {
-    using BullOak.Test.EndToEnd.Contexts;
     using System;
     using System.Linq;
     using BullOak.Test.EndToEnd.Specifications;
+    using BullOak.Test.EndToEnd.Stub.AggregateBased;
     using BullOak.Test.EndToEnd.Stub.AggregateBased.CinemaAggregate;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
     using BullOak.Test.EndToEnd.Stub.Shared.Messages;

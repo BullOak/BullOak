@@ -7,14 +7,13 @@ namespace BullOak.Repositories
 
     public interface IManageSessionOf<out TState> : IDisposable
     {
-        IEnumerable<IHoldEventWithMetadata> NewEvents { get; }
+        IEnumerable<object> NewEvents { get; }
 
         TState State { get; }
 
         Task SaveChanges();
 
-        void AddToStream(params IHoldEventWithMetadata[] events);
         void AddToStream(params object[] events);
-        //void AddToStream(IEnumerable<IHoldEventWithMetadata> events);
+        void AddToStream(IEnumerable<object> events);
     }
 }

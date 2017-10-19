@@ -9,9 +9,8 @@
     [MemoryDiagnoser]
     public class SaveAggregateBenchmark
     {
-        private AggregateFixture fixture = new AggregateFixture("testing", 3);
+        private AggregateFixture fixture = new AggregateFixture("testing");
         private int capacity = 20;
-
 
         [Benchmark]
         public void SaveRepoBasedAggregate()

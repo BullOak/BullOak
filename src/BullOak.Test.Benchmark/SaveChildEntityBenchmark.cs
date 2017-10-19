@@ -11,7 +11,7 @@
     [ShortRunJob]
     public class SaveChildEntityBenchmark
     {
-        private AggregateFixture fixture = new AggregateFixture("testing", 3);
+        private AggregateFixture fixture = new AggregateFixture("testing");
         private static readonly RepoBasedViewing RepoBasedViewing = new RepoBasedViewing();
 
         [Params(1,10,100)]

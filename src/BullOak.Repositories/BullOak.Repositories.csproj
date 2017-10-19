@@ -44,12 +44,10 @@
     <Compile Include="EmptyApplier.cs" />
     <Compile Include="EventApplierContainer.cs" />
     <Compile Include="EventSourced\EventSourceSession.cs" />
-    <Compile Include="EventSourced\FunctionHanlder.cs" />
     <Compile Include="EventSourced\IManageEventSourceSession.cs" />
     <Compile Include="FuncEventApplier.cs" />
     <Compile Include="IApplyEvents.cs" />
     <Compile Include="ICreateEventAppliers.cs" />
-    <Compile Include="IHoldEventWithMetadata.cs" />
     <Compile Include="InMemory\InMemoryEventSourcedRepository.cs" />
     <Compile Include="InMemory\InMemoryEventSourcedSession.cs" />
     <Compile Include="IManagePersistenceOf.cs" />

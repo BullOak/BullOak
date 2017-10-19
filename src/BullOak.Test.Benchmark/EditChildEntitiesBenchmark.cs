@@ -17,13 +17,16 @@
 
         private ViewingId viewingId;
 
-        [Params(1, 10, 100)]
+        [Params(20, 100)]
         public int Capacity { get; set; }
+
+        [Params(1, 20)]
+        public int SeatsToReserve { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
-            fixture = new AggregateFixture(Guid.NewGuid().ToString(), Capacity);
+            fixture = new AggregateFixture(Guid.NewGuid().ToString());
             viewingId = new ViewingId(Guid.NewGuid().ToString(), fixture.dateOfViewing, fixture.cinemaId);
             fixture.AddViewingAndSeatCreatiuonEvents(viewingId, Capacity);
         }
@@ -33,14 +36,17 @@
         {
             using (var session = fixture.ViewingFunctionalRepo.Load(viewingId))
             {
-                var events = viewingAggregate.ReserveSeat(session.State, 0);
+                for (int i = 0; i < SeatsToReserve; i++)
+                {
+                    var events = viewingAggregate.ReserveSeat(session.State, i);
 
-                session.AddToStream(events);
+                    session.AddToStream(events);
+                }
                 session.SaveChanges().Wait();
             }
 
             var eventCount = fixture.ViewingFunctionalRepo[viewingId].Count;
-            fixture.ViewingFunctionalRepo[viewingId].RemoveAt(eventCount - 1);
+            fixture.ViewingFunctionalRepo[viewingId].RemoveRange(eventCount - SeatsToReserve, SeatsToReserve);
         }
 
         [Benchmark]
@@ -48,12 +54,13 @@
         {
             var aggregate = fixture.ViewingAggregateRepository.Load(viewingId).Result;
 
-            aggregate.ReserveSeat(0);
+            for (int i = 0; i < SeatsToReserve; i++)
+                aggregate.ReserveSeat((ushort) i);
 
             fixture.ViewingAggregateRepository.Save(aggregate).Wait();
 
             var eventCount = fixture.ViewingAggregateRepository[viewingId.ToString()].Count;
-            fixture.ViewingAggregateRepository[viewingId.ToString()].RemoveAt(eventCount - 1);
+            fixture.ViewingAggregateRepository[viewingId.ToString()].RemoveRange(eventCount - SeatsToReserve, SeatsToReserve);
         }
     }
 }

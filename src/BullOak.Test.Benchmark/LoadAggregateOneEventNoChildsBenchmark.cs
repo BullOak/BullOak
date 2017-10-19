@@ -6,7 +6,7 @@
     [ShortRunJob]
     public class LoadAggregateOneEventNoChildsBenchmark
     {
-        private AggregateFixture fixture = new AggregateFixture("testing", 3);
+        private AggregateFixture fixture = new AggregateFixture("testing");
 
         public LoadAggregateOneEventNoChildsBenchmark()
         {

@@ -12,16 +12,17 @@
     [ShortRunJob]
     public class LoadAggregateWithChildEntitiesBenchmark
     {
-        private AggregateFixture fixture = new AggregateFixture("testing", 3);
+        private AggregateFixture fixture;
 
         private ViewingId viewingId;
 
-        [Params(1, 10, 100)]
+        [Params(10, 100)]
         public int Capacity { get; set; }
 
         [GlobalSetup]
         public void Setup()
         {
+            fixture = new AggregateFixture(Guid.NewGuid().ToString());
             viewingId = new ViewingId(Guid.NewGuid().ToString(), fixture.dateOfViewing, fixture.cinemaId);
             fixture.AddViewingAndSeatCreatiuonEvents(viewingId, Capacity);
         }
@@ -38,7 +39,6 @@
         [Benchmark]
         public AggregateBasedViewing LoadAggregateBasedAggregateWithChilds()
         {
-            //This will implicitly create childs as per capacity
             return fixture.ViewingAggregateRepository.Load(viewingId).Result;
         }
     }

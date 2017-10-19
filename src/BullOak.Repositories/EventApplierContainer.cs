@@ -19,10 +19,10 @@
             {
                 var key = typeof(TState);
 
-                if (!container.TryGetValue(key, out List<object> handler))
+                if (!container.TryGetValue(key, out List<object> handlers))
                     return new List<IApplyEvents<TState>>(0);
 
-                return handler.Cast<IApplyEvents<TState>>();
+                return handlers.Cast<IApplyEvents<TState>>();
             }
         }
 
@@ -39,7 +39,7 @@
             }
         }
 
-        public void Register<TState, TEvent>(Func<TState, IHoldEventWithMetadata<TEvent>, TState> applier)
+        public void Register<TState, TEvent>(Func<TState, TEvent, TState> applier)
             => Register((FuncEventApplier<TState, TEvent>)applier);
 
         public ICreateEventAppliers Build()

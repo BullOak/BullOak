@@ -12,13 +12,13 @@
         private readonly IEventStream eventStream;
         private static readonly Task Done = Task.FromResult(0);
 
-        public NEventStoreSession(ICreateEventAppliers factory, IEventStream stream)
-            : base(factory)
+        public NEventStoreSession(IEnumerable<IApplyEvents<TState>> appliers, IEventStream stream)
+            : base(appliers)
         {
             eventStream = stream;
         }
 
-        protected override Task SaveEvents(List<IHoldEventWithMetadata> newEvents, int concurrency)
+        protected override Task SaveEvents(List<object> newEvents, int concurrency)
         {
             foreach (var @event in newEvents)
             {

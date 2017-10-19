@@ -5,59 +5,69 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class EventEnvelope<TEvent> : IHoldEventWithMetadata<TEvent>
-    {
-        public Type EventType => Event.GetType();
-        public Dictionary<string, string> Metadata { get; } = new Dictionary<string, string>(0);
-        public TEvent Event { get; private set; }
-        object IHoldEventWithMetadata.Event => Event;
-
-        public EventEnvelope(TEvent @event) => Event = @event;
-    }
-
-    internal static class EnvelopeHelper
-    {
-        public static EventEnvelope<TEvent> CreateEnvelopeDynamic<TEvent>(TEvent @event)
-            => new EventEnvelope<TEvent>(@event);
-        public static IHoldEventWithMetadata CreateEnvelope(dynamic @event)
-            => CreateEnvelopeDynamic(@event);
-    }
-
     public abstract class BaseSession<TState> : IManageSessionOf<TState>
         where TState : new()
     {
-        internal readonly ICreateEventAppliers eventApplyFactory;
-        internal readonly List<IHoldEventWithMetadata> eventsToStore = new List<IHoldEventWithMetadata>(4);
-        public IEnumerable<IHoldEventWithMetadata> NewEvents => eventsToStore.AsReadOnly();
+        //internal readonly ICreateEventAppliers eventApplyFactory;
+        internal readonly IEnumerable<IApplyEvents<TState>> appliers;
+        internal readonly List<object> eventsToStore = new List<object>(4);
+        public IEnumerable<object> NewEvents => eventsToStore.AsReadOnly();
 
-        public TState State => GetCurrent();
-
-        internal BaseSession(ICreateEventAppliers factory)
-            => this.eventApplyFactory = factory ?? throw new ArgumentNullException(nameof(factory));
-
-        protected abstract TState GetCurrent();
-
-        protected TState ApplyEvent(TState state, IHoldEventWithMetadata eventEnvelope)
+        private struct StateStruct
         {
-            //TODO: This method is looping and is already in a loop AND a hot path
-            var appliers = eventApplyFactory.GetInstance<TState>();
+            public int lastEventCount;
+            public TState lastState;
 
-            foreach (var applier in appliers.Where(x=> x.CanApplyEvent(eventEnvelope.Event)))
+            public StateStruct(int lastEventCount, TState lastSTate)
             {
-                state = applier.Apply(state, eventEnvelope);
+                this.lastEventCount = lastEventCount;
+                this.lastState = lastSTate;
             }
-
-            return state;
         }
+        private StateStruct? lastState = null;
+        public TState State
+        {
+            get
+            {
+                var state = lastState;
+                if (state.HasValue && state.Value.lastEventCount == eventsToStore.Count)
+                    return state.Value.lastState;
+
+                StateStruct s = state ?? new StateStruct(0, GetStored());
+
+                if (s.lastEventCount < eventsToStore.Count)
+                {
+                    foreach (var @event in eventsToStore)
+                    {
+                        s.lastState = ApplyEvent(s.lastState, @event);
+                    }
+
+                    s.lastEventCount += eventsToStore.Count;
+                }
+
+                lastState = s;
+                return lastState.Value.lastState;
+            }
+        }
+
+        internal BaseSession(IEnumerable<IApplyEvents<TState>> appliers)
+            => this.appliers = appliers ?? throw new ArgumentNullException(nameof(appliers));
+
+        protected abstract TState GetStored();
+
+        //TODO: This method is looping and is already in a loop AND a hot path
+        protected TState ApplyEvent(TState state, object @event)
+            //=> eventApplyFactory.GetInstance<TState>()
+            => appliers
+                .First(x => x.CanApplyEvent(@event))
+                .Apply(state, @event);
 
         public abstract Task SaveChanges();
 
         public void AddToStream(IEnumerable<object> events)
-            => eventsToStore.AddRange(events.Select(EnvelopeHelper.CreateEnvelope));
-        public void AddToStream(params IHoldEventWithMetadata[] events)
             => eventsToStore.AddRange(events);
         public void AddToStream(params object[] events)
-            => eventsToStore.AddRange(events.Select(EnvelopeHelper.CreateEnvelope));
+            => eventsToStore.AddRange(events);
 
         public void Dispose() => eventsToStore.Clear();
     }

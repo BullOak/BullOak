@@ -4,6 +4,6 @@
 
     public interface IManageEventSourceSession<out TState> : IManageSessionOf<TState>
     {
-        IEnumerable<IHoldEventWithMetadata> EventStream { get; }
+        IEnumerable<object> EventStream { get; }
     }
 }

@@ -22,7 +22,7 @@
 
         public SeatReservedEvent ReserveSeat(ViewingState state, int idOfSeatToReserve)
         {
-            if (state.TimeOfShowing > DateTime.Now.AddHours(-2))
+            if (state.TimeOfShowing <= DateTime.Now.AddHours(2))
                 throw new Exception("You cannot book a seat if it is past 2 hours due the time of showing");
 
             return seatInViewingEntity.Reserve(state, idOfSeatToReserve);

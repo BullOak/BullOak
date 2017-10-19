@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.NEventStore
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using BullOak.Common;
@@ -12,12 +13,13 @@
         where TId : IId
     {
         private readonly IStoreEvents store;
-        private readonly ICreateEventAppliers appliersFactory;
+        private readonly IEnumerable<IApplyEvents<TState>> appliers;
 
         public NEventStoreRepository(IStoreEvents store, ICreateEventAppliers appliersFactory)
         {
             this.store = store ?? throw new ArgumentNullException(nameof(store));
-            this.appliersFactory = appliersFactory ?? throw new ArgumentNullException(nameof(appliersFactory));
+            this.appliers = (appliersFactory ?? throw new ArgumentNullException(nameof(appliersFactory)))
+                .GetInstance<TState>();
         }
 
         public Task Clear(TId id)
@@ -45,10 +47,9 @@
 
             var events = stream.CommittedEvents
                 .Select(x => x.Body)
-                .Cast<IHoldEventWithMetadata>()
                 .ToArray();
 
-            var session = new NEventStoreSession<TState>(appliersFactory, stream);
+            var session = new NEventStoreSession<TState>(appliers, stream);
             session.Initialize(events, stream.StreamRevision);
             return session;
         }

@@ -3,6 +3,7 @@
     using System;
     using BullOak.Infrastructure.TestHelpers.Application.Stubs;
     using BullOak.Messages;
+    using BullOak.Repositories;
     using BullOak.Repositories.InMemory;
     using BullOak.Test.EndToEnd.Stub.AggregateBased;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased;
@@ -24,17 +25,35 @@
         public string name;
         public DateTime dateOfViewing;
 
-        public AggregateFixture(string name, int capacity)
+        public AggregateFixture(string name, ICreateEventAppliers fakeDi = null)
         {
             this.name = name;
             correlationId = Guid.NewGuid();
-            CinemaFunctionalRepo = new InMemoryEventSourcedRepository<CinemaAggregateState, CinemaAggregateRootId>(StubDI.GetCreator());
-            ViewingFunctionalRepo = new InMemoryEventSourcedRepository<ViewingState, ViewingId>(StubDI.GetCreator());
+            CinemaFunctionalRepo = new InMemoryEventSourcedRepository<CinemaAggregateState, CinemaAggregateRootId>(fakeDi ?? StubDI.GetCreator());
+            ViewingFunctionalRepo = new InMemoryEventSourcedRepository<ViewingState, ViewingId>(fakeDi ?? StubDI.GetCreator());
             CinemaAggregateRepository = new CinemaAggregateRepository(new InMemoryEventStore());
             ViewingAggregateRepository = new ViewingAggregateRepository(new InMemoryEventStore());
 
             cinemaId = new CinemaAggregateRootId(name);
-            dateOfViewing = DateTime.Now.AddDays(-3);
+            dateOfViewing = DateTime.Now.AddDays(3);
+        }
+
+        public static ICreateEventAppliers GetAppliersWith<TState>(int totalAppliers, IApplyEvents<TState> custom,
+            int customIndex)
+        {
+            var container = new EventApplierContainer();
+
+            for (int i = 0; i < totalAppliers; i++)
+            {
+                container.Register(i == customIndex ? custom : new FakeApplier<TState>());
+            }
+            return container.Build();
+        }
+
+        private class FakeApplier<TState> : IApplyEvents<TState>
+        {
+            public bool CanApplyEvent(object @event) => false;
+            public TState Apply(TState state, object @event) => state;
         }
 
         public void AddCreationEvent()

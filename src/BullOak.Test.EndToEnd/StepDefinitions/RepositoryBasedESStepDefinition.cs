@@ -113,7 +113,7 @@
             using (var session = CinemaRepo.Load(CinemaId))
             {
                 session.EventStream.First().Should().NotBeNull();
-                session.EventStream.First().Should().BeAssignableTo<IHoldEventWithMetadata<CinemaCreated>>();
+                session.EventStream.First().Should().BeAssignableTo<CinemaCreated>();
             }
         }
 
@@ -123,7 +123,7 @@
             using (var session = CinemaRepo.Load(CinemaId))
             {
                 session.EventStream.First().Should().NotBeNull();
-                session.EventStream.First().As<IHoldEventWithMetadata<CinemaCreated>>().Event
+                session.EventStream.First().As<CinemaCreated>()
                     .Capacity.Should().Be(capacity);
             }
         }
@@ -134,7 +134,7 @@
             using (var session = CinemaRepo.Load(CinemaId))
             {
                 session.EventStream.First().Should().NotBeNull();
-                session.EventStream.First().As<IHoldEventWithMetadata<CinemaCreated>>().Event
+                session.EventStream.First().As<CinemaCreated>()
                     .Id.Name.Should().Be(name);
             }
         }

@@ -1,7 +1,9 @@
 ﻿namespace BullOak.Repositories.InMemory
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using BullOak.Common;
     using BullOak.EventStream;
@@ -11,72 +13,51 @@
         where TId : IId
         where TState : new()
     {
-        private Dictionary<TId, List<IHoldEventWithMetadata>> eventStore = new Dictionary<TId, List<IHoldEventWithMetadata>>();
-        private ICreateEventAppliers appliersFactory;
+        private static readonly Task done = Task.FromResult(0);
+        private ConcurrentDictionary<TId, List<object>> eventStore = new ConcurrentDictionary<TId, List<object>>();
+        private IEnumerable<IApplyEvents<TState>> appliers;
 
-        public List<IHoldEventWithMetadata> this[TId id]
-        {
-            get
-            {
-                lock (eventStore)
-                {
-                    return eventStore[id];
-                }
-            }
-        }
+        public List<object> this[TId id] => eventStore[id];
 
         public InMemoryEventSourcedRepository(ICreateEventAppliers appliersFactory)
-            => this.appliersFactory = appliersFactory ?? throw new ArgumentNullException(nameof(appliersFactory));
+            => appliers = (appliersFactory ?? throw new ArgumentNullException(nameof(appliersFactory)))
+            .GetInstance<TState>();
 
         public EventSourceSession<TState, int> Load(TId id, bool throwIfNotExists = false)
         {
-            lock (eventStore)
+            List<object> eventStream;
+
+            if (!eventStore.TryGetValue(id, out eventStream))
             {
-                List<IHoldEventWithMetadata> eventStream;
-
-                if (!eventStore.TryGetValue(id, out eventStream))
-                {
-                    eventStream = new List<IHoldEventWithMetadata>();
-                    eventStore.Add(id, eventStream);
-                }
-
-                var session = new InMemoryEventSourcedSession<TState>(appliersFactory, (events, concurrency) => SaveEvents(id, events, concurrency));
-                session.Initialize(eventStream.ToArray(), eventStream.Count);
-
-                return session;
+                eventStream = new List<object>();
+                eventStore.GetOrAdd(id, eventStream);
             }
+
+            var session = new InMemoryEventSourcedSession<TState>(appliers, (events, concurrency) => SaveEvents(id, events, concurrency));
+            session.Initialize(eventStream.ToArray(), eventStream.Count);
+
+            return session;
         }
 
-        private Task SaveEvents(TId id, List<IHoldEventWithMetadata> newEvents, int concurrencyId)
+        private Task SaveEvents(TId id, List<object> newEvents, int concurrencyId)
         {
-            lock (eventStore)
-            {
-                var list = eventStore[id];
+            var list = eventStore[id];
 
-                if(list.Count != concurrencyId) throw new ConcurrencyException(id.ToString(), typeof(TState));
+            if(list.Count != concurrencyId) throw new ConcurrencyException(id.ToString(), typeof(TState));
 
-                list.AddRange(newEvents);
-            }
+            list.AddRange(newEvents);
 
-            return Task.FromResult(0);
+            return done;
         }
 
         public Task Clear(TId id)
         {
-            lock (eventStore)
-            {
-                if(eventStore.ContainsKey(id)) eventStore[id].Clear();
-            }
+            if(eventStore.ContainsKey(id)) eventStore[id].Clear();
 
-            return Task.FromResult(0);
+            return done;
         }
 
         public Task<bool> Exists(TId id)
-        {
-            lock (eventStore)
-            {
-                return Task.FromResult(eventStore.ContainsKey(id));
-            }
-        }
+            => Task.FromResult(eventStore.ContainsKey(id));
     }
 }

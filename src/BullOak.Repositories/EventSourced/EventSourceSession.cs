@@ -9,17 +9,17 @@
     public abstract class EventSourceSession<TState, TConcurrency> : BaseSession<TState>, IManageEventSourceSession<TState>
         where TState : new()
     {
-        private IHoldEventWithMetadata[] events;
+        private object[] events;
         private int initialized = 0;
         private TConcurrency concurrencyId;
 
-        public IEnumerable<IHoldEventWithMetadata> EventStream { get; private set; }
+        public IEnumerable<object> EventStream { get; private set; }
 
-        protected EventSourceSession(ICreateEventAppliers eventAppliersFactory)
-            :base(eventAppliersFactory)
+        protected EventSourceSession(IEnumerable<IApplyEvents<TState>> eventAppliers)
+            :base(eventAppliers)
         { }
 
-        public void Initialize(IHoldEventWithMetadata[] events, TConcurrency concurrencyId)
+        public void Initialize(object[] events, TConcurrency concurrencyId)
         {
             if (Interlocked.Increment(ref initialized) == 1)
             {
@@ -36,9 +36,9 @@
         public sealed override Task SaveChanges()
             => SaveEvents(base.eventsToStore, concurrencyId);
 
-        protected abstract Task SaveEvents(List<IHoldEventWithMetadata> newEvents, TConcurrency concurrency);
+        protected abstract Task SaveEvents(List<object> newEvents, TConcurrency concurrency);
 
-        protected sealed override TState GetCurrent()
+        protected sealed override TState GetStored()
         {
             if (events == null) throw new ArgumentNullException("Not initialized. Please make sure that existing events are set first");
 
@@ -47,10 +47,6 @@
             for (i = 0; i < events.Length; i++)
             {
                 state = ApplyEvent(state, events[i]);
-            }
-            for (i = 0; i < eventsToStore.Count; i++)
-            {
-                state = ApplyEvent(state, (dynamic)eventsToStore[i]);
             }
             return state;
         }

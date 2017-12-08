@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using BullOak.Common;
+    using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventSourced;
     using global::NEventStore;
 
@@ -13,13 +14,13 @@
         where TId : IId
     {
         private readonly IStoreEvents store;
-        private readonly IEnumerable<IApplyEvents<TState>> appliers;
+        private readonly IApplyEvents<TState>[] appliers;
 
         public NEventStoreRepository(IStoreEvents store, ICreateEventAppliers appliersFactory)
         {
             this.store = store ?? throw new ArgumentNullException(nameof(store));
             this.appliers = (appliersFactory ?? throw new ArgumentNullException(nameof(appliersFactory)))
-                .GetInstance<TState>();
+                .GetInstance<TState>().ToArray();
         }
 
         public Task Clear(TId id)

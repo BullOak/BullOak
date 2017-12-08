@@ -1,4 +1,4 @@
-﻿namespace BullOak.Test.Benchmark
+﻿namespace BullOak.Test.Benchmark.Behavioural
 {
     using System;
     using BenchmarkDotNet.Attributes;
@@ -21,7 +21,7 @@
         {
             var di = AggregateFixture.GetAppliersWith(NumberOfAppliers, new CinemaCreatedReconstitutor(), Start ? 0 : NumberOfAppliers - 1);
             fixture = new AggregateFixture(Guid.NewGuid().ToString(), di);
-            fixture.AddCreationEvent();
+            fixture.AddCinemaCreationEvent();
         }
 
         [Benchmark]
@@ -29,7 +29,7 @@
         {
             using (var session = fixture.CinemaFunctionalRepo.Load(fixture.cinemaId))
             {
-                return session.State;
+                return session.GetCurrentState();
             }
         }
     }

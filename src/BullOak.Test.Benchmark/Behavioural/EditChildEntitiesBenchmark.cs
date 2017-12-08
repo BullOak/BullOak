@@ -1,9 +1,8 @@
-﻿namespace BullOak.Test.Benchmark
+﻿namespace BullOak.Test.Benchmark.Behavioural
 {
     using System;
     using BenchmarkDotNet.Attributes;
     using BenchmarkDotNet.Attributes.Jobs;
-    using BullOak.Test.EndToEnd.Stub.RepositoryBased.ViewingAggregate;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
 
     using AggregateBasedViewing = BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.ViewingAggregateRoot;
@@ -38,15 +37,17 @@
             {
                 for (int i = 0; i < SeatsToReserve; i++)
                 {
-                    var events = viewingAggregate.ReserveSeat(session.State, i);
+                    var events = viewingAggregate.ReserveSeat(session.GetCurrentState(), i);
 
                     session.AddToStream(events);
                 }
                 session.SaveChanges().Wait();
             }
 
-            var eventCount = fixture.ViewingFunctionalRepo[viewingId].Count;
-            fixture.ViewingFunctionalRepo[viewingId].RemoveRange(eventCount - SeatsToReserve, SeatsToReserve);
+            var eventCount = fixture.ViewingFunctionalRepo[viewingId].Length;
+            var buffer = fixture.ViewingFunctionalRepo[viewingId];
+            Array.Resize(ref buffer, eventCount - SeatsToReserve);
+            fixture.ViewingFunctionalRepo[viewingId] = buffer;
         }
 
         [Benchmark]

@@ -52,7 +52,7 @@
         {
             using (var session = ViewingRepository.Load(ViewingId))
             {
-                var state = session.State;
+                var state = session.GetCurrentState();
                 Event = ViewingAggregate.ReserveSeat(state, seatToReserve);
 
                 session.AddToStream(Event);

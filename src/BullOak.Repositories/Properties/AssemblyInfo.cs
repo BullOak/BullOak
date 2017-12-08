@@ -34,3 +34,9 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+[assembly: InternalsVisibleTo("BullOak.Repositories.Test.Unit")]
+
+//NOTE: DO NOT REMOVE THIS! This is needed for ILEmitted code
+[assembly: InternalsVisibleTo("BullOak.Repositories.Emitter")]
+[assembly: InternalsVisibleTo("BullOak.Test.Benchmark")]

@@ -1,9 +1,10 @@
-﻿namespace BullOak.Test.Benchmark
+﻿namespace BullOak.Test.Benchmark.Behavioural
 {
     using System;
     using BullOak.Infrastructure.TestHelpers.Application.Stubs;
     using BullOak.Messages;
     using BullOak.Repositories;
+    using BullOak.Repositories.Appliers;
     using BullOak.Repositories.InMemory;
     using BullOak.Test.EndToEnd.Stub.AggregateBased;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased;
@@ -56,7 +57,7 @@
             public TState Apply(TState state, object @event) => state;
         }
 
-        public void AddCreationEvent()
+        public void AddCinemaCreationEvent()
         {
             var @event = new CinemaCreated(Guid.NewGuid(), cinemaId, 2);
 
@@ -98,6 +99,21 @@
             }
 
             ViewingAggregateRepository[viewingId.ToString()].Add(seatCreated.ToEnvelope(new SeatId(seatNumber))
+                .FromChildEntity<BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.SeatsInViewing>()
+                .WithParentId(viewingId));
+        }
+
+        public void AddSeatReservationEvent(ViewingId viewingId, ushort seatNumber)
+        {
+            var seatReserved = new SeatReservedEvent(viewingId, new SeatId(seatNumber));
+
+            using (var session = ViewingFunctionalRepo.Load(viewingId))
+            {
+                session.AddToStream(seatReserved);
+                session.SaveChanges();
+            }
+
+            ViewingAggregateRepository[viewingId.ToString()].Add(seatReserved.ToEnvelope(new SeatId(seatNumber))
                 .FromChildEntity<BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.SeatsInViewing>()
                 .WithParentId(viewingId));
         }

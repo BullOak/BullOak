@@ -1,7 +1,7 @@
 ﻿namespace BullOak.Repositories
 {
-    using System;
     using System.Collections.Generic;
+    using BullOak.Repositories.Appliers;
 
     public interface ICreateEventAppliers
     {

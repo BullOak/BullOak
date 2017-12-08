@@ -28,42 +28,75 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseSession.cs" />
-    <Compile Include="EmptyApplier.cs" />
-    <Compile Include="EventApplierContainer.cs" />
-    <Compile Include="EventSourced\EventSourceSession.cs" />
-    <Compile Include="EventSourced\IManageEventSourceSession.cs" />
-    <Compile Include="FuncEventApplier.cs" />
-    <Compile Include="IApplyEvents.cs" />
-    <Compile Include="ICreateEventAppliers.cs" />
+    <Compile Include="Appliers\BaseApplyEvents.cs" />
+    <Compile Include="Appliers\EventApplier.cs" />
+    <Compile Include="Appliers\IApplyEventsToStates.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="Config\ApplierConfigurationBuilder.cs" />
+    <Compile Include="Config\ConfigurationOwner.cs" />
+    <Compile Include="Config\Extensions\EventApplierConfigExtensions.cs" />
+    <Compile Include="Config\Extensions\EventCollectionConfigExtensions.cs" />
+    <Compile Include="Config\Extensions\EventPublisherConfigExtensions.cs" />
+    <Compile Include="Config\Extensions\ThreadSafetySelectorExtensions.cs" />
+    <Compile Include="Config\IConfigureEventAppliersAndBuild.cs" />
+    <Compile Include="Config\IConfigureEventCollectionType.cs" />
+    <Compile Include="Config\IConfigureEventPublisher.cs" />
+    <Compile Include="Config\IConfigureStateFactory.cs" />
+    <Compile Include="Config\IConfigureThreadSafety.cs" />
+    <Compile Include="Config\IHoldAllConfiguration.cs" />
+    <Compile Include="Exceptions\EntityDoesNotExistException.cs" />
+    <Compile Include="Exceptions\StreamNotFoundException.cs" />
+    <Compile Include="IReadDefaultConfiguration.cs" />
+    <Compile Include="SessionSaver.cs" />
+    <Compile Include="Session\CustomLinkedList\ILinkedList.cs" />
+    <Compile Include="Session\CustomLinkedList\ThreadSafeNodeCollection.cs" />
+    <Compile Include="Session\FunctionSessionSaver.cs" />
+    <Compile Include="Session\RepoSession.cs" />
+    <Compile Include="DeliveryTargetGuarntee.cs" />
+    <Compile Include="Appliers\EmptyApplier.cs" />
+    <Compile Include="Appliers\EventApplierContainer.cs" />
+    <Compile Include="Appliers\FuncEventApplier.cs" />
+    <Compile Include="Appliers\IApplyEvents.cs" />
+    <Compile Include="Appliers\ICreateEventAppliers.cs" />
     <Compile Include="InMemory\InMemoryEventSourcedRepository.cs" />
-    <Compile Include="InMemory\InMemoryEventSourcedSession.cs" />
     <Compile Include="IManagePersistenceOf.cs" />
-    <Compile Include="IManageSessionOf.cs" />
+    <Compile Include="Session\IManageSessionAndHoldSyncConstructOf.cs" />
+    <Compile Include="Session\IManageSessionOf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="EventAndStateTypeInfo.cs" />
+    <Compile Include="Session\IAddEventsToSession.cs" />
+    <Compile Include="Session\CustomLinkedList\Node.cs" />
+    <Compile Include="Session\CustomLinkedList\NodeEnumerator.cs" />
+    <Compile Include="Session\CustomLinkedList\LinkedList.cs" />
+    <Compile Include="Appliers\IApplyEventsToCurrentState.cs" />
+    <Compile Include="Session\ISaveSessionChanges.cs" />
+    <Compile Include="Session\SimpleSession.cs" />
+    <Compile Include="Session\StateUpdaters\AbstractStateUpdater.cs" />
+    <Compile Include="Session\StateUpdaters\EventApplierExtensions.cs" />
+    <Compile Include="Session\StateUpdaters\StateUpdaterForIList.cs" />
+    <Compile Include="Session\StateUpdaters\StateUpdaterForICollection.cs" />
+    <Compile Include="Session\StateUpdaters\StateUpdaterForNodeCollection.cs" />
+    <Compile Include="StateEmit\EmittedTypeFactory.cs" />
+    <Compile Include="StateEmit\ICanSwitchBackAndToReadOnly.cs" />
+    <Compile Include="StateEmit\IControlStateWritability.cs" />
+    <Compile Include="StateEmit\ICreateStateInstances.cs" />
+    <Compile Include="StateEmit\IStateManager.cs" />
+    <Compile Include="StateEmit\StateController.cs" />
+    <Compile Include="StateEmit\StateTypeEmitter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BullOak.Common\BullOak.Common.csproj">
       <Project>{432e21ec-ef22-490c-b2bb-c2606fff156b}</Project>
       <Name>BullOak.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BullOak.EventStream\BullOak.EventStream.csproj">
-      <Project>{90e2d13e-b1ca-47ad-87dd-d3707d150b0b}</Project>
-      <Name>BullOak.EventStream</Name>
-    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

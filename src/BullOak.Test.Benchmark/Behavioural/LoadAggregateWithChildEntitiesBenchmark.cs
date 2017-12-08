@@ -1,4 +1,4 @@
-﻿namespace BullOak.Test.Benchmark
+﻿namespace BullOak.Test.Benchmark.Behavioural
 {
     using System;
     using BenchmarkDotNet.Attributes;
@@ -25,6 +25,8 @@
             fixture = new AggregateFixture(Guid.NewGuid().ToString());
             viewingId = new ViewingId(Guid.NewGuid().ToString(), fixture.dateOfViewing, fixture.cinemaId);
             fixture.AddViewingAndSeatCreatiuonEvents(viewingId, Capacity);
+            for (ushort u = 0; u < Capacity; u++)
+                fixture.AddSeatReservationEvent(viewingId, u);
         }
 
         [Benchmark]
@@ -32,7 +34,7 @@
         {
             using (var session = fixture.ViewingFunctionalRepo.Load(viewingId))
             {
-                return session.State;
+                return session.GetCurrentState();
             }
         }
 

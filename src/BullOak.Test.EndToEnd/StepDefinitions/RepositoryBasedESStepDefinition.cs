@@ -91,7 +91,7 @@
 
             using (var session = CinemaRepo.Load(id))
             {
-                CinemaState = session.State;
+                CinemaState = session.GetCurrentState();
             }
         }
 
@@ -144,7 +144,7 @@
         {
             using (var session = CinemaRepo.Load(CinemaId))
             {
-                session.State.Should().NotBeNull();
+                session.GetCurrentState().Should().NotBeNull();
             }
         }
 
@@ -153,7 +153,7 @@
         {
             using (var session = CinemaRepo.Load(CinemaId))
             {
-                session.State.NumberOfSeats.Should().Be(capacity);
+                session.GetCurrentState().NumberOfSeats.Should().Be(capacity);
             }
         }
 
@@ -162,7 +162,7 @@
         {
             using (var session = CinemaRepo.Load(CinemaId))
             {
-                session.State.Id.Name.Should().Be(name);
+                session.GetCurrentState().Id.Name.Should().Be(name);
             }
         }
     }

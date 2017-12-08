@@ -1,4 +1,4 @@
-﻿namespace BullOak.Test.Benchmark
+﻿namespace BullOak.Test.Benchmark.Behavioural
 {
     using System;
     using BenchmarkDotNet.Attributes;

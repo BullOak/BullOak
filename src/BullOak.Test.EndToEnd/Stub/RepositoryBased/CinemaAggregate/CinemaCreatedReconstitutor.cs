@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate
 {
     using BullOak.Repositories;
+    using BullOak.Repositories.Appliers;
     using BullOak.Test.EndToEnd.Stub.Shared.Messages;
 
     public class CinemaCreatedReconstitutor : BaseApplyEvents<CinemaAggregateState, CinemaCreated>

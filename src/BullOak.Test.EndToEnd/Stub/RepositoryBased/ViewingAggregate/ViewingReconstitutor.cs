@@ -2,6 +2,7 @@
 {
     using System;
     using BullOak.Repositories;
+    using BullOak.Repositories.Appliers;
     using BullOak.Test.EndToEnd.Stub.Shared.Messages;
 
     internal class ViewingReconstitutor : IApplyEvents<ViewingState>

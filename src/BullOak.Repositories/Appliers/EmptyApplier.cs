@@ -1,5 +1,7 @@
 namespace BullOak.Repositories
 {
+    using BullOak.Repositories.Appliers;
+
     internal class EmptyApplier<TState> : IApplyEvents<TState>
     {
         public bool CanApplyEvent(object @event) => true;

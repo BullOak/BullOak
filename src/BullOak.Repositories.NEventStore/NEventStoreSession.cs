@@ -1,8 +1,8 @@
 ﻿namespace BullOak.Repositories.NEventStore
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventSourced;
     using global::NEventStore;
 
@@ -12,19 +12,19 @@
         private readonly IEventStream eventStream;
         private static readonly Task Done = Task.FromResult(0);
 
-        public NEventStoreSession(IEnumerable<IApplyEvents<TState>> appliers, IEventStream stream)
+        public NEventStoreSession(IApplyEvents<TState>[] appliers, IEventStream stream)
             : base(appliers)
         {
             eventStream = stream;
         }
 
-        protected override Task SaveEvents(List<object> newEvents, int concurrency)
+        protected override Task SaveEvents(object[] newEvents, int concurrency)
         {
-            foreach (var @event in newEvents)
+            for (var index = 0; index < newEvents.Length; index++)
             {
                 eventStream.Add(new EventMessage()
                 {
-                    Body = @event
+                    Body = newEvents[index]
                 });
             }
 

@@ -1,16 +1,11 @@
-﻿namespace BullOak.Repositories
+﻿namespace BullOak.Repositories.Appliers
 {
     using System;
 
-    public interface IApplyEvents<TState>
+    public abstract class BaseApplyEvents<TState, TEvent> : IApplyEvents<TState>,
+        IApplyEvent<TState, TEvent>
     {
-        bool CanApplyEvent(object @event);
-        TState Apply(TState state, object @event);
-    }
-
-    public abstract class BaseApplyEvents<TState, TEvent> : IApplyEvents<TState>
-    {
-        public bool CanApplyEvent(object @event)
+        bool IApplyEvents<TState>.CanApplyEvent(object @event)
             => @event is TEvent;
 
         public abstract TState Apply(TState state, TEvent @event);

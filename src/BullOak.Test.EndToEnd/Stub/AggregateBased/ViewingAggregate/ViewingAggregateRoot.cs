@@ -11,6 +11,7 @@
         IHaveChildEntities<SeatsInViewing, SeatId>
     {
         private readonly Dictionary<SeatId, SeatsInViewing> seats = new Dictionary<SeatId, SeatsInViewing>();
+        private DateTime TimeOfShowing { get; set; }
 
         //for use by framework
         public ViewingAggregateRoot() { }
@@ -34,6 +35,7 @@
         public void Apply(ViewingCreatedEvent @event)
         {
             Id = @event.Id;
+            TimeOfShowing = @event.Id.ShowingDate;
         }
 
         public SeatsInViewing GetOrAdd(SeatId id, Func<SeatId, SeatsInViewing> factory)

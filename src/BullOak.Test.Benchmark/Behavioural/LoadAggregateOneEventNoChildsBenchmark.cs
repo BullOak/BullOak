@@ -1,4 +1,4 @@
-﻿namespace BullOak.Test.Benchmark
+﻿namespace BullOak.Test.Benchmark.Behavioural
 {
     using BenchmarkDotNet.Attributes;
     using BenchmarkDotNet.Attributes.Jobs;
@@ -10,7 +10,7 @@
 
         public LoadAggregateOneEventNoChildsBenchmark()
         {
-            fixture.AddCreationEvent();
+            fixture.AddCinemaCreationEvent();
         }
 
         [Benchmark]
@@ -18,7 +18,7 @@
         {
             using (var session = fixture.CinemaFunctionalRepo.Load(fixture.cinemaId))
             {
-                return session.State;
+                return session.GetCurrentState();
             }
         }
 

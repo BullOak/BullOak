@@ -77,6 +77,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.NEvent
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Test.Benchmark", "BullOak.Test.Benchmark\BullOak.Test.Benchmark.csproj", "{00939149-097C-4A99-9A8D-1DC6DE596B4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.Test.Unit", "BullOak.Repositories.Test.Unit\BullOak.Repositories.Test.Unit.csproj", "{F66F86D4-3668-4994-92BA-58EC92D6A67E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug.Integration|Any CPU = Debug.Integration|Any CPU
@@ -293,6 +295,14 @@ Global
 		{00939149-097C-4A99-9A8D-1DC6DE596B4D}.Release.Integration|Any CPU.Build.0 = Release|Any CPU
 		{00939149-097C-4A99-9A8D-1DC6DE596B4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00939149-097C-4A99-9A8D-1DC6DE596B4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Debug.Integration|Any CPU.ActiveCfg = Debug|Any CPU
+		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Debug.Integration|Any CPU.Build.0 = Debug|Any CPU
+		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Release.Integration|Any CPU.ActiveCfg = Release|Any CPU
+		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Release.Integration|Any CPU.Build.0 = Release|Any CPU
+		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -326,6 +336,7 @@ Global
 		{5934536F-FB5D-42AD-841B-3395B4C1D76D} = {AE0922CC-D3B9-4084-87DE-9B831201034C}
 		{68401C19-68BA-45B3-BC69-82EF38583A5D} = {AE0922CC-D3B9-4084-87DE-9B831201034C}
 		{00939149-097C-4A99-9A8D-1DC6DE596B4D} = {C0C8E3D4-5A5D-45C4-BC9B-6B5093F6E964}
+		{F66F86D4-3668-4994-92BA-58EC92D6A67E} = {A51AB156-2974-4B61-9C91-D45DC4F41367}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85F7A59E-70F4-40CD-888E-8DDF38C2B760}

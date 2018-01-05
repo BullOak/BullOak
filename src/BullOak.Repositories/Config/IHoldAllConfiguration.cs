@@ -1,0 +1,17 @@
+namespace BullOak.Repositories
+{
+    using System;
+    using System.Collections.Generic;
+    using BullOak.Repositories.Appliers;
+    using BullOak.Repositories.EventPublisher;
+    using BullOak.Repositories.StateEmit;
+
+    public interface IHoldAllConfiguration
+    {
+        Func<Type, Func<ICollection<object>>> CollectionTypeSelector { get; }
+        IPublishEvents EventPublisher { get; }
+        IApplyEventsToStates EventApplier { get; }
+        Func<Type, bool> ThreadSafetySelector { get; }
+        ICreateStateInstances StateFactory { get; }
+    }
+}

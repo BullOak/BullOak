@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Enumeration.cs" />
     <Compile Include="Exceptions\BusinessException.cs" />
+    <Compile Include="Exceptions\ConcurrencyException.cs" />
     <Compile Include="Exceptions\ConfigurationException.cs" />
     <Compile Include="Exceptions\InvalidTransitionException.cs" />
     <Compile Include="Extensions\HttpClientExtensions.cs" />

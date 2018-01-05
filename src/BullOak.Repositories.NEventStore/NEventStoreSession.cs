@@ -1,42 +1,47 @@
-﻿//namespace BullOak.Repositories.NEventStore
-//{
-//    using System;
-//    using System.Threading.Tasks;
-//    using BullOak.Repositories.Session;
-//    using global::NEventStore;
+﻿namespace BullOak.Repositories.NEventStore
+{
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using BullOak.Repositories.Session;
+    using global::NEventStore;
 
-//    internal class NEventStoreSession<TState> : RepoSessionWithConcurrency<TState, int>
-//    {
-//        private readonly IEventStream eventStream;
-//        private static readonly Task Done = Task.FromResult(0);
+    internal class NEventStoreSession<TState> : BaseEventSourcedSyncSession<TState, int>
+    {
+        private readonly IEventStream eventStream;
 
-//        public NEventStoreSession(IHoldAllConfiguration configuration, IEventStream stream)
-//            : base(configuration)
-//        {
-//            eventStream = stream ?? throw new ArgumentNullException(nameof(stream));
+        public NEventStoreSession(IHoldAllConfiguration configuration, IEventStream stream)
+            : base(configuration)
+        {
+            eventStream = stream ?? throw new ArgumentNullException(nameof(stream));
+        }
 
-//            LoadFromEvents(stream.CommittedEvents, stream.StreamRevision);
-//        }
+        public void Initialize()
+        {
+            LoadFromEvents(eventStream.CommittedEvents.Select(x=> x.Body).ToArray(), eventStream.StreamRevision);
+        }
 
-//        protected override Task SaveChangesProtected(object[] newEvents, TState latestState, int concurrencyId, bool eventsAlreadySent)
-//        {
-//            for (var index = 0; index < newEvents.Length; index++)
-//            {
-//                eventStream.Add(new EventMessage()
-//                {
-//                    Body = newEvents[index]
-//                });
-//            }
+        protected override void SaveChanges(object[] eventsToAdd, bool shouldSaveSnapshot, TState snapshot)
+        {
+            if (!shouldSaveSnapshot)
+            {
+                for (var index = 0; index < eventsToAdd.Length; index++)
+                {
+                    eventStream.Add(new EventMessage()
+                    {
+                        Body = eventsToAdd[index]
+                    });
+                }
 
-//            eventStream.CommitChanges(Guid.NewGuid());
+                eventStream.CommitChanges(Guid.NewGuid());
+            }
+            else throw new NotSupportedException("Snapshotting not yet supported.");
+        }
 
-//            return Done;
-//        }
-
-//        protected override void Dispose(bool disposing)
-//        {
-//            if(disposing) eventStream.Dispose();
-//            base.Dispose(disposing);
-//        }
-//    }
-//}
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) eventStream.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+}

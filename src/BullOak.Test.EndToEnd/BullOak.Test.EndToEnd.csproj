@@ -98,7 +98,7 @@
     <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaCreatedReconstitutor.cs" />
     <Compile Include="Stub\Shared\Messages\SeatInViewingInitialized.cs" />
     <Compile Include="Stub\RepositoryBased\ViewingAggregate\ViewingReconstitutor.cs" />
-    <Compile Include="Stub\RepositoryBased\ViewingAggregate\ViewingState.cs" />
+    <Compile Include="Stub\RepositoryBased\ViewingAggregate\IViewingState.cs" />
     <Compile Include="Stub\Shared\Ids\SeatId.cs" />
     <Compile Include="Stub\RepositoryBased\ViewingAggregate\SeatInViewingEntity.cs" />
     <Compile Include="Stub\RepositoryBased\ViewingAggregate\ViewingAggregateRoot.cs" />

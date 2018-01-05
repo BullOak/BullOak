@@ -30,7 +30,7 @@
         }
 
         [Benchmark]
-        public ViewingState LoadRepoBasedAggregateWithChilds()
+        public IViewingState LoadRepoBasedAggregateWithChilds()
         {
             using (var session = fixture.ViewingFunctionalRepo.BeginSessionFor(viewingId))
             {

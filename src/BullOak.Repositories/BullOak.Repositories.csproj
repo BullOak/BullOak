@@ -67,7 +67,7 @@
     <Compile Include="Session\BaseEventSourcedSyncSession.cs" />
     <Compile Include="Session\CustomLinkedList\ILinkedList.cs" />
     <Compile Include="Session\CustomLinkedList\ThreadSafeNodeCollection.cs" />
-    <Compile Include="Session\RepoSession.cs" />
+    <Compile Include="Session\BaseRepoSession.cs" />
     <Compile Include="DeliveryTargetGuarntee.cs" />
     <Compile Include="Appliers\EmptyApplier.cs" />
     <Compile Include="Appliers\FuncEventApplier.cs" />
@@ -83,9 +83,7 @@
     <Compile Include="Session\CustomLinkedList\LinkedList.cs" />
     <Compile Include="Appliers\IApplyEventsToCurrentState.cs" />
     <Compile Include="Session\StateUpdaters\AbstractStateUpdater.cs" />
-    <Compile Include="Session\StateUpdaters\EventApplierExtensions.cs" />
-    <Compile Include="Session\StateUpdaters\StateUpdaterForIList.cs" />
-    <Compile Include="Session\StateUpdaters\StateUpdaterForICollection.cs" />
+    <Compile Include="Session\StateUpdaters\StateUpdaterForIEnumerable.cs" />
     <Compile Include="Session\StateUpdaters\StateUpdaterForNodeCollection.cs" />
     <Compile Include="StateEmit\EmittedTypeFactory.cs" />
     <Compile Include="StateEmit\ICanSwitchBackAndToReadOnly.cs" />
@@ -94,12 +92,6 @@
     <Compile Include="StateEmit\IStateManager.cs" />
     <Compile Include="StateEmit\StateController.cs" />
     <Compile Include="StateEmit\StateTypeEmitter.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BullOak.Common\BullOak.Common.csproj">
-      <Project>{432e21ec-ef22-490c-b2bb-c2606fff156b}</Project>
-      <Name>BullOak.Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

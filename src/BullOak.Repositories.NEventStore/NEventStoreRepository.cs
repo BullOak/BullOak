@@ -1,16 +1,12 @@
 ﻿namespace BullOak.Repositories.NEventStore
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
-    using BullOak.Common;
-    using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Session;
-    using CommonDomain;
     using global::NEventStore;
 
-    internal class NEventStoreRepository<TId, TState>: ISynchronouslyManagePersistanceOf<TId, NEventStoreSession<TState>, TState>
+    public class NEventStoreRepository<TId, TState>: ISynchronouslyManagePersistanceOf<TId,
+        IManageAndSaveSynchronousSession<TState>, TState>
     {
         private readonly IStoreEvents store;
         private readonly IHoldAllConfiguration configuration;
@@ -21,18 +17,15 @@
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public NEventStoreSession<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
+        public IManageAndSaveSynchronousSession<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
-            var stream = store.OpenStream(streamId: id.ToString());
-            var sn = new Snapshot("", 0, null);
+            var stream = store.OpenStream(id.ToString(), 0);
 
-            store.OpenStream(sn, int.MaxValue);
-            var events = stream.CommittedEvents
-                .Select(x => x.Body)
-                .ToArray();
+            if (throwIfNotExists && stream.CommittedEvents.Count <=0)
+                throw new StreamNotFoundException();
 
             var session = new NEventStoreSession<TState>(configuration, stream);
-
+            session.Initialize();
             return session;
         }
 

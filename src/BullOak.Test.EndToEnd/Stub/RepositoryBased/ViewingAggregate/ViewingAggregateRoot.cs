@@ -20,7 +20,7 @@
             }
         }
 
-        public SeatReservedEvent ReserveSeat(ViewingState state, int idOfSeatToReserve)
+        public SeatReservedEvent ReserveSeat(IViewingState state, int idOfSeatToReserve)
         {
             return seatInViewingEntity.Reserve(state, idOfSeatToReserve);
         }

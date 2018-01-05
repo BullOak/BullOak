@@ -6,26 +6,30 @@
 
     internal class StateUpdaterForLinkedList<TState> : AbstractStateUpdater<TState, ILinkedList<object>>
     {
-        private readonly NodeEnumerator<object> newEventsEnumerator;
-
+        private readonly ILinkedList<object> newEventsCollection;
+        private NodeEnumerator<object> enumerator;
         public StateUpdaterForLinkedList(IHoldAllConfiguration configuration, TState state, ILinkedList<object> newEventsCollection) 
             : base(configuration, state, newEventsCollection)
-            => newEventsEnumerator = newEventsCollection.GetEnumerator() as NodeEnumerator<object> ?? throw new Exception("Unexpected enumerator type.");
+            => this.newEventsCollection = newEventsCollection;
+            //=> newEventsEnumerator = newEventsCollection.GetEnumerator() as NodeEnumerator<object> ?? throw new Exception("Unexpected enumerator type.");
 
         public sealed override TState GetCurrentState()
         {
-            if (newEventsEnumerator.Current is Node<object> node && node.next == null) return state;
+            if (newEventsCollection.Count == 0) return state;
+
+            if (enumerator == null)
+                enumerator = newEventsCollection.GetEnumerator() as NodeEnumerator<object> ?? throw new Exception("Unexpected enumerator type.");
+
+            if (enumerator.Current is Node<object> node && node.next == null) return state;
 
             bool isLockTaken = false;
             try
             {
                 if (useThreadSafeOperations) Monitor.Enter(newEventsCollection, ref isLockTaken);
-                stateMutabilityController.MakeStateWritable();
-                while (newEventsEnumerator.MoveNext())
+                while (enumerator.MoveNext())
                 {
-                    state = eventApplier.Apply(state, newEventsEnumerator.Current);
+                    state = (TState)eventApplier.ApplyEvent(TypeOfState, state, enumerator.Current);
                 }
-                stateMutabilityController.MakeStateReadOnly();
             }
             finally
             {

@@ -10,7 +10,7 @@
     using FluentAssertions;
     using TechTalk.SpecFlow;
 
-    using ViewingRepository = BullOak.Repositories.InMemory.InMemoryEventSourcedRepository<Stub.Shared.Ids.ViewingId, Stub.RepositoryBased.ViewingAggregate.ViewingState>;
+    using ViewingRepository = BullOak.Repositories.InMemory.InMemoryEventSourcedRepository<Stub.Shared.Ids.ViewingId, Stub.RepositoryBased.ViewingAggregate.IViewingState>;
 
     [Binding]
     [Scope(Feature = "RepositoryBasedES")]

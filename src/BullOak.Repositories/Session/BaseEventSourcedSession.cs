@@ -9,7 +9,6 @@
     public abstract class BaseEventSourcedSession<TState, TConcurrencyId> : BaseRepoSession<TState>, IManageAndSaveSessionWithExplicitSnapshot<TState>
     {
         private static readonly Type typeOfState = typeof(TState);
-        private static readonly Task done = Task.FromResult(0);
 
         private TConcurrencyId concurrencyId;
         public TConcurrencyId ConcurrencyId => concurrencyId;
@@ -29,13 +28,8 @@
         public void LoadFromEvents(object[] storedEvents, TConcurrencyId concurrencyId)
         {
             var initialState = configuration.StateFactory.GetState(typeOfState);
-            int storedEventsCount = storedEvents.Length;
-            Type eventType = null;
-            for (int i = 0; i < storedEventsCount; i++)
-            {
-                eventType = storedEvents[i].GetType();
-                initialState = eventApplier.Apply(typeOfState, initialState, eventType, storedEvents[i]);
-            }
+
+            initialState = eventApplier.Apply(typeOfState, initialState, storedEvents);
 
             Initialize((TState) initialState);
             this.concurrencyId = concurrencyId;

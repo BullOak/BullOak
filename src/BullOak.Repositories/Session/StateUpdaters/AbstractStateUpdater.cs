@@ -1,12 +1,15 @@
 ﻿namespace BullOak.Repositories.Session.StateUpdaters
 {
+    using System;
     using System.Collections.Generic;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.StateEmit;
 
     internal abstract class AbstractStateUpdater<TState, TCollection> : IApplyEventsToCurrentState<TState> 
-        where TCollection : ICollection<object>
+        where TCollection : IEnumerable<object>
     {
+        public static readonly Type TypeOfState = typeof(TState);
+
         protected TCollection newEventsCollection;
         protected IApplyEventsToStates eventApplier;
         protected bool useThreadSafeOperations;

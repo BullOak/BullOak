@@ -77,10 +77,8 @@
             {
                 case ILinkedList<object> linkedList:
                     return new StateUpdaterForLinkedList<TState>(configuration, initialState, linkedList);
-                case IList<object> list:
-                    return new StateUpdaterForIList<TState>(configuration, initialState, list);
                 default:
-                    return new StateUpdaterForICollection<TState>(configuration, initialState, collection);
+                    return new StateUpdaterForIEnumerable<TState>(configuration, initialState, collection);
             }
         }
 

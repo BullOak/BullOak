@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
+    using BullOak.Repositories.StateEmit;
 
     public abstract class BaseEventSourcedSyncSession<TState, TConcurrencyId> : BaseRepoSession<TState>, IManageAndSaveSynchronousSessionWithExplicitSnapshot<TState>
     {
@@ -29,13 +30,8 @@
         public void LoadFromEvents(object[] storedEvents, TConcurrencyId concurrencyId)
         {
             var initialState = configuration.StateFactory.GetState(typeOfState);
-            int storedEventsCount = storedEvents.Length;
-            Type eventType = null;
-            for (int i =0;i<storedEventsCount;i++)
-            {
-                eventType = storedEvents[i].GetType();
-                initialState = eventApplier.Apply(typeOfState, initialState, eventType, storedEvents[i]);
-            }
+
+            initialState = eventApplier.Apply(typeOfState, initialState, storedEvents);
 
             Initialize((TState) initialState);
             this.concurrencyId = concurrencyId;

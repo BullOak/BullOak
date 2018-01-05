@@ -19,7 +19,7 @@ branches:
   # whitelist
   only:
     - master
-    - dev
+    - develop
 
   # blacklist
 #  except:
@@ -218,6 +218,8 @@ build_script:
 test:
   assemblies:
     - '**\*.Test.Unit.dll'
+    - '**\*.Test.Acceptance.dll'
+    - '**\*.Test.Integration.dll'
 
 #  categories:
 

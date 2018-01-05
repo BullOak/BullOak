@@ -17,10 +17,28 @@ namespace BullOak.Repositories.Session
         bool IsOptimisticConcurrencySupported { get; }
         TState GetCurrentState();
 
-        void AddToStream(IEnumerable<object> events);
-        void AddToStream(object[] events);
+        void AddEvents(IEnumerable<object> events);
+        void AddEvents(object[] events);
         void AddEvent(object events);
+    }
 
+    public interface IManageAndSaveSession<out TState> : IManageSessionOf<TState>
+    {
         Task SaveChanges(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce);
+    }
+
+    public interface IManageAndSaveSessionWithExplicitSnapshot<out TState> : IManageAndSaveSession<TState>
+    {
+        Task SaveChangesWithSnapshot(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce);
+    }
+
+    public interface IManageAndSaveSynchronousSession<out TState> : IManageSessionOf<TState>
+    {
+        void SaveChanges(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce);
+    }
+
+    public interface IManageAndSaveSynchronousSessionWithExplicitSnapshot<out TState> : IManageAndSaveSynchronousSession <TState>
+    {
+        void SaveChangesWithSnapshot(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce);
     }
 }

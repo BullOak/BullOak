@@ -1,6 +1,6 @@
 ﻿namespace BullOak.Repositories.StateEmit
 {
-    internal interface ICanSwitchBackAndToReadOnly
+    public interface ICanSwitchBackAndToReadOnly
     {
         bool CanEdit { set; }
     }

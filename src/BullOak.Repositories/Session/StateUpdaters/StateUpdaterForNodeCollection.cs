@@ -19,7 +19,7 @@
             bool isLockTaken = false;
             try
             {
-                if (useThreadSafeOperations) Monitor.Enter(newEventsEnumerator, ref isLockTaken);
+                if (useThreadSafeOperations) Monitor.Enter(newEventsCollection, ref isLockTaken);
                 stateMutabilityController.MakeStateWritable();
                 while (newEventsEnumerator.MoveNext())
                 {

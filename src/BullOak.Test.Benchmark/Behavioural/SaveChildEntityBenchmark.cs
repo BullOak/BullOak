@@ -22,14 +22,14 @@
         {
             var id = new ViewingId(Guid.NewGuid().ToString(), fixture.dateOfViewing, fixture.cinemaId);
 
-            using (var session = fixture.ViewingFunctionalRepo.Load(id))
+            using (var session = fixture.ViewingFunctionalRepo.BeginSessionFor(id))
             {
-                session.AddToStream(RepoBasedViewing.CreateViewing(id.CinemaId, id.MovieName, id.ShowingDate, Capacity));
-                session.SaveChanges().Wait();
+                session.AddEvent(RepoBasedViewing.CreateViewing(id.CinemaId, id.MovieName, id.ShowingDate, Capacity));
+                session.SaveChanges();
             }
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void SaveAggregateBasedAggregatesithChilds()
         {
             //This will implicitly create childs as per capacity

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Application", "BullOak.Application\BullOak.Application.csproj", "{FDBEC3D7-4D0E-4D15-BF63-F3A846C34288}"
 EndProject
@@ -80,6 +80,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.Test.Unit", "BullOak.Repositories.Test.Unit\BullOak.Repositories.Test.Unit.csproj", "{F66F86D4-3668-4994-92BA-58EC92D6A67E}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug.Integration|Any CPU = Debug.Integration|Any CPU
 		Debug|Any CPU = Debug|Any CPU
@@ -340,5 +343,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85F7A59E-70F4-40CD-888E-8DDF38C2B760}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

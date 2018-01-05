@@ -43,7 +43,7 @@
         //{
         //    var sut = new NodeCollection<object>();
 
-        //    for (int i = 0; i < NumberOfEvents; i++)
+        //    for (int i = 0; i < Events; i++)
         //        sut.AddUnsafe(defaultEvents[i]);
 
         //    return sut.GetBuffer();
@@ -54,7 +54,7 @@
         //{
         //    var sut = new LinkedList<object>();
 
-        //    for (int i = 0; i < NumberOfEvents; i++)
+        //    for (int i = 0; i < Events; i++)
         //        sut.AddLast(defaultEvents[i]);
 
         //    return sut.ToArray();
@@ -65,7 +65,7 @@
         //{
         //    var sut = new List<object>();
 
-        //    for (int i = 0; i < NumberOfEvents; i++)
+        //    for (int i = 0; i < Events; i++)
         //        sut.Add(defaultEvents[i]);
 
         //    return sut.ToArray();
@@ -76,7 +76,7 @@
         //{
         //    var sut = new ConcurrentQueue<object>();
 
-        //    for (int i = 0; i < NumberOfEvents; i++)
+        //    for (int i = 0; i < Events; i++)
         //        sut.Enqueue(defaultEvents[i]);
 
         //    return sut.ToArray();

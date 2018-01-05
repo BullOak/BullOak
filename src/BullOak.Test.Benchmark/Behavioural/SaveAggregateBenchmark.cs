@@ -17,18 +17,18 @@
         {
             var cinemaId = new CinemaAggregateRootId(Guid.NewGuid().ToString());
 
-            using (var session = fixture.CinemaFunctionalRepo.Load(cinemaId))
+            using (var session = fixture.CinemaFunctionalRepo.BeginSessionFor(cinemaId))
             {
                 var @event = new BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate.CinemaAggregateRoot()
                     .Create(fixture.correlationId, capacity, Guid.NewGuid().ToString());
 
-                session.AddToStream(@event);
+                session.AddEvent(@event);
 
-                session.SaveChanges().Wait();
+                session.SaveChanges();
             }
         }
 
-        [Benchmark(Baseline = true)]
+        //[Benchmark(Baseline = true)]
         public void SaveAnAggregateBasedAggregate()
         {
             var aggregate = new BullOak.Test.EndToEnd.Stub.AggregateBased.CinemaAggregate.CinemaAggregateRoot(fixture.correlationId, capacity, Guid.NewGuid().ToString());

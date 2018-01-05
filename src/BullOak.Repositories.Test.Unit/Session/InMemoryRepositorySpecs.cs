@@ -4,7 +4,9 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using BullOak.Common;
     using BullOak.Repositories.Appliers;
+    using BullOak.Repositories.EventPublisher;
     using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.InMemory;
     using BullOak.Repositories.Session;
@@ -19,10 +21,10 @@
         public string Name { get; set; }
     }
 
-    public static class InMemoryEventSourcedRepository
+    public static class InMemoryEventSourcedRepositoryTestExtensions
     {
-        public static InMemoryEventSourcedRepository<TState,TId> WithEventInStream<TState, TId>(
-            this InMemoryEventSourcedRepository<TState, TId> sut, object @event, TId streamId)
+        public static InMemoryEventSourcedRepository<TId, TState> WithEventInStream<TState, TId>(
+            this InMemoryEventSourcedRepository<TId, TState> sut, object @event, TId streamId)
         {
             var currentEvents = sut[streamId]?.ToList() ?? new List<object>();
             currentEvents.Add(@event);
@@ -30,7 +32,7 @@
             return sut;
         }
     }
-    public class ConfigurationStub : IHoldAllConfiguration
+    public class ConfigurationStub<TState> : IHoldAllConfiguration
     {
         private static readonly Type typeOfGenericList = typeof(List<>);
 
@@ -47,7 +49,7 @@
         public Fake<ICreateStateInstances> MockStateFactory => mockStateFactory;
 
         public Func<Type, Func<ICollection<object>>> CollectionTypeSelector { get; private set; }
-        public Func<object, Task> EventPublisher { get; private set; }
+        public IPublishEvents EventPublisher { get; private set; }
         public IApplyEventsToStates EventApplier => MockEventApplier.FakedObject;
         public Func<Type, bool> ThreadSafetySelector { get; private set; }
         public ICreateStateInstances StateFactory => MockStateFactory.FakedObject;
@@ -62,13 +64,12 @@
             typesThatHaveAskedForSafetyType = new List<Type>();
         }
 
-        public ConfigurationStub WithDefaultSetup()
+        public ConfigurationStub<TState> WithDefaultSetup()
         {
-            EventPublisher = e =>
+            EventPublisher = new MySyncEventPublisher(e =>
             {
                 eventsThatHaveBeenPublished.Add(e);
-                return Task.CompletedTask;
-            };
+            });
             WithCollectionType<List<object>>();
             WithThreadSafety(false);
             WithStateFactory(Activator.CreateInstance);
@@ -76,7 +77,7 @@
             return this;
         }
 
-        public ConfigurationStub WithCollectionType<TCollection>()
+        public ConfigurationStub<TState> WithCollectionType<TCollection>()
         {
             CollectionTypeSelector = t =>
             {
@@ -86,7 +87,7 @@
             return this;
         }
 
-        public ConfigurationStub WithThreadSafety(bool threadSafety)
+        public ConfigurationStub<TState> WithThreadSafety(bool threadSafety)
         {
             ThreadSafetySelector = t =>
             {
@@ -96,7 +97,7 @@
             return this;
         }
 
-        public ConfigurationStub WithStateFactory(Func<Type, object> factory)
+        public ConfigurationStub<TState> WithStateFactory(Func<Type, object> factory)
         {
             MockStateFactory.CallsTo(i => i.GetState(null))
                 .WithAnyArguments()
@@ -105,23 +106,23 @@
             return this;
         }
 
-        public InMemoryEventSourcedRepository<TState, TStateId> GetNewSUT<TState, TStateId>()
-            => new InMemoryEventSourcedRepository<TState, TStateId>(this);
+        internal InMemoryEventSourcedRepository<TStateId, TState> GetNewSUT<TStateId>()
+            => new InMemoryEventSourcedRepository<TStateId, TState>(this);
     }
 
 
     public class InMemoryRepositorySpecs
     {
         [Fact]
-        public async Task BeginSession_WithNewIdAndThrowIfNotExist_ShouldThrowException()
+        public void BeginSession_WithNewIdAndThrowIfNotExist_ShouldThrowException()
         {
             //Arrangements
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>();
+                .GetNewSUT<int>();
 
             //Act
-            var exception = await Record.ExceptionAsync(() => sut.BeginSessionFor(123, throwIfNotExists: true));
+            var exception = Record.Exception(() => sut.BeginSessionFor(123, throwIfNotExists: true));
 
             //Assert
             exception.Should().NotBeNull();
@@ -129,15 +130,15 @@
         }
 
         [Fact]
-        public async Task BeginSession_WithNewId_ShouldReturnSession()
+        public void BeginSession_WithNewId_ShouldReturnSession()
         {
             //Arrangements
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>();
+                .GetNewSUT<int>();
 
             //Act
-            var session = await sut.BeginSessionFor(123);
+            var session = sut.BeginSessionFor(123);
 
             //Assert
             session.Should().NotBeNull();
@@ -145,20 +146,20 @@
         }
 
         [Fact]
-        public async Task SaveEvents_WithOneNewEvent_ShouldAddEventInStore()
+        public void SaveEvents_WithOneNewEvent_ShouldAddEventInStore()
         {
             //Arrangements
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>();
+                .GetNewSUT<int>();
             var @event = new object();
             var id = 42;
 
-            using (var session = await sut.BeginSessionFor(id))
+            using (var session = sut.BeginSessionFor(id))
             {
                 //Act
                 session.AddEvent(@event);
-                await session.SaveChanges();
+                session.SaveChanges();
             }
 
             //Assert
@@ -168,20 +169,20 @@
         }
 
         [Fact]
-        public async Task SaveEvents_WithOneNewEvent_ShouldPublishEvent()
+        public void SaveEvents_WithOneNewEvent_ShouldPublishEvent()
         {
             //Arrangements
-            var config = new ConfigurationStub()
+            var config = new ConfigurationStub<TestState>()
                 .WithDefaultSetup();
-            var sut = config.GetNewSUT<TestState, int>();
+            var sut = config.GetNewSUT<int>();
             var @event = new object();
             var id = 42;
 
-            using (var session = await sut.BeginSessionFor(id))
+            using (var session = sut.BeginSessionFor(id))
             {
                 //Act
                 session.AddEvent(@event);
-                await session.SaveChanges();
+                session.SaveChanges();
             }
 
             //Assert
@@ -190,16 +191,16 @@
         }
 
         [Fact]
-        public async Task DisposeSession_WithOneEvent_ShouldNotSaveEvents()
+        public void DisposeSession_WithOneEvent_ShouldNotSaveEvents()
         {
             //Arrangements
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>();
+                .GetNewSUT<int>();
             var @event = new object();
             var id = 42;
 
-            using (var session = await sut.BeginSessionFor(id))
+            using (var session = sut.BeginSessionFor(id))
             {
                 //Act
                 session.AddEvent(@event);
@@ -210,16 +211,16 @@
         }
 
         [Fact]
-        public async Task DisposeSession_WithOneEvent_ShouldNotPublishEvents()
+        public void DisposeSession_WithOneEvent_ShouldNotPublishEvents()
         {
             //Arrangements
-            var config = new ConfigurationStub()
+            var config = new ConfigurationStub<TestState>()
                 .WithDefaultSetup();
-            var sut = config.GetNewSUT<TestState, int>();
+            var sut = config.GetNewSUT<int>();
             var @event = new object();
             var id = 42;
 
-            using (var session = await sut.BeginSessionFor(id))
+            using (var session = sut.BeginSessionFor(id))
             {
                 //Act
                 session.AddEvent(@event);
@@ -230,14 +231,14 @@
         }
 
         [Fact]
-        public async Task StreamWithOneEvent_Clear_ShouldEmptyStream()
+        public void StreamWithOneEvent_Clear_ShouldEmptyStream()
         {
             //Arrange
             int id = 42;
             object @event = new object();
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>()
+                .GetNewSUT<int>()
                 .WithEventInStream(@event, id);
 
             //Act
@@ -248,22 +249,22 @@
         }
 
         [Fact]
-        public async Task StreamWithOneEvent_BeginSessionAndAddOneEvent_ShouldHaveStreamWith2Events()
+        public void StreamWithOneEvent_BeginSessionAndAddOneEvent_ShouldHaveStreamWith2Events()
         {
             //Arrange
             int id = 42;
             object @event = new object();
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>()
+                .GetNewSUT<int>()
                 .WithEventInStream(@event, id);
             object newEvent = new object();
 
             //Act
-            using (var session = await sut.BeginSessionFor(id))
+            using (var session = sut.BeginSessionFor(id))
             {
                 session.AddEvent(newEvent);
-                await session.SaveChanges();
+                session.SaveChanges();
             }
 
             //Assert
@@ -272,19 +273,19 @@
         }
 
         [Fact]
-        public async Task StreamWithOneEvent_ClearThenBeginSessionWiththrowIfNotExist_ShouldThrow()
+        public void StreamWithOneEvent_ClearThenBeginSessionWiththrowIfNotExist_ShouldThrow()
         {
             //Arrange
             int id = 42;
             object @event = new object();
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>()
+                .GetNewSUT<int>()
                 .WithEventInStream(@event, id);
-            await sut.Clear(id);
+            sut.Clear(id);
 
             //Act
-            var exception = await Record.ExceptionAsync(() => sut.BeginSessionFor(id, true));
+            var exception = Record.Exception(() => sut.BeginSessionFor(id, true));
 
             //Assert
             exception.Should().NotBeNull();
@@ -292,56 +293,55 @@
         }
 
         [Fact]
-        public async Task StreamWithOneEvent_Exists_ShouldReturnTrue()
+        public void StreamWithOneEvent_Exists_ShouldReturnTrue()
         {
             //Arrange
             int id = 42;
             object @event = new object();
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>()
+                .GetNewSUT<int>()
                 .WithEventInStream(@event, id);
 
             //Act
-            var exists = await sut.Exists(id);
+            var exists = sut.Exists(id);
 
             //Assert
             exists.Should().BeTrue();
         }
 
         [Fact]
-        public async Task StreamWithOneEvent_ExistsWithDifferentId_ShouldReturnFalse()
+        public void StreamWithOneEvent_ExistsWithDifferentId_ShouldReturnFalse()
         {
             //Arrange
             int idWithEvent = 42;
             object @event = new object();
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>()
+                .GetNewSUT<int>()
                 .WithEventInStream(@event, idWithEvent);
 
             //Act
-            var exists = await sut.Exists(idWithEvent+1);
+            var exists = sut.Exists(idWithEvent+1);
 
             //Assert
             exists.Should().BeFalse();
         }
 
         [Fact]
-        public async Task StreamWithoutEvents_Exists_ShouldReturnFalse()
+        public void StreamWithoutEvents_Exists_ShouldReturnFalse()
         {
             //Arrange
             int id = 42;
-            var sut = new ConfigurationStub()
+            var sut = new ConfigurationStub<TestState>()
                 .WithDefaultSetup()
-                .GetNewSUT<TestState, int>();
+                .GetNewSUT<int>();
 
             //Act
-            var exists = await sut.Exists(id);
+            var exists = sut.Exists(id);
 
             //Assert
             exists.Should().BeFalse();
         }
-
     }
 }

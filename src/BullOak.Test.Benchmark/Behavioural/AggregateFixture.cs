@@ -1,13 +1,13 @@
 ﻿namespace BullOak.Test.Benchmark.Behavioural
 {
     using System;
+    using System.Collections.Generic;
+    using System.Reflection;
     using BullOak.Infrastructure.TestHelpers.Application.Stubs;
     using BullOak.Messages;
     using BullOak.Repositories;
-    using BullOak.Repositories.Appliers;
     using BullOak.Repositories.InMemory;
     using BullOak.Test.EndToEnd.Stub.AggregateBased;
-    using BullOak.Test.EndToEnd.Stub.RepositoryBased;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.ViewingAggregate;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
@@ -15,23 +15,32 @@
 
     internal class AggregateFixture
     {
-        public readonly InMemoryEventSourcedRepository<CinemaAggregateState, CinemaAggregateRootId> CinemaFunctionalRepo;
+        public readonly InMemoryEventSourcedRepository<CinemaAggregateRootId, CinemaAggregateState> CinemaFunctionalRepo;
         public readonly CinemaAggregateRepository CinemaAggregateRepository;
         public CinemaAggregateRootId cinemaId;
 
-        public readonly InMemoryEventSourcedRepository<ViewingState, ViewingId> ViewingFunctionalRepo;
+        public readonly InMemoryEventSourcedRepository<ViewingId, ViewingState> ViewingFunctionalRepo;
         public readonly ViewingAggregateRepository ViewingAggregateRepository;
 
         public Guid correlationId;
         public string name;
         public DateTime dateOfViewing;
 
-        public AggregateFixture(string name, ICreateEventAppliers fakeDi = null)
+        public AggregateFixture(string name, object[] appliers = null)
         {
+            var configuration = Configuration.Begin()
+                .WithDefaultCollection()
+                .WithDefaultStateFactory()
+                .AlwaysUseThreadSafe()
+                .WithNoEventPublisher()
+                .WithAnyAppliersFromInstances((IEnumerable<object>) appliers ?? new List<object>())
+                .WithAnyAppliersFrom(Assembly.GetAssembly(typeof(CinemaAggregateRepository)))
+                .Build();
+
             this.name = name;
             correlationId = Guid.NewGuid();
-            CinemaFunctionalRepo = new InMemoryEventSourcedRepository<CinemaAggregateState, CinemaAggregateRootId>(fakeDi ?? StubDI.GetCreator());
-            ViewingFunctionalRepo = new InMemoryEventSourcedRepository<ViewingState, ViewingId>(fakeDi ?? StubDI.GetCreator());
+            CinemaFunctionalRepo = new InMemoryEventSourcedRepository<CinemaAggregateRootId, CinemaAggregateState>(configuration);
+            ViewingFunctionalRepo = new InMemoryEventSourcedRepository<ViewingId, ViewingState>(configuration);
             CinemaAggregateRepository = new CinemaAggregateRepository(new InMemoryEventStore());
             ViewingAggregateRepository = new ViewingAggregateRepository(new InMemoryEventStore());
 
@@ -39,31 +48,14 @@
             dateOfViewing = DateTime.Now.AddDays(3);
         }
 
-        public static ICreateEventAppliers GetAppliersWith<TState>(int totalAppliers, IApplyEvents<TState> custom,
-            int customIndex)
-        {
-            var container = new EventApplierContainer();
-
-            for (int i = 0; i < totalAppliers; i++)
-            {
-                container.Register(i == customIndex ? custom : new FakeApplier<TState>());
-            }
-            return container.Build();
-        }
-
-        private class FakeApplier<TState> : IApplyEvents<TState>
-        {
-            public bool CanApplyEvent(object @event) => false;
-            public TState Apply(TState state, object @event) => state;
-        }
-
+        Random r = new Random();
         public void AddCinemaCreationEvent()
         {
-            var @event = new CinemaCreated(Guid.NewGuid(), cinemaId, 2);
+            var @event = new CinemaCreated(Guid.NewGuid(), cinemaId, r.Next());
 
-            using (var session = CinemaFunctionalRepo.Load(@event.Id))
+            using (var session = CinemaFunctionalRepo.BeginSessionFor(@event.Id))
             {
-                session.AddToStream(@event);
+                session.AddEvent(@event);
                 session.SaveChanges();
             }
 
@@ -71,13 +63,13 @@
                 .FromAggregate<BullOak.Test.EndToEnd.Stub.AggregateBased.CinemaAggregate.CinemaAggregateRoot>());
         }
 
-        public void AddViewingAndSeatCreatiuonEvents(ViewingId viewingId, int capacity)
+        public void AddViewingAndSeatCreationEvents(ViewingId viewingId, int capacity)
         {
             var viewingCreatedEvent = new ViewingCreatedEvent(viewingId, capacity);
 
-            using (var session = ViewingFunctionalRepo.Load(viewingCreatedEvent.Id))
+            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingCreatedEvent.Id))
             {
-                session.AddToStream(viewingCreatedEvent);
+                session.AddEvent(viewingCreatedEvent);
                 session.SaveChanges();
             }
 
@@ -92,9 +84,9 @@
         {
             var seatCreated = new SeatInViewingInitialized(new SeatId(seatNumber));
 
-            using (var session = ViewingFunctionalRepo.Load(viewingId))
+            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingId))
             {
-                session.AddToStream(seatCreated);
+                session.AddEvent(seatCreated);
                 session.SaveChanges();
             }
 
@@ -107,9 +99,9 @@
         {
             var seatReserved = new SeatReservedEvent(viewingId, new SeatId(seatNumber));
 
-            using (var session = ViewingFunctionalRepo.Load(viewingId))
+            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingId))
             {
-                session.AddToStream(seatReserved);
+                session.AddEvent(seatReserved);
                 session.SaveChanges();
             }
 

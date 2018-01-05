@@ -37,6 +37,4 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("BullOak.Repositories.Test.Unit")]
 
-//NOTE: DO NOT REMOVE THIS! This is needed for ILEmitted code
-[assembly: InternalsVisibleTo("BullOak.Repositories.Emitter")]
 [assembly: InternalsVisibleTo("BullOak.Test.Benchmark")]

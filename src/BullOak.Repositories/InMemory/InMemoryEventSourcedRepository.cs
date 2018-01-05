@@ -3,80 +3,89 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
-    using BullOak.Common;
-    using BullOak.Common.Exceptions;
-    using BullOak.Repositories.Appliers;
+    using System.Threading;
     using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.Session;
 
-    public class InMemoryEventSourcedRepository<TState, TId> : IManagePersistenceOf<TState, TId>
+    public class InMemoryEventSourcedRepository<TId, TState> : ISynchronouslyManagePersistanceOf<TId, IManageAndSaveSynchronousSession<TState>, TState>
     {
-        private static readonly Task done = Task.FromResult(0);
         private Dictionary<TId, object[]> eventStore = new Dictionary<TId, object[]>();
         private readonly IHoldAllConfiguration configuration;
+        private static bool useThreadSafeOps;
 
         public object[] this[TId id]
         {
-            get
-            {
-                if(eventStore.TryGetValue(id, out var value)) return value;
-                return new object[0];
-            }
+            get => eventStore.TryGetValue(id, out var value) ? value : new object[0];
             set => eventStore[id] = value;
         }
 
-        public InMemoryEventSourcedRepository(IHoldAllConfiguration configuration)
-            => this.configuration = configuration;
+        public TId[] IdsOfStreamsWithEvents =>
+            eventStore
+                .Where(x => x.Value != null && x.Value.Length > 0)
+                .Select(x => x.Key)
+                .ToArray();
 
-        public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
+        public InMemoryEventSourcedRepository(IHoldAllConfiguration configuration)
+        {
+            this.configuration = configuration;
+            useThreadSafeOps = configuration.ThreadSafetySelector(typeof(TState));
+        }
+
+        public IManageAndSaveSynchronousSession<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
             object[] eventStream;
+            bool lockTaken = false;
 
-            lock (eventStore)
+            try
             {
+                if (useThreadSafeOps) Monitor.TryEnter(eventStore, ref lockTaken);
+                if (useThreadSafeOps && !lockTaken) throw new Exception("Lock not taken");
+
                 if (!eventStore.TryGetValue(id, out eventStream) && !throwIfNotExists)
                 {
                     eventStream = new object[0];
                     eventStore[id] = eventStream;
                 }
-                else if (throwIfNotExists) throw new StreamNotFoundException(id.ToString());
+                else if (throwIfNotExists)
+                    throw new StreamNotFoundException(id.ToString());
+            }
+            finally
+            {
+                if(lockTaken) Monitor.Exit(eventStore);
             }
 
-            var session = new BasicEventSourcedRepoSession<TState>(configuration, 
-                (e, c) => SaveEvents(id, e, c));
+            var session = new InMemoryEventStoreSession<TState, TId>(configuration, eventStore, id);
 
-            lock (eventStore)
+            try
             {
+                lockTaken = false;
+                if (useThreadSafeOps) Monitor.TryEnter(eventStore, ref lockTaken);
+                if (useThreadSafeOps && !lockTaken) throw new Exception("Lock not taken");
+
                 session.LoadFromEvents(eventStore[id], eventStore[id].Length);
             }
+            finally
+            {
+                if(lockTaken) Monitor.Exit(eventStore);
+            }
 
-            return Task.FromResult((IManageSessionOf<TState>) session);
+            return session;
         }
 
-        // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-        private Task SaveEvents(TId id, object[] newEvents, int concurrencyId)
+        public void Clear(TId id)
         {
-            var list = eventStore[id];
-
-            if(list.Length != concurrencyId) throw new ConcurrencyException(id.ToString(), typeof(TState));
-
-            var newBuffer = new object[list.Length + newEvents.Length];
-            Array.Copy(list, 0, newBuffer, 0, list.Length);
-            Array.Copy(newEvents, 0, newBuffer, list.Length, newEvents.Length);
-            eventStore[id] = newBuffer;
-
-            return done;
+            lock (eventStore)
+            {
+                if (eventStore.ContainsKey(id)) eventStore.Remove(id);
+            }
         }
 
-        public Task Clear(TId id)
+        public bool Exists(TId id)
         {
-            if(eventStore.ContainsKey(id)) eventStore[id] = new object[0];
-
-            return done;
+            lock (eventStore)
+            {
+                return eventStore.ContainsKey(id) && eventStore[id] != null && eventStore[id].Length > 0;
+            }
         }
-
-        public Task<bool> Exists(TId id)
-            => Task.FromResult(eventStore.ContainsKey(id));
     }
 }

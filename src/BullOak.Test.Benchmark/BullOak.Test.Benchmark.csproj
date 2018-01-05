@@ -32,6 +32,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BenchmarkDotNet, Version=0.10.9.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">
@@ -142,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behavioural\AggregateFixture.cs" />
+    <Compile Include="Behavioural\CodeTests.cs" />
     <Compile Include="Behavioural\LoadAggregateOneEventNoChildsBenchmark.cs" />
     <Compile Include="Behavioural\EditChildEntitiesBenchmark.cs" />
     <Compile Include="Behavioural\TestClass.cs" />

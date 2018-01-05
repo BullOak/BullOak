@@ -27,21 +27,21 @@
         {
             fixture = new AggregateFixture(Guid.NewGuid().ToString());
             viewingId = new ViewingId(Guid.NewGuid().ToString(), fixture.dateOfViewing, fixture.cinemaId);
-            fixture.AddViewingAndSeatCreatiuonEvents(viewingId, Capacity);
+            fixture.AddViewingAndSeatCreationEvents(viewingId, Capacity);
         }
 
         [Benchmark]
         public void EditChildFromRepoBasedAggregate()
         {
-            using (var session = fixture.ViewingFunctionalRepo.Load(viewingId))
+            using (var session = fixture.ViewingFunctionalRepo.BeginSessionFor(viewingId))
             {
                 for (int i = 0; i < SeatsToReserve; i++)
                 {
                     var events = viewingAggregate.ReserveSeat(session.GetCurrentState(), i);
 
-                    session.AddToStream(events);
+                    session.AddEvent(events);
                 }
-                session.SaveChanges().Wait();
+                session.SaveChanges();
             }
 
             var eventCount = fixture.ViewingFunctionalRepo[viewingId].Length;
@@ -50,7 +50,7 @@
             fixture.ViewingFunctionalRepo[viewingId] = buffer;
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void EditChildFromAggregateBasedAggregate()
         {
             var aggregate = fixture.ViewingAggregateRepository.Load(viewingId).Result;

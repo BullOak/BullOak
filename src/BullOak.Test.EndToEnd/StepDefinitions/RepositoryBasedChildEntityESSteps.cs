@@ -1,6 +1,8 @@
 ﻿namespace BullOak.Test.EndToEnd.StepDefinitions
 {
     using System;
+    using System.Threading.Tasks;
+    using BullOak.Repositories;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.ViewingAggregate;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
@@ -8,7 +10,7 @@
     using FluentAssertions;
     using TechTalk.SpecFlow;
 
-    using ViewingRepository = BullOak.Repositories.InMemory.InMemoryEventSourcedRepository<Stub.RepositoryBased.ViewingAggregate.ViewingState, Stub.Shared.Ids.ViewingId>;
+    using ViewingRepository = BullOak.Repositories.InMemory.InMemoryEventSourcedRepository<Stub.Shared.Ids.ViewingId, Stub.RepositoryBased.ViewingAggregate.ViewingState>;
 
     [Binding]
     [Scope(Feature = "RepositoryBasedES")]
@@ -27,10 +29,10 @@
 
         private object Event { get; set; }
 
-        public RepositoryBasedChildEntityESSteps(ScenarioContext scenarioContext)
+        public RepositoryBasedChildEntityESSteps(ScenarioContext scenarioContext, IHoldAllConfiguration config)
         {
             this.scenarioContext = scenarioContext ?? throw new ArgumentNullException(nameof(scenarioContext));
-            ViewingRepository = new ViewingRepository(StubDI.GetCreator());
+            ViewingRepository = new ViewingRepository(config);
         }
 
         [Given(@"a viewing for ""(.*)"" with (.*) seats in (.*) hours from now")]
@@ -38,11 +40,11 @@
         {
             var cinemaId= new CinemaAggregateRootId("CinemaId");
             ViewingId = new ViewingId(movie, DateTime.Now.AddHours(hoursUntilViewing), cinemaId);
-            using (var session = ViewingRepository.Load(ViewingId))
+            using (var session = ViewingRepository.BeginSessionFor(ViewingId))
             {
                 var creationEvent = ViewingAggregate.CreateViewing(cinemaId, movie, ViewingId.ShowingDate, seats);
 
-                session.AddToStream(creationEvent);
+                session.AddEvent(creationEvent);
                 session.SaveChanges();
             }
         }
@@ -50,12 +52,12 @@
         [When(@"I try to reserve seat (.*)")]
         public void WhenITryToReserveSeat(int seatToReserve)
         {
-            using (var session = ViewingRepository.Load(ViewingId))
+            using (var session = ViewingRepository.BeginSessionFor(ViewingId))
             {
                 var state = session.GetCurrentState();
                 Event = ViewingAggregate.ReserveSeat(state, seatToReserve);
 
-                session.AddToStream(Event);
+                session.AddEvent(Event);
                 session.SaveChanges();
             }
         }

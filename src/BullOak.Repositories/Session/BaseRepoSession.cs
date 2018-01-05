@@ -4,35 +4,39 @@
     using System.Collections;
     using System.Collections.Generic;
     using BullOak.Repositories.Appliers;
-    using BullOak.Repositories.Session.CustomLinkedList;
-    using BullOak.Repositories.Session.StateUpdaters;
 
     public abstract class BaseRepoSession<TState> : IManageSessionOf<TState>
     {
         private readonly IDisposable disposableHandle;
 
         protected readonly IHoldAllConfiguration configuration;
-        private IApplyEventsToCurrentState<TState> eventApplier;
         protected ICollection<object> NewEventsCollection { get; private set; }
 
         public abstract bool IsOptimisticConcurrencySupported { get; }
-        public TState GetCurrentState() => eventApplier.GetCurrentState();
+        private TState currentState;
+        public TState GetCurrentState() => currentState;
 
-        private static object collectionFactoryLock = new object();
-        private static Func<ICollection<object>> newEventCollectionFactory;
+        private static readonly Type stateType = typeof(TState);
+        private static object eventApplierLock = new object();
+        protected static IApplyEventsToStates EventApplier;
 
         internal BaseRepoSession(IHoldAllConfiguration configuration, IDisposable disposableHandle)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+
             this.disposableHandle = disposableHandle;
 
-            if (newEventCollectionFactory == null)
+            NewEventsCollection = configuration.CollectionTypeSelector(stateType)();
+
+            currentState = default(TState);
+
+            if (EventApplier == null)
             {
-                lock (collectionFactoryLock)
+                lock (eventApplierLock)
                 {
-                    if (newEventCollectionFactory == null)
+                    if (EventApplier == null)
                     {
-                        newEventCollectionFactory = this.configuration.CollectionTypeSelector(typeof(TState));
+                        EventApplier = this.configuration.EventApplier;
                     }
                 }
             }
@@ -44,6 +48,8 @@
 
             foreach (var @event in events)
                 NewEventsCollection.Add(@event);
+
+            currentState = (TState) EventApplier.Apply(stateType, currentState, events);
         }
 
         public void AddEvents(object[] events)
@@ -52,6 +58,8 @@
 
             for (int i = 0; i < events.Length; i++)
                 NewEventsCollection.Add(events[i]);
+
+            currentState = (TState)EventApplier.Apply(stateType, currentState, events);
         }
 
         public void AddEvent(object @event)
@@ -61,25 +69,18 @@
             {
                 object[] eventArray = new object[eventCollection.Count];
                 eventCollection.CopyTo(eventArray, 0);
+                AddEvents(eventArray);
             }
-            else NewEventsCollection.Add(@event);
+            else
+            {
+                NewEventsCollection.Add(@event);
+                currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, @event);
+            }
         } 
 
         protected void Initialize(TState storedState)
         {
-            NewEventsCollection = newEventCollectionFactory();
-            eventApplier = GetApplierFor(configuration, storedState, NewEventsCollection);
-        }
-
-        private static IApplyEventsToCurrentState<TState> GetApplierFor<TState>(IHoldAllConfiguration configuration, TState initialState, ICollection<object> collection)
-        {
-            switch (collection)
-            {
-                case ILinkedList<object> linkedList:
-                    return new StateUpdaterForLinkedList<TState>(configuration, initialState, linkedList);
-                default:
-                    return new StateUpdaterForIEnumerable<TState>(configuration, initialState, collection);
-            }
+            currentState = storedState;
         }
 
         protected virtual void Dispose(bool disposing)

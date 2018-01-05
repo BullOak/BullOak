@@ -1,28 +1,62 @@
 ﻿namespace BullOak.Repositories.StateEmit
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
+    using System.Threading;
 
     internal class StateTypeEmitter
     {
-        public static Type EmitType(Type typeOfState)
-        {
-            //var typeOfState = typeof(TState);
-            if (!typeOfState.IsInterface)
-                throw new ArgumentException($"Parameter must be type of an interface", nameof(typeOfState));
-            if (typeOfState.GetMethods().Count(x => !x.IsHideBySig) > 0)
-                throw new ArgumentException("Parameter must be of an interface type that does contain methods.", nameof(typeOfState));
+        private static int emittedIndex = 0;
 
+        public static Type EmitType(Type typeToMake, string nameForClass = null)
+        {
             var modelBuilder = GetModelBuilder();
-            var typeBuilder = modelBuilder.DefineType("StateGen_" + typeOfState.Name, TypeAttributes.NotPublic | TypeAttributes.Class);
+
+            if (!typeToMake.IsInterface)
+                throw new ArgumentException($"Parameter must be type of an interface", nameof(typeToMake));
+            if (typeToMake.GetMethods().Any(m => !m.IsHideBySig))
+                throw new ArgumentException("Parameter must be of an interface type that does contain methods.",
+                    nameof(typeToMake));
+
+            return EmitType(modelBuilder, typeToMake, nameForClass);
+        }
+
+        public static Dictionary<Type, Type> EmitTypes(params Type[] typesToMake)
+        {
+            var modelBuilder = GetModelBuilder();
+
+            if (typesToMake.Any(x => !x.IsInterface))
+                throw new ArgumentException($"Parameter must be type of an interface", nameof(typesToMake));
+            if (typesToMake.Any(x => x.GetMethods().Any(m => !m.IsHideBySig)))
+                throw new ArgumentException("Parameter must be of an interface type that does contain methods.",
+                    nameof(typesToMake));
+
+            return EmitTypes(modelBuilder, typesToMake).ToDictionary(x => x.Item1, x => x.Item2);
+        }
+
+        private static IEnumerable<Tuple<Type, Type>> EmitTypes(ModuleBuilder modelBuilder, Type[] typesToMake)
+            => typesToMake.Select(x => new Tuple<Type, Type>(x, EmitType(modelBuilder, x)));
+
+        private static Type EmitType(ModuleBuilder modelBuilder, Type typeToMake, string nameToUseForType = null)
+        {
+            //var typeToMake = typeof(TState);
+            if (!typeToMake.IsInterface)
+                throw new ArgumentException($"Parameter must be type of an interface", nameof(typeToMake));
+            if (typeToMake.GetMethods().Any(x => !x.IsHideBySig))
+                throw new ArgumentException("Parameter must be of an interface type that does contain methods.",
+                    nameof(typeToMake));
+
+            var typeBuilder = modelBuilder.DefineType("StateGen_" + nameToUseForType ?? typeToMake.Name,
+                TypeAttributes.NotPublic | TypeAttributes.Class);
             typeBuilder.AddInterfaceImplementation(typeof(ICanSwitchBackAndToReadOnly));
-            typeBuilder.AddInterfaceImplementation(typeOfState);
+            typeBuilder.AddInterfaceImplementation(typeToMake);
 
             var canEditField = AddCanEditFieldAndProp(typeBuilder);
 
-            foreach (var prop in typeOfState.GetProperties())
+            foreach (var prop in typeToMake.GetProperties())
             {
                 EmitProperty(prop, canEditField, modelBuilder, typeBuilder);
             }
@@ -33,9 +67,7 @@
         private static ModuleBuilder GetModelBuilder()
         {
             var assemblyName = Assembly.GetExecutingAssembly().GetName();
-            //NOTE: If this changes, the InternalVisibleTo attribute in this assembly corresponding to this HAS to be changed
-            // otherwise your clients will be seeing C# compiler errors
-            assemblyName.Name += ".Emitter";
+            assemblyName.Name += ".Emitter.Group" + Interlocked.Increment(ref emittedIndex);
             var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
             return assemblyBuilder.DefineDynamicModule(assemblyName.Name);
         }

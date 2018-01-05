@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="StepDefinitions\AggregateBasedChildEntityESSteps.cs" />
+    <Compile Include="StepDefinitions\Context.cs" />
     <Compile Include="StepDefinitions\RepositoryBasedChildEntityESSteps.cs" />
     <Compile Include="Stub\AggregateBased\CinemaAggregateRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,7 +96,6 @@
     <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaAggregateRoot.cs" />
     <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaAggregateState.cs" />
     <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaCreatedReconstitutor.cs" />
-    <Compile Include="Stub\RepositoryBased\StubDI.cs" />
     <Compile Include="Stub\Shared\Messages\SeatInViewingInitialized.cs" />
     <Compile Include="Stub\RepositoryBased\ViewingAggregate\ViewingReconstitutor.cs" />
     <Compile Include="Stub\RepositoryBased\ViewingAggregate\ViewingState.cs" />

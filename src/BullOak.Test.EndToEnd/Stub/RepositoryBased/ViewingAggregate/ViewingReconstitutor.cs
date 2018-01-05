@@ -7,8 +7,11 @@
 
     internal class ViewingReconstitutor : IApplyEvents<ViewingState>
     {
-        public bool CanApplyEvent(object @event)
-            => @event is ViewingCreatedEvent || @event is SeatReservedEvent || @event is SeatInViewingInitialized;
+        public bool CanApplyEvent(Type eventType)
+            => eventType == typeof(ViewingCreatedEvent)
+               || eventType == typeof(SeatReservedEvent)
+               || eventType == typeof(SeatInViewingInitialized);
+            //=> @event is ViewingCreatedEvent || @event is SeatReservedEvent || @event is SeatInViewingInitialized;
 
         public ViewingState Apply(ViewingState state, object envelope)
         {
@@ -20,8 +23,8 @@
                     return Apply(state, env);
                 case SeatInViewingInitialized env:
                     return Apply(state, env);
-                    default:
-                throw new Exception("Cannot apply event");
+                default:
+                    throw new Exception("Cannot apply event");
             }
         }
 

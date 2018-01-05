@@ -4,40 +4,130 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    internal class EventApplier : IApplyEventsToStates
+    internal struct ApplierRetriever
     {
-        private Dictionary<Type, IReadOnlyCollection<object>> stateAppliersDictionary =
-            new Dictionary<Type, IReadOnlyCollection<object>>();
+        private Type stateType;
+        private bool singleInstance;
+        private IApplyEventsInternal applierInstance;
+        private Func<IApplyEventsInternal> applierFactory;
 
+        public Type StateType => stateType;
+        public bool SingleInstance => singleInstance;
+        public IApplyEventsInternal ApplierInstance => applierInstance;
+        public Func<IApplyEventsInternal> ApplierFactory => applierFactory;
+        public bool IsDefault => stateType == null;
 
-        public void SeedWith(IDictionary<Type, ICollection<object>> appliersByStateType)
+        public ApplierRetriever(Type stateType, IApplyEventsInternal applier)
         {
-            var stateAppliersDictionary = new Dictionary<Type, IReadOnlyCollection<object>>();
-
-            foreach (var appliersKey in appliersByStateType.Keys)
-            {
-                var appliers = appliersByStateType[appliersKey];
-                stateAppliersDictionary[appliersKey] = appliers.ToArray();
-            }
-
-            this.stateAppliersDictionary = stateAppliersDictionary;
+            this.stateType = stateType;
+            singleInstance = true;
+            applierFactory = null;
+            applierInstance = applier;
         }
 
-        public TState Apply<TState, TEvent>(TState state, TEvent @event)
+        public ApplierRetriever(Type stateType, Func<IApplyEventsInternal> applierFactory)
         {
-            var typeOfState = typeof(TState);
-            var typeOfEvent = typeof(TEvent);
+            this.stateType = stateType;
+            singleInstance = false;
+            applierInstance = null;
+            this.applierFactory = applierFactory;
+        }
 
-            //TODO (Savvas): There may be a lot of room for optimization here by caching collection of appliers for a state type.
-            if (stateAppliersDictionary.TryGetValue(typeOfState, out var applierCollection)) throw new ApplierNotFoundException(typeOfState);
+        internal IApplyEventsInternal GetApplier()
+        {
+            if (singleInstance) return applierInstance;
+            return applierFactory();
+        }
 
-            var applier = applierCollection
-                .Cast<IApplyEvents<TState>>()
-                .FirstOrDefault(x=> x.CanApplyEvent(@event));
+        public IApplyEventsInternal GetApplier(EventAndStateTypes types, bool withCheck = false)
+        {
+            var applier = GetApplier();
 
-            if (applier == null) throw new ApplierNotFoundException(typeOfState, typeOfEvent);
+            if (withCheck && !applier.CanApplyEvent(types.stateType, types.eventType))
+                throw new ArgumentException(
+                    $"Type of event {types.eventType} is not supported. Applier type: {applier.GetType().Name}");
 
+            return applier;
+        }
+    }
+
+    internal class EventAndStateTypes : IEquatable<EventAndStateTypes>
+    {
+        public Type stateType;
+        public Type eventType;
+        private int hashCode;
+
+        public EventAndStateTypes(Type stateType, Type eventType)
+        {
+            this.stateType = stateType;
+            this.eventType = eventType;
+
+            unchecked
+            {
+                hashCode = (stateType.GetHashCode() * 397) ^ eventType.GetHashCode();
+            }
+        }
+
+        /// <inheritdoc />
+        public bool Equals(EventAndStateTypes other) 
+            => ReferenceEquals(stateType, other.stateType) && ReferenceEquals(eventType, other.eventType);
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((EventAndStateTypes) obj);
+        }
+
+        public override int GetHashCode() => hashCode;
+    }
+
+    internal class EventApplier : IApplyEventsToStates
+    {
+        private List<ApplierRetriever> unindexedAppliers = new List<ApplierRetriever>();
+
+        private IDictionary<EventAndStateTypes, ApplierRetriever> indexedStateAppliers =
+            new Dictionary<EventAndStateTypes, ApplierRetriever>();
+
+        public IEnumerable<Type> SupportedStateTypes { get; private set; } = new List<Type>();
+
+        internal void SeedWith(ICollection<ApplierRetriever> allAppliers)
+        {
+            unindexedAppliers.AddRange(allAppliers);
+            SupportedStateTypes = unindexedAppliers.Select(x => x.StateType);
+        }
+
+        public TState Apply<TState>(TState state, object @event)
+            => (TState)Apply(typeof(TState), state, @event.GetType(), @event);
+
+        public object Apply(Type stateType, object state, Type eventType, object @event)
+        {
+            var key = new EventAndStateTypes(stateType, eventType);
+            var applier = GetApplierFor(key);
             return applier.Apply(state, @event);
+        }
+
+        private IApplyEventsInternal GetApplierFor(EventAndStateTypes index)
+        {
+            if (!indexedStateAppliers.TryGetValue(index, out var indexedApplier))
+            {
+                indexedApplier = GetApplierFromUnindexed(index);
+
+                indexedStateAppliers.Add(index, indexedApplier);
+            }
+
+            return indexedApplier.GetApplier(index);
+        }
+
+        private ApplierRetriever GetApplierFromUnindexed(EventAndStateTypes index)
+        {
+            var applier = unindexedAppliers
+                .FirstOrDefault(x => x.GetApplier(index)?.CanApplyEvent(index.stateType, index.eventType) == true);
+
+            if (applier.IsDefault) throw new ApplierNotFoundException(index.stateType, index.eventType);
+
+            return applier;
         }
     }
 

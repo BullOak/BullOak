@@ -4,6 +4,7 @@ namespace BullOak.Repositories
 
     public interface IConfigureStateFactory
     {
+        IConfigureThreadSafety WithDefaultStateFactory();
         IConfigureThreadSafety WithStateFactory(ICreateStateInstances stateFactory);
     }
 }

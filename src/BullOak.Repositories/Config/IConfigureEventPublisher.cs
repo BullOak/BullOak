@@ -1,9 +1,9 @@
 namespace BullOak.Repositories
 {
-    using EventPublisher = System.Func<object, System.Threading.Tasks.Task>;
+    using BullOak.Repositories.EventPublisher;
 
     public interface IConfigureEventPublisher
     {
-        IManuallyConfigureEventAppliers WithEventPublisher(EventPublisher publish);
+        IManuallyConfigureEventAppliers WithEventPublisher(IPublishEvents EventPublisher);
     }
 }

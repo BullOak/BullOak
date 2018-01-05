@@ -2,21 +2,22 @@
 {
     using System;
     using System.Threading.Tasks;
+    using BullOak.Repositories.EventPublisher;
 
     public static class EventPublisherConfigExtensions
     {
-        private static Task Done = Task.FromResult(0);
+        public static IManuallyConfigureEventAppliers WithEventPublisher(
+            this IConfigureEventPublisher eventPublisherConfig,
+            Action<object> publish)
+            => eventPublisherConfig.WithEventPublisher(new MySyncEventPublisher(publish));
 
-        public static IConfigureEventAppliers WithEventPublisher(
-            this IConfigureEventPublisher eventPublisherConfig, Action<object> publish)
-            => eventPublisherConfig.WithEventPublisher(o =>
-            {
-                publish(o);
-                return Done;
-            });
+        public static IManuallyConfigureEventAppliers WithEventPublisher(
+            this IConfigureEventPublisher eventPublisherConfig,
+            Func<object, Task> publish)
+            => eventPublisherConfig.WithEventPublisher(new MyAsyncEventPublisher(publish));
 
-        public static IConfigureEventAppliers WithNoEventPublisher(
+        public static IManuallyConfigureEventAppliers WithNoEventPublisher(
             this IConfigureEventPublisher eventPublisherConfig)
-            => eventPublisherConfig.WithEventPublisher(_ => Done);
+            => eventPublisherConfig.WithEventPublisher(MyNullEventPublisher.Instance);
     }
 }

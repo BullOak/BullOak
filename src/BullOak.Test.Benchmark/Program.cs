@@ -4,14 +4,41 @@
     using System.Collections.Generic;
     using BenchmarkDotNet.Running;
     using BullOak.Test.Benchmark.Behavioural;
-    using BullOak.Test.Benchmark.Profiling;
 
     class Program
     {
         static void Main(string[] args)
         {
+            //RunForVSProfiling<EditChildEntitiesBenchmark>(b => b.EditChildFromRepoBasedAggregate(),
+            //    b =>
+            //    {
+            //        b.Capacity = 100;
+            //        b.SeatsToReserve = 20;
+            //    });
+            //Console.ReadKey();
+
             //ProfileEditRepoBasedChilds();
             RunBenchmark();
+        }
+
+        private static void RunForVSProfiling<TBenchmark>(Action<TBenchmark> methodToCall, 
+            Action<TBenchmark> setupParameters)
+        {
+            var instance = Activator.CreateInstance<TBenchmark>();
+
+            //Set any parameters
+            setupParameters(instance);
+
+            //Call setup methods
+            ((dynamic)instance).Setup();
+
+            //Loop to infinity for profiler.
+            var endOn = DateTime.UtcNow + TimeSpan.FromSeconds(30);
+            while (endOn > DateTime.UtcNow)
+            {
+                for (int i = 0; i < 5000; i++)
+                    methodToCall(instance);
+            }
         }
 
         private static void ProfileEditRepoBasedChilds()
@@ -41,12 +68,16 @@
         {
             var benchmarks = new List<Benchmark>();
 
-            //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(SaveAggregateBenchmark)));
+
+            //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(CodeTests)));
+
+            benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(SaveAggregateBenchmark)));
+            benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(LoadAggregateWithChildEntitiesBenchmark)));
+            benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(EditChildEntitiesBenchmark)));
+            benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(RepoBasedWithVariableReconstitutors)));
+
             //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(LoadAggregateOneEventNoChildsBenchmark)));
             //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(SaveChildEntityBenchmark)));
-            //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(LoadAggregateWithChildEntitiesBenchmark)));
-            benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(EditChildEntitiesBenchmark)));
-            //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(RepoBasedWithVariableReconstitutors)));
             //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(EventCollectionBenchmark)));
 
             var summary = BenchmarkRunner.Run(benchmarks.ToArray(), null);

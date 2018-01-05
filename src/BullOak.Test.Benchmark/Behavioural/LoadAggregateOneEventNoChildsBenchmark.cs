@@ -16,13 +16,13 @@
         [Benchmark]
         public object LoadRepoBaseAggregate()
         {
-            using (var session = fixture.CinemaFunctionalRepo.Load(fixture.cinemaId))
+            using (var session = fixture.CinemaFunctionalRepo.BeginSessionFor(fixture.cinemaId))
             {
                 return session.GetCurrentState();
             }
         }
 
-        [Benchmark]
+        //[Benchmark]
         public object LoadAggregateBasedAggregate()
             => fixture.CinemaAggregateRepository.Load(fixture.cinemaId).Result;
     }

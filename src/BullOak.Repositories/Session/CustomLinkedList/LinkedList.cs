@@ -63,12 +63,12 @@
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            var node = first;
-            for (int i = arrayIndex; i < array.Length && node != null; i++)
+            Node<T> node = first;
+            int i = 0;
+            do
             {
-                array[i] = node.value;
-                node = node.next;
-            }
+                array[i++] = node.value;
+            } while ((node = node.next) != null);
         }
 
         public object[] GetBuffer()

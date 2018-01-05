@@ -13,7 +13,6 @@
         private TConcurrencyId concurrencyId;
         public TConcurrencyId ConcurrencyId => concurrencyId;
 
-        protected readonly IApplyEventsToStates eventApplier;
         protected readonly IPublishEvents eventPublisher;
 
         public sealed override bool IsOptimisticConcurrencySupported => true;
@@ -21,7 +20,6 @@
         public BaseEventSourcedSession(IHoldAllConfiguration configuration, IDisposable disposableHandle = null)
             : base(configuration, disposableHandle)
         {
-            eventApplier = configuration.EventApplier;
             eventPublisher = configuration.EventPublisher;
         }
 
@@ -29,7 +27,7 @@
         {
             var initialState = configuration.StateFactory.GetState(typeOfState);
 
-            initialState = eventApplier.Apply(typeOfState, initialState, storedEvents);
+            initialState = EventApplier.Apply(typeOfState, initialState, storedEvents);
 
             Initialize((TState) initialState);
             this.concurrencyId = concurrencyId;

@@ -82,9 +82,6 @@
     <Compile Include="Session\CustomLinkedList\NodeEnumerator.cs" />
     <Compile Include="Session\CustomLinkedList\LinkedList.cs" />
     <Compile Include="Appliers\IApplyEventsToCurrentState.cs" />
-    <Compile Include="Session\StateUpdaters\AbstractStateUpdater.cs" />
-    <Compile Include="Session\StateUpdaters\StateUpdaterForIEnumerable.cs" />
-    <Compile Include="Session\StateUpdaters\StateUpdaterForNodeCollection.cs" />
     <Compile Include="StateEmit\EmittedTypeFactory.cs" />
     <Compile Include="StateEmit\ICanSwitchBackAndToReadOnly.cs" />
     <Compile Include="StateEmit\IControlStateWritability.cs" />

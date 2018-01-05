@@ -9,23 +9,16 @@
 
     public abstract class BaseRepoSession<TState> : IManageSessionOf<TState>
     {
-        private static readonly Type typeOfState = typeof(TState);
-
         private readonly IDisposable disposableHandle;
 
         protected readonly IHoldAllConfiguration configuration;
         private IApplyEventsToCurrentState<TState> eventApplier;
-        protected IApplyEventsToCurrentState<TState> EventApplier
-        {
-            get => eventApplier;
-            private set => eventApplier = eventApplier ?? value;
-        }
         protected ICollection<object> NewEventsCollection { get; private set; }
 
         public abstract bool IsOptimisticConcurrencySupported { get; }
-        public TState GetCurrentState() => EventApplier.GetCurrentState();
+        public TState GetCurrentState() => eventApplier.GetCurrentState();
 
-        private static readonly object collectionFactoryLock = new object();
+        private static object collectionFactoryLock = new object();
         private static Func<ICollection<object>> newEventCollectionFactory;
 
         internal BaseRepoSession(IHoldAllConfiguration configuration, IDisposable disposableHandle)
@@ -75,7 +68,7 @@
         protected void Initialize(TState storedState)
         {
             NewEventsCollection = newEventCollectionFactory();
-            EventApplier = GetApplierFor(configuration, storedState, NewEventsCollection);
+            eventApplier = GetApplierFor(configuration, storedState, NewEventsCollection);
         }
 
         private static IApplyEventsToCurrentState<TState> GetApplierFor<TState>(IHoldAllConfiguration configuration, TState initialState, ICollection<object> collection)

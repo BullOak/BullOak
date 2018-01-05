@@ -1,11 +1,10 @@
 ﻿namespace BullOak.Repositories.Session
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
-    using BullOak.Repositories.StateEmit;
+    using BullOak.Repositories.EventPublisher;
 
     public abstract class BaseEventSourcedSyncSession<TState, TConcurrencyId> : BaseRepoSession<TState>, IManageAndSaveSynchronousSessionWithExplicitSnapshot<TState>
     {
@@ -16,6 +15,7 @@
         public TConcurrencyId ConcurrencyId => concurrencyId;
 
         protected readonly IApplyEventsToStates eventApplier;
+        protected readonly IPublishEvents eventPublisher;
 
         public sealed override bool IsOptimisticConcurrencySupported => true;
 
@@ -23,6 +23,7 @@
             : base(configuration, disposableHandle)
         {
             eventApplier = configuration.EventApplier;
+            eventPublisher = configuration.EventPublisher;
         }
 
         public void LoadFromEvents(object[] storedEvents, TConcurrencyId concurrencyId)
@@ -40,38 +41,26 @@
             this.concurrencyId = concurrencyId;
         }
 
-        public void LoadFromEvents(IEnumerable<object> storedEvents, TConcurrencyId concurrencyId)
-        {
-            var initialState = configuration.StateFactory.GetState(typeOfState);
-
-            Type eventType = null;
-            foreach (var @event in storedEvents)
-            {
-                eventType = @event.GetType();
-                initialState = eventApplier.Apply(typeOfState, initialState, eventType, @event);
-            }
-
-            Initialize((TState)initialState);
-            this.concurrencyId = concurrencyId;
-        }
-
         public void SaveChanges(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce)
-        {
-            var newEvents = NewEventsCollection.ToArray();
-            var sendEventsBeforeSaving = targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce;
-
-            if (sendEventsBeforeSaving) PublishEvents(configuration, newEvents);
-            SaveChanges(newEvents, false, default(TState));
-            if (!sendEventsBeforeSaving) PublishEvents(configuration, newEvents);
-        }
+            => SaveChanges(false, targetGuarantee);
 
         public void SaveChangesWithSnapshot(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce)
+            => SaveChanges(false, targetGuarantee);
+
+        private void SaveChanges(bool shouldSnapshot = false,
+            DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce)
         {
             var newEvents = NewEventsCollection.ToArray();
             var sendEventsBeforeSaving = targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce;
 
+            TState currentState;
+            if (shouldSnapshot)
+                currentState = GetCurrentState();
+            else
+                currentState = default(TState);
+
             if (sendEventsBeforeSaving) PublishEvents(configuration, newEvents);
-            SaveChanges(newEvents, true, EventApplier.GetCurrentState());
+            SaveChanges(newEvents, shouldSnapshot, currentState);
             if (!sendEventsBeforeSaving) PublishEvents(configuration, newEvents);
         }
 
@@ -79,9 +68,7 @@
         {
             for (var i = 0; i < events.Length; i++)
             {
-                //We await each one to guarantee ordering of publishing, even though it would have been more performant
-                // to publish and await all of them with a WhenAll
-                configuration.EventPublisher.PublishSync(events[i]);
+                eventPublisher.PublishSync(events[i]);
             }
         }
 

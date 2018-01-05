@@ -6,11 +6,11 @@ using Xunit;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BullOak.Repositories.NEventStore.Test.Integration")]
+[assembly: AssemblyTitle("BullOak.Repositories.Test.Acceptance")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BullOak.Repositories.NEventStore.Test.Integration")]
+[assembly: AssemblyProduct("BullOak.Repositories.Test.Acceptance")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -21,7 +21,7 @@ using Xunit;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a3af25f4-fd47-43f0-b006-43eeae487a22")]
+[assembly: Guid("0b6bf506-83ee-476d-9766-63c62724fac3")]
 
 // Version information for an assembly consists of the following four values:
 //

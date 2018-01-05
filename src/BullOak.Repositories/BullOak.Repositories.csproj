@@ -90,6 +90,10 @@
     <Compile Include="StateEmit\StateController.cs" />
     <Compile Include="StateEmit\StateTypeEmitter.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="BullOak.Repositories.nuspec">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

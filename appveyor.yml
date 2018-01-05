@@ -19,7 +19,7 @@ branches:
   # whitelist
   only:
     - master
-    - dev
+    - develop
 
   # blacklist
 #  except:
@@ -187,7 +187,7 @@ build:
   #publish_wap: true               # package Web Application Projects (WAP) for Web Deploy
   #publish_wap_xcopy: true         # package Web Application Projects (WAP) for XCopy deployment
   #publish_azure: true             # package Azure Cloud Service projects and push to artifacts
-  #publish_nuget: true             # package projects with .nuspec files and push to artifacts
+  publish_nuget: true             # package projects with .nuspec files and push to artifacts
   #publish_nuget_symbols: true     # generate and publish NuGet symbol packages
   #include_nuget_references: true  # add -IncludeReferencedProjects option while packaging NuGet artifacts
 
@@ -218,6 +218,8 @@ build_script:
 test:
   assemblies:
     - '**\*.Test.Unit.dll'
+    - '**\*.Test.Acceptance.dll'
+    - '**\*.Repositories.NEventStore.Test.Integration.dll'
 
 #  categories:
 
@@ -248,18 +250,21 @@ test_script:
 artifacts:
 
   # pushing a single file
-  - path: test.zip
+  #- path: test.zip
 
   # pushing a single file with environment variable in path and "Deployment name" specified
-  - path: MyProject\bin\$(configuration)
-    name: myapp
+  #- path: MyProject\bin\$(configuration)
+  #  name: myapp
 
   # pushing entire folder as a zip archive
-  - path: logs
+  # - path: logs
 
   # pushing all *.nupkg files in build directory recursively
-  - path: '**\*.nupkg'
-
+  # - path: '**\*.nupkg'
+  
+  - path: '*.nupkg'
+    name: bullOakNugets
+  
 
 #---------------------------------#
 #     deployment configuration    #
@@ -340,13 +345,11 @@ deploy:
 #    artifact: MyPackage.cspkg
 #
     # Deploying to NuGet feed
-#  - provider: NuGet
-#    server: https://my.nuget.server/feed
-#    api_key:
-#      secure: FYWX6NfjZIVw==
-#    skip_symbols: false
-#    symbol_server: https://your.symbol.server/feed
-#    artifact: MyPackage.nupkg
+  - provider: NuGet
+    api_key:
+      secure: XsqCRWh0LKyXLLapgvDT+uYDxT3S+RLPBN3iccQNauVYYn0/E/N4u1gxBF7TJofW
+    skip_symbols: false 
+    artifact: /.*\.nupkg/ 
 
 #    # Deploy to GitHub Releases
 #  - provider: GitHub

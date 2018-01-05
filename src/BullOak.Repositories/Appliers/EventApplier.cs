@@ -3,35 +3,50 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using BullOak.Repositories.StateEmit;
 
     internal struct ApplierRetriever
     {
+        private static Type typeOfSwitchableInterface = typeof(ICanSwitchBackAndToReadOnly);
+
         private Type stateType;
         private bool singleInstance;
         private IApplyEventsInternal applierInstance;
         private Func<IApplyEventsInternal> applierFactory;
+        private bool isStateTypeSwitchable;
 
         public Type StateType => stateType;
         public bool SingleInstance => singleInstance;
         public IApplyEventsInternal ApplierInstance => applierInstance;
         public Func<IApplyEventsInternal> ApplierFactory => applierFactory;
+        public bool IsStateTypeSwitchable => isStateTypeSwitchable;
         public bool IsDefault => stateType == null;
 
         public ApplierRetriever(Type stateType, IApplyEventsInternal applier)
+            : this(stateType)
         {
-            this.stateType = stateType;
             singleInstance = true;
-            applierFactory = null;
             applierInstance = applier;
         }
 
         public ApplierRetriever(Type stateType, Func<IApplyEventsInternal> applierFactory)
+            :this(stateType)
         {
+            singleInstance = false;
+            this.applierFactory = applierFactory;
+        }
+
+        private ApplierRetriever(Type stateType)
+        {
+            isStateTypeSwitchable = GetIfStateSwitchable(stateType);
             this.stateType = stateType;
             singleInstance = false;
             applierInstance = null;
-            this.applierFactory = applierFactory;
+            applierFactory = null;
         }
+
+        private static bool GetIfStateSwitchable(Type state)
+            => state.GetInterfaces().Any(x => ReferenceEquals(x, typeOfSwitchableInterface));
 
         internal IApplyEventsInternal GetApplier()
         {
@@ -98,17 +113,61 @@
             SupportedStateTypes = unindexedAppliers.Select(x => x.StateType);
         }
 
-        public TState Apply<TState>(TState state, object @event)
-            => (TState)Apply(typeof(TState), state, @event.GetType(), @event);
-
-        public object Apply(Type stateType, object state, Type eventType, object @event)
+        public object Apply(Type stateType, object state, IEnumerable<object> events)
         {
-            var key = new EventAndStateTypes(stateType, eventType);
-            var applier = GetApplierFor(key);
-            return applier.Apply(state, @event);
+            var switchable = state as ICanSwitchBackAndToReadOnly;
+            if (switchable != null) switchable.CanEdit = true;
+
+            foreach(var @event in events)
+            {
+                state = ApplyAssumeWritable(stateType, state, @event.GetType(), @event);
+            }
+
+            if (switchable != null) switchable.CanEdit = false;
+
+            return state;
         }
 
-        private IApplyEventsInternal GetApplierFor(EventAndStateTypes index)
+        public object Apply(Type stateType, object state, object[] events)
+        {
+            var switchable = state as ICanSwitchBackAndToReadOnly;
+            if (switchable != null) switchable.CanEdit = true;
+
+            int length = events.Length;
+            object @event;
+            for (int i = 0; i < length; i++)
+            {
+                @event = events[i];
+                state = ApplyAssumeWritable(stateType, state, @event.GetType(), @event);
+            }
+
+            if (switchable != null) switchable.CanEdit = false;
+
+            return state;
+        }
+
+        public object ApplyEvent(Type stateType, object state, object @event)
+        {
+            var switchable = state as ICanSwitchBackAndToReadOnly;
+            if (switchable != null) switchable.CanEdit = true;
+
+            state = ApplyAssumeWritable(stateType, state, @event.GetType(), @event);
+
+            if (switchable != null) switchable.CanEdit = false;
+
+            return state;
+        }
+
+        private object ApplyAssumeWritable(Type stateType, object state, Type eventType, object @event)
+        {
+            var key = new EventAndStateTypes(stateType, eventType);
+            
+            return GetApplierRetrieverFor(key)
+                .GetApplier()
+                .Apply(state, @event);
+        }
+
+        private ApplierRetriever GetApplierRetrieverFor(EventAndStateTypes index)
         {
             if (!indexedStateAppliers.TryGetValue(index, out var indexedApplier))
             {
@@ -117,7 +176,7 @@
                 indexedStateAppliers.Add(index, indexedApplier);
             }
 
-            return indexedApplier.GetApplier(index);
+            return indexedApplier;
         }
 
         private ApplierRetriever GetApplierFromUnindexed(EventAndStateTypes index)

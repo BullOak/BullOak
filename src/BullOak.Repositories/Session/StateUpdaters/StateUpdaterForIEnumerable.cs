@@ -4,9 +4,9 @@
     using System.Linq;
     using System.Threading;
 
-    internal class StateUpdaterForICollection<TState> : AbstractStateUpdater<TState, ICollection<object>>
+    internal class StateUpdaterForIEnumerable<TState> : AbstractStateUpdater<TState, IEnumerable<object>>
     {
-        public StateUpdaterForICollection(IHoldAllConfiguration configuration, TState state, ICollection<object> newEventsCollection)
+        public StateUpdaterForIEnumerable(IHoldAllConfiguration configuration, TState state, IEnumerable<object> newEventsCollection)
             :base(configuration, state, newEventsCollection)
         { }
 
@@ -16,9 +16,7 @@
             try
             {
                 if (useThreadSafeOperations) Monitor.Enter(newEventsCollection, ref isLockTaken);
-                stateMutabilityController.MakeStateWritable();
-                state = newEventsCollection.Aggregate(state, eventApplier.Apply);
-                stateMutabilityController.MakeStateReadOnly();
+                state = (TState) eventApplier.Apply(TypeOfState, state, newEventsCollection);
                 return state;
             }
             finally

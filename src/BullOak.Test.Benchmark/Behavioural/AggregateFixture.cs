@@ -19,7 +19,7 @@
         public readonly CinemaAggregateRepository CinemaAggregateRepository;
         public CinemaAggregateRootId cinemaId;
 
-        public readonly InMemoryEventSourcedRepository<ViewingId, ViewingState> ViewingFunctionalRepo;
+        public readonly InMemoryEventSourcedRepository<ViewingId, IViewingState> ViewingFunctionalRepo;
         public readonly ViewingAggregateRepository ViewingAggregateRepository;
 
         public Guid correlationId;
@@ -40,7 +40,7 @@
             this.name = name;
             correlationId = Guid.NewGuid();
             CinemaFunctionalRepo = new InMemoryEventSourcedRepository<CinemaAggregateRootId, CinemaAggregateState>(configuration);
-            ViewingFunctionalRepo = new InMemoryEventSourcedRepository<ViewingId, ViewingState>(configuration);
+            ViewingFunctionalRepo = new InMemoryEventSourcedRepository<ViewingId, IViewingState>(configuration);
             CinemaAggregateRepository = new CinemaAggregateRepository(new InMemoryEventStore());
             ViewingAggregateRepository = new ViewingAggregateRepository(new InMemoryEventStore());
 

@@ -6,7 +6,7 @@
 
     internal class SeatInViewingEntity
     {
-        public SeatReservedEvent Reserve(ViewingState state, int idOfSeatToReserve)
+        public SeatReservedEvent Reserve(IViewingState state, int idOfSeatToReserve)
         {
             if (state.Seats[idOfSeatToReserve].IsReserved)
                 throw new Exception("Seat already reserved");

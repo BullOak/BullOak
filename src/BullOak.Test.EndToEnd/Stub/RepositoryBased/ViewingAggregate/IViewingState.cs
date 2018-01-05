@@ -3,11 +3,10 @@
     using System;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
 
-    public class ViewingState
+    public interface IViewingState
     {
-        public ViewingId ViewingId { get; set; }
-        public Seats[] Seats { get; set; }
-        public DateTime TimeOfShowing => ViewingId.ShowingDate;
+        ViewingId ViewingId { get; set; }
+        Seats[] Seats { get; set; }
     }
 
     public class Seats

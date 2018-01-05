@@ -73,8 +73,22 @@
             WithCollectionType<List<object>>();
             WithThreadSafety(false);
             WithStateFactory(Activator.CreateInstance);
+            WithJustReturnEventApplier();
 
             return this;
+        }
+
+        private void WithJustReturnEventApplier()
+        {
+            mockEventApplier.CallsTo(a => a.ApplyEvent(typeof(object), new object(), new object()))
+                .WithAnyArguments()
+                .ReturnsLazily(c => c.Arguments.ToArray()[1]);
+            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new object[0]))
+                .WithAnyArguments()
+                .ReturnsLazily(c => c.Arguments.ToArray()[1]);
+            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new List<object>()))
+                .WithAnyArguments()
+                .ReturnsLazily(c => c.Arguments.ToArray()[1]);
         }
 
         public ConfigurationStub<TState> WithCollectionType<TCollection>()

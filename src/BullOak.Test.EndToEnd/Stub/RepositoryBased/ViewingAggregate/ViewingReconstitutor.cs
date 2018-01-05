@@ -5,7 +5,7 @@
     using BullOak.Repositories.Appliers;
     using BullOak.Test.EndToEnd.Stub.Shared.Messages;
 
-    internal class ViewingReconstitutor : IApplyEvents<ViewingState>
+    internal class ViewingReconstitutor : IApplyEvents<IViewingState>
     {
         public bool CanApplyEvent(Type eventType)
             => eventType == typeof(ViewingCreatedEvent)
@@ -13,7 +13,7 @@
                || eventType == typeof(SeatInViewingInitialized);
             //=> @event is ViewingCreatedEvent || @event is SeatReservedEvent || @event is SeatInViewingInitialized;
 
-        public ViewingState Apply(ViewingState state, object envelope)
+        public IViewingState Apply(IViewingState state, object envelope)
         {
             switch (envelope)
             {
@@ -28,7 +28,7 @@
             }
         }
 
-        public ViewingState Apply(ViewingState state, ViewingCreatedEvent envelope)
+        public IViewingState Apply(IViewingState state, ViewingCreatedEvent envelope)
         {
             //Use Automapper here??
             state.ViewingId = envelope.Id;
@@ -39,13 +39,13 @@
             return state;
         }
 
-        public ViewingState Apply(ViewingState state, SeatReservedEvent envelope)
+        public IViewingState Apply(IViewingState state, SeatReservedEvent envelope)
         {
             state.Seats[envelope.IdOfSeatToReserve.Id].IsReserved = true;
             return state;
         }
 
-        public ViewingState Apply(ViewingState state, SeatInViewingInitialized @event)
+        public IViewingState Apply(IViewingState state, SeatInViewingInitialized @event)
             => state;
     }
 }

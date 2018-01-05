@@ -79,10 +79,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Test.Benchmark", "B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.Test.Unit", "BullOak.Repositories.Test.Unit\BullOak.Repositories.Test.Unit.csproj", "{F66F86D4-3668-4994-92BA-58EC92D6A67E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventStores", "EventStores", "{39758F75-4739-442B-9CEA-A376CE7F0692}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTests", "IntegrationTests", "{5F8DEADC-DC1A-4883-9064-8237CFF85E76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.NEventStore.Test.Integration", "BullOak.Repositories.NEventStore.Test.Integration\BullOak.Repositories.NEventStore.Test.Integration.csproj", "{A3AF25F4-FD47-43F0-B006-43EEAE487A22}"
+EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug.Integration|Any CPU = Debug.Integration|Any CPU
 		Debug|Any CPU = Debug|Any CPU
@@ -306,6 +309,14 @@ Global
 		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Release.Integration|Any CPU.Build.0 = Release|Any CPU
 		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F66F86D4-3668-4994-92BA-58EC92D6A67E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3AF25F4-FD47-43F0-B006-43EEAE487A22}.Debug.Integration|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3AF25F4-FD47-43F0-B006-43EEAE487A22}.Debug.Integration|Any CPU.Build.0 = Debug|Any CPU
+		{A3AF25F4-FD47-43F0-B006-43EEAE487A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3AF25F4-FD47-43F0-B006-43EEAE487A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3AF25F4-FD47-43F0-B006-43EEAE487A22}.Release.Integration|Any CPU.ActiveCfg = Release|Any CPU
+		{A3AF25F4-FD47-43F0-B006-43EEAE487A22}.Release.Integration|Any CPU.Build.0 = Release|Any CPU
+		{A3AF25F4-FD47-43F0-B006-43EEAE487A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3AF25F4-FD47-43F0-B006-43EEAE487A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -337,12 +348,18 @@ Global
 		{47483A1E-B967-429D-BACF-9A052F2B81CC} = {8537FFDD-FBA6-4A2D-8AA4-D4CBB4EFD97F}
 		{76145EE3-3F46-4D54-9B55-BFFB40229EDE} = {C0C8E3D4-5A5D-45C4-BC9B-6B5093F6E964}
 		{5934536F-FB5D-42AD-841B-3395B4C1D76D} = {AE0922CC-D3B9-4084-87DE-9B831201034C}
-		{68401C19-68BA-45B3-BC69-82EF38583A5D} = {AE0922CC-D3B9-4084-87DE-9B831201034C}
+		{68401C19-68BA-45B3-BC69-82EF38583A5D} = {39758F75-4739-442B-9CEA-A376CE7F0692}
 		{00939149-097C-4A99-9A8D-1DC6DE596B4D} = {C0C8E3D4-5A5D-45C4-BC9B-6B5093F6E964}
 		{F66F86D4-3668-4994-92BA-58EC92D6A67E} = {A51AB156-2974-4B61-9C91-D45DC4F41367}
+		{39758F75-4739-442B-9CEA-A376CE7F0692} = {AE0922CC-D3B9-4084-87DE-9B831201034C}
+		{5F8DEADC-DC1A-4883-9064-8237CFF85E76} = {39758F75-4739-442B-9CEA-A376CE7F0692}
+		{A3AF25F4-FD47-43F0-B006-43EEAE487A22} = {5F8DEADC-DC1A-4883-9064-8237CFF85E76}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85F7A59E-70F4-40CD-888E-8DDF38C2B760}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

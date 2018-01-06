@@ -260,9 +260,9 @@ artifacts:
   # - path: logs
 
   # pushing all *.nupkg files in build directory recursively
-  - path: '**\*.nupkg'
+  # - path: '**\*.nupkg'
   
-  - path: '*.nupkg'
+  - path: \*.nupkg
     name: bullOakNugets
 
 

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>BullOak.Repositories</id>
+    <version>0.4.2</version>
+    <title>BullOak.Repositories</title>
+    <authors>Savvas Kleanthous</authors>
+    <owners>Savvas Kleanthous</owners>
+    <licenseUrl>https://github.com/BullOak/BullOak/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/BullOak/BullOak</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>An base repostitory implementation to be used in message-drive, CQRS-based architectures. Caters for event sourced solutions specifically, but allows for entity-based solutions as well. All changes to entities happen through events (even in entity-based solutions), where the reconstitution logic that applies the events is decoupled from any aggregates\state.</description>
+    <copyright>Copyright 2018</copyright>
+    <tags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\BullOak.Repositories.dll" target="lib\net45" />
+  </files>
+</package>

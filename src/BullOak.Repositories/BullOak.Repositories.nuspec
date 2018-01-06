@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BullOak.Repositories</id>
-    <version>0.4.2</version>
+    <version>$version$</version>
     <title>BullOak.Repositories</title>
     <authors>Savvas Kleanthous</authors>
     <owners>Savvas Kleanthous</owners>

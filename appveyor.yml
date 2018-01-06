@@ -342,13 +342,13 @@ deploy:
 #    artifact: MyPackage.cspkg
 #
     # Deploying to NuGet feed
-#  - provider: NuGet
-#    server: https://my.nuget.server/feed
-#    api_key:
-#      secure: FYWX6NfjZIVw==
-#    skip_symbols: false
+  - provider: NuGet
+    server: https://my.nuget.server/feed
+    api_key:
+      secure: FYWX6NfjZIVw==
+    skip_symbols: true
 #    symbol_server: https://your.symbol.server/feed
-#    artifact: MyPackage.nupkg
+    artifact: '**\BullOak.*.nupkg'
 
 #    # Deploy to GitHub Releases
 #  - provider: GitHub

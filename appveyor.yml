@@ -219,7 +219,7 @@ test:
   assemblies:
     - '**\*.Test.Unit.dll'
     - '**\*.Test.Acceptance.dll'
-    - '**\*.Test.Integration.dll'
+    - '**\*.Repositories.NEventStore.Test.Integration.dll'
 
 #  categories:
 

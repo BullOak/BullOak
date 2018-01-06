@@ -250,17 +250,20 @@ test_script:
 artifacts:
 
   # pushing a single file
-  - path: test.zip
+  #- path: test.zip
 
   # pushing a single file with environment variable in path and "Deployment name" specified
-  - path: MyProject\bin\$(configuration)
-    name: myapp
+  #- path: MyProject\bin\$(configuration)
+  #  name: myapp
 
   # pushing entire folder as a zip archive
-  - path: logs
+  # - path: logs
 
   # pushing all *.nupkg files in build directory recursively
   - path: '**\*.nupkg'
+  
+  - path: 'BullOak*.nupkg'
+    name: bullOakNugets
 
 
 #---------------------------------#
@@ -347,7 +350,7 @@ deploy:
       secure: XsqCRWh0LKyXLLapgvDT+uYDxT3S+RLPBN3iccQNauVYYn0/E/N4u1gxBF7TJofW
     skip_symbols: true
 #    symbol_server: https://your.symbol.server/feed
-    artifact: 'BullOak*.nupkg'
+    artifact: bullOakNugets
 
 #    # Deploy to GitHub Releases
 #  - provider: GitHub

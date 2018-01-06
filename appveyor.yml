@@ -343,12 +343,11 @@ deploy:
 #
     # Deploying to NuGet feed
   - provider: NuGet
-    server: https://my.nuget.server/feed
     api_key:
-      secure: FYWX6NfjZIVw==
+      secure: XsqCRWh0LKyXLLapgvDT+uYDxT3S+RLPBN3iccQNauVYYn0/E/N4u1gxBF7TJofW
     skip_symbols: true
 #    symbol_server: https://your.symbol.server/feed
-    artifact: '**\BullOak.*.nupkg'
+    artifact: 'BullOak*.nupkg'
 
 #    # Deploy to GitHub Releases
 #  - provider: GitHub

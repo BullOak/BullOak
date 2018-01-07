@@ -262,9 +262,9 @@ artifacts:
   # pushing all *.nupkg files in build directory recursively
   # - path: '**\*.nupkg'
   
-  - path: \*.nupkg
-    name: bullOakNugets
-
+  - path: BullOak.Repositories\bin\$(configuration)\BullOak.Repositories.nupkg
+    name: bullOakRepositoryNuget
+  
 
 #---------------------------------#
 #     deployment configuration    #
@@ -350,7 +350,7 @@ deploy:
       secure: XsqCRWh0LKyXLLapgvDT+uYDxT3S+RLPBN3iccQNauVYYn0/E/N4u1gxBF7TJofW
     skip_symbols: true
 #    symbol_server: https://your.symbol.server/feed
-    artifact: bullOakNugets
+    artifact: bullOakRepositoryNuget
 
 #    # Deploy to GitHub Releases
 #  - provider: GitHub

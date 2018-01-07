@@ -262,8 +262,8 @@ artifacts:
   # pushing all *.nupkg files in build directory recursively
   # - path: '**\*.nupkg'
   
-  - path: BullOak.Repositories\bin\$(configuration)\BullOak.Repositories.nupkg
-    name: bullOakRepositoryNuget
+  - path: '*.nupkg'
+    name: bullOakNugets
   
 
 #---------------------------------#

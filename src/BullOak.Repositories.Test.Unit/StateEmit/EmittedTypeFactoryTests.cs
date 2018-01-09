@@ -40,18 +40,18 @@
         }
 
         [Fact]
-        public void GetState_OfClassWithDefaultCtor_ShouldSucceed()
+        public void GetWrapper_OfInterface_ShouldSucceed()
         {
             //Arrange
-            var typeOfClass = typeof(MyInterfaceImplementation);
+            Func<Func<MyInterface, MyInterface>> factory = () => sut.GetWrapper<MyInterface>();
 
             //Act
-            var instance = sut.GetState(typeOfClass);
+            var exception = Record.Exception(factory);
 
             //
-            instance.Should().NotBeNull();
+            exception.Should().BeNull();
+            factory().Should().NotBeNull();
         }
-
         [Fact]
         public void GetState_OfClassWithDefaultCtor_ShouldReturnInstanceOfClassType()
         {
@@ -65,6 +65,18 @@
 
             //
             (instance.GetType() == typeOfClass).Should().BeTrue();
+        }
+
+        [Fact]
+        public void GetWrapper_OfClassWithDefaultCtor_ShouldThrowException()
+        {
+            //Arrange
+
+            //Act
+            var exception = Record.Exception(() => sut.GetWrapper<MyInterface>());
+
+            //
+            exception.Should().BeNull();
         }
 
         [Fact]
@@ -98,6 +110,21 @@
         }
 
         [Fact]
+        public void GetWrapper_OfInterface_SucceedsAndReturnsFactoryThatWrapsPassedVariable()
+        {
+            //Arrange
+            var instance = new MyInterfaceImplementation();
+
+            //Act
+            var wrapper = sut.GetWrapper<MyInterface>()
+                (instance);
+
+            //Assert
+            wrapper.Should().NotBeNull();
+            wrapper.Should().BeAssignableTo<MyInterface>();
+        }
+
+        [Fact]
         public void GetState_OfInterface_StateAlsoImplementsICanSwitchBackAndToReadOnly()
         {
             //Arrange
@@ -111,6 +138,21 @@
         }
 
         [Fact]
+        public void GetWrapper_OfInterface_WrapperAlsoImplementsICanSwitchBackAndToReadOnly()
+        {
+            //Arrange
+            var instance = new MyInterfaceImplementation();
+
+            //Act
+            var wrapper = sut.GetWrapper<MyInterface>()
+                (instance);
+
+            //Assert
+            wrapper.Should().NotBeNull();
+            wrapper.Should().BeAssignableTo<ICanSwitchBackAndToReadOnly>();
+        }
+
+        [Fact]
         public void GetState_OfInterface_StateIsImutatableByDefault()
         {
             //Arrange
@@ -119,6 +161,20 @@
 
             //Act
             var exception = Record.Exception(() => state.MyValue = 5);
+
+            //Assert
+            exception.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void GetWrapper_OfInterface_WrappedValuesAreImmutatableByDefault()
+        {
+            //Arrange
+            var instance = new MyInterfaceImplementation();
+            var wrapper = sut.GetWrapper<MyInterface>()(instance);
+
+            //Act
+            var exception = Record.Exception(() => wrapper.MyValue = 5);
 
             //Assert
             exception.Should().NotBeNull();
@@ -140,6 +196,21 @@
         }
 
         [Fact]
+        public void GetWrapper_OfInterface_WhenWrapperIsSetToReadonlyAnyAttemptsToEditStateShouldThrow()
+        {
+            //Arrange
+            var instance = new MyInterfaceImplementation();
+            var wrapper = sut.GetWrapper<MyInterface>()(instance);
+            (wrapper as ICanSwitchBackAndToReadOnly).CanEdit = false;
+
+            //Act
+            var exception = Record.Exception(() => wrapper.MyValue = 5);
+
+            //Assert
+            exception.Should().NotBeNull();
+        }
+
+        [Fact]
         public void GetState_OfInterface_WhenStateIsSetToMutableAnyAttemptToChangeStateShouldSucceed()
         {
             //Arrange
@@ -154,6 +225,23 @@
             //Assert
             exception.Should().BeNull();
             state.MyValue.Should().Be(value);
+        }
+
+        [Fact]
+        public void GetWrapper_OfInterface_WhenWrapperIsSetToMutableAnyAttemptsToEditStateShouldSucceed()
+        {
+            //Arrange
+            var instance = new MyInterfaceImplementation();
+            var wrapper = sut.GetWrapper<MyInterface>()(instance);
+            (wrapper as ICanSwitchBackAndToReadOnly).CanEdit = true;
+
+            //Act
+            var exception = Record.Exception(() => wrapper.MyValue = 5);
+
+            //Assert
+            exception.Should().BeNull();
+            wrapper.MyValue.Should().Be(5);
+            instance.MyValue.Should().Be(5);
         }
     }
 }

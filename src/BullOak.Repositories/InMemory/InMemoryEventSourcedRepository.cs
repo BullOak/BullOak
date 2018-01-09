@@ -7,7 +7,7 @@
     using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.Session;
 
-    public class InMemoryEventSourcedRepository<TId, TState> : ISynchronouslyManagePersistanceOf<TId, IManageAndSaveSynchronousSession<TState>, TState>
+    public class InMemoryEventSourcedRepository<TId, TState>
     {
         private Dictionary<TId, object[]> eventStore = new Dictionary<TId, object[]>();
         private readonly IHoldAllConfiguration configuration;
@@ -31,7 +31,7 @@
             useThreadSafeOps = configuration.ThreadSafetySelector(typeof(TState));
         }
 
-        public IManageAndSaveSynchronousSession<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
+        public IManageAndSaveSession<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
             object[] eventStream;
             bool lockTaken = false;

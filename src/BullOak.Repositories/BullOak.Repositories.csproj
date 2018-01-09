@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,7 +38,10 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Appliers\ApplierNotFoundException.cs" />
+    <Compile Include="Appliers\ApplierRetriever.cs" />
     <Compile Include="Appliers\BaseApplyEvents.cs" />
+    <Compile Include="Appliers\EventAndStateTypes.cs" />
     <Compile Include="Appliers\EventApplier.cs" />
     <Compile Include="Appliers\IApplyEventsToStates.cs" />
     <Compile Include="Configuration.cs" />
@@ -59,11 +63,9 @@
     <Compile Include="Config\IConfigureStateFactory.cs" />
     <Compile Include="Config\IConfigureThreadSafety.cs" />
     <Compile Include="Config\IHoldAllConfiguration.cs" />
-    <Compile Include="Exceptions\EntityDoesNotExistException.cs" />
     <Compile Include="Exceptions\StreamNotFoundException.cs" />
     <Compile Include="InMemory\InMemoryEventStoreSession.cs" />
     <Compile Include="IReadDefaultConfiguration.cs" />
-    <Compile Include="Session\BaseEventSourcedSession.cs" />
     <Compile Include="Session\BaseEventSourcedSyncSession.cs" />
     <Compile Include="Session\CustomLinkedList\ILinkedList.cs" />
     <Compile Include="Session\CustomLinkedList\ThreadSafeNodeCollection.cs" />
@@ -73,8 +75,8 @@
     <Compile Include="Appliers\FuncEventApplier.cs" />
     <Compile Include="Appliers\IApplyEvents.cs" />
     <Compile Include="InMemory\InMemoryEventSourcedRepository.cs" />
-    <Compile Include="IManagePersistenceOf.cs" />
-    <Compile Include="Session\IManageSessionAndHoldSyncConstructOf.cs" />
+    <Compile Include="Session\IManageAndSaveSession.cs" />
+    <Compile Include="Session\IManageAndSaveSessionWithSnapshot.cs" />
     <Compile Include="Session\IManageSessionOf.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Session\IAddEventsToSession.cs" />
@@ -82,13 +84,19 @@
     <Compile Include="Session\CustomLinkedList\NodeEnumerator.cs" />
     <Compile Include="Session\CustomLinkedList\LinkedList.cs" />
     <Compile Include="Appliers\IApplyEventsToCurrentState.cs" />
+    <Compile Include="StateEmit\BaseTypeFactory.cs" />
     <Compile Include="StateEmit\EmittedTypeFactory.cs" />
+    <Compile Include="StateEmit\Emitters\BaseClassEmitter.cs" />
+    <Compile Include="StateEmit\Emitters\EmitHelper.cs" />
+    <Compile Include="StateEmit\Emitters\OwnedStateClassEmitter.cs" />
+    <Compile Include="StateEmit\Emitters\StateWrapperEmitter.cs" />
     <Compile Include="StateEmit\ICanSwitchBackAndToReadOnly.cs" />
     <Compile Include="StateEmit\IControlStateWritability.cs" />
     <Compile Include="StateEmit\ICreateStateInstances.cs" />
     <Compile Include="StateEmit\IStateManager.cs" />
     <Compile Include="StateEmit\StateController.cs" />
-    <Compile Include="StateEmit\StateTypeEmitter.cs" />
+    <Compile Include="StateEmit\Emitters\StateTypeEmitter.cs" />
+    <Compile Include="StateEmit\TypeCannotBeWrappedException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BullOak.Repositories.nuspec">

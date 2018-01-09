@@ -37,7 +37,8 @@
             {
                 session.AddEvents(eventsContainer.LastEventsCreated);
 
-                recordedException = Record.Exception(() => session.SaveChanges());
+                //The implementation is sync-based. Async it stubbed.
+                recordedException = Record.Exception(() => session.SaveChangesSync());
             }
         }
 

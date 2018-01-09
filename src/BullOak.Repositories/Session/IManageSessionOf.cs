@@ -2,7 +2,6 @@ namespace BullOak.Repositories.Session
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Manages a session. A session represents the operations that relate
@@ -20,25 +19,5 @@ namespace BullOak.Repositories.Session
         void AddEvents(IEnumerable<object> events);
         void AddEvents(object[] events);
         void AddEvent(object events);
-    }
-
-    public interface IManageAndSaveSession<out TState> : IManageSessionOf<TState>
-    {
-        Task SaveChanges(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce);
-    }
-
-    public interface IManageAndSaveSessionWithExplicitSnapshot<out TState> : IManageAndSaveSession<TState>
-    {
-        Task SaveChangesWithSnapshot(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce);
-    }
-
-    public interface IManageAndSaveSynchronousSession<out TState> : IManageSessionOf<TState>
-    {
-        void SaveChanges(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce);
-    }
-
-    public interface IManageAndSaveSynchronousSessionWithExplicitSnapshot<out TState> : IManageAndSaveSynchronousSession <TState>
-    {
-        void SaveChangesWithSnapshot(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce);
     }
 }

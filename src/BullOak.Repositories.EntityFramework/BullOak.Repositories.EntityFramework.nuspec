@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>BullOak.Repositories.EntityFramework</id>
+    <version>$version$</version>
+    <title>BullOak.Repositories.EntityFramework</title>
+    <authors>Savvas Kleanthous</authors>
+    <owners>Savvas Kleanthous</owners>
+    <licenseUrl>https://github.com/BullOak/BullOak/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/BullOak/BullOak</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The BullOak.Repositories implementation for EntityFramework</description>
+	<summary>This is the EntityFramework implementation of a repository for BullOak.Repositories. See BullOak.Repositories nuget for more info.</summary>
+    <copyright>Copyright 2018</copyright>
+    <tags>CQRS EntityFramework event-driven repository repositories DDD domain-driven-design</tags>
+    <dependencies>
+      <dependency id="BullOak.Repositories" version="$version$" />
+      <dependency id="EntityFramework" version="6.2.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\BullOak.Repositories.EntityFramework.dll" target="lib\net45" />
+  </files>
+</package>

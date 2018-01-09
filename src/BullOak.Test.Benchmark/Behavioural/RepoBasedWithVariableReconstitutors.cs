@@ -6,6 +6,7 @@
     using BenchmarkDotNet.Attributes.Jobs;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.StateEmit;
+    using BullOak.Repositories.StateEmit.Emitters;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate;
 
     public class TestBlankApplier<TEvent> : BaseApplyEvents<CinemaAggregateState, TEvent>
@@ -38,7 +39,7 @@
             var appliers = new List<object>();
             for (int i = 0; i < Appliers; i++)
             {
-                var stubClass = StateTypeEmitter.EmitType(flagType, flagType.Name + i.ToString());
+                var stubClass = StateTypeEmitter.EmitType(flagType, new OwnedStateClassEmitter(), flagType.Name + i.ToString());
                 var constructedApplierType = openApplierType.MakeGenericType(stubClass);
                 appliers.Add(Activator.CreateInstance(constructedApplierType));
             }

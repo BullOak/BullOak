@@ -13,14 +13,11 @@
             => stateFactoryConfiguration.WithStateFactory(new ContainerFactory(container));
     }
 
-    internal class ActivatorStateFactory : ICreateStateInstances
+    internal class ActivatorStateFactory : BaseTypeFactory
     {
-        public object GetState(Type type)
-            => Activator.CreateInstance(type);
+        private EmittedTypeFactory typeFactory = new EmittedTypeFactory();
 
-        public void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)
-        {
-            throw new NotImplementedException();
-        }
+        public override object GetState(Type type)
+            => Activator.CreateInstance(type);
     }
 }

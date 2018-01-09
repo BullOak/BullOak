@@ -84,9 +84,9 @@
         private NEventStoreContainer nEventStoreContainer;
         private NEventStoreRepository<string, IHoldHigherOrder> repository;
 
-        public IManageAndSaveSynchronousSession<IHoldHigherOrder> LastSession
+        public IManageAndSaveSession<IHoldHigherOrder> LastSession
         {
-            get => (IManageAndSaveSynchronousSession<IHoldHigherOrder>) scenarioContext[id];
+            get => (IManageAndSaveSession<IHoldHigherOrder>) scenarioContext[id];
             private set => scenarioContext[id] = value;
         }
 
@@ -103,7 +103,7 @@
             repository = new NEventStoreRepository<string, IHoldHigherOrder>(nEventStoreContainer.EventStore, configuration);
         }
 
-        public IManageAndSaveSynchronousSession<IHoldHigherOrder> StartSession(string streamId)
+        public IManageAndSaveSession<IHoldHigherOrder> StartSession(string streamId)
         {
             LastSession = repository.BeginSessionFor(streamId);
 

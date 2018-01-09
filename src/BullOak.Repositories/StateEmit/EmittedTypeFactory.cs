@@ -4,20 +4,16 @@
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using BullOak.Repositories.StateEmit.Emitters;
 
-    //public class FactoryAlreadyExistsException : Exception
-    //{
-    //    public FactoryAlreadyExistsException(string message)
-    //        :base(message)
-    //    { }
-    //}
-
-    internal class EmittedTypeFactory : ICreateStateInstances
+    internal class EmittedTypeFactory : BaseTypeFactory
     {
+        private static BaseClassEmitter ownedState = new OwnedStateClassEmitter();
         private ConcurrentDictionary<Type, Func<object>> TypeFactories = new ConcurrentDictionary<Type, Func<object>>();
 
         public void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)
         {
+            base.WarmupWith(typesToCreateFactoriesFor);
             lock (TypeFactories)
             {
                 foreach(var type in typesToCreateFactoriesFor)
@@ -26,13 +22,11 @@
                     {
                         TypeFactories[type] = CreateTypeFactoryMethod(type);
                     }
-                    //else
-                    //    throw new FactoryAlreadyExistsException($"Factory for {type.Name} already exists and cannot be replaced.");
                 }
             }
         }
 
-        public object GetState(Type type)
+        public override object GetState(Type type)
         {
             if (TypeFactories.TryGetValue(type, out var factory)) return factory();
 
@@ -49,7 +43,7 @@
 
         private static Func<object> CreateTypeFactoryMethod(Type type)
         {
-            var typeToCreate = type.IsInterface ? StateTypeEmitter.EmitType(type) : type;
+            var typeToCreate = type.IsInterface ? StateTypeEmitter.EmitType(type, ownedState) : type;
 
             var ctor = typeToCreate.GetConstructor(Type.EmptyTypes);
 

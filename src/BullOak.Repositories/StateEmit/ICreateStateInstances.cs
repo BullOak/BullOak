@@ -7,5 +7,6 @@
     {
         void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor);
         object GetState(Type type);
+        Func<T, T> GetWrapper<T>();
     }
 }

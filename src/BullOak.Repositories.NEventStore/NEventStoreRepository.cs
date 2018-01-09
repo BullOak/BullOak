@@ -1,12 +1,10 @@
 ﻿namespace BullOak.Repositories.NEventStore
 {
     using System;
-    using System.Linq;
     using BullOak.Repositories.Session;
     using global::NEventStore;
 
-    public class NEventStoreRepository<TId, TState>: ISynchronouslyManagePersistanceOf<TId,
-        IManageAndSaveSynchronousSession<TState>, TState>
+    public class NEventStoreRepository<TId, TState>
     {
         private readonly IStoreEvents store;
         private readonly IHoldAllConfiguration configuration;
@@ -17,7 +15,7 @@
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public IManageAndSaveSynchronousSession<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
+        public IManageAndSaveSessionWithSnapshot<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
             var stream = store.OpenStream(id.ToString(), 0);
 

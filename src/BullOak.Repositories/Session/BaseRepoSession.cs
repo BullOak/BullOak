@@ -3,7 +3,10 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
+    using BullOak.Repositories.EventPublisher;
 
     public abstract class BaseRepoSession<TState> : IManageSessionOf<TState>
     {
@@ -16,11 +19,13 @@
         private TState currentState;
         public TState GetCurrentState() => currentState;
 
+        protected readonly IPublishEvents eventPublisher;
+
         private static readonly Type stateType = typeof(TState);
         private static object eventApplierLock = new object();
         protected static IApplyEventsToStates EventApplier;
 
-        internal BaseRepoSession(IHoldAllConfiguration configuration, IDisposable disposableHandle)
+        protected BaseRepoSession(IHoldAllConfiguration configuration, IDisposable disposableHandle)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
@@ -29,6 +34,8 @@
             NewEventsCollection = configuration.CollectionTypeSelector(stateType)();
 
             currentState = default(TState);
+
+            this.eventPublisher = configuration.EventPublisher;
 
             if (EventApplier == null)
             {
@@ -64,23 +71,40 @@
 
         public void AddEvent(object @event)
         {
-            if (@event is IEnumerable<object> events) AddEvents(events);
-            else if (@event is ICollection eventCollection)
+            if (@event is ICollection eventCollection)
             {
                 object[] eventArray = new object[eventCollection.Count];
                 eventCollection.CopyTo(eventArray, 0);
                 AddEvents(eventArray);
             }
+            else if (@event is IEnumerable<object> events)
+                AddEvents(events);
             else
             {
                 NewEventsCollection.Add(@event);
                 currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, @event);
             }
-        } 
+        }
 
         protected void Initialize(TState storedState)
+            => currentState = storedState;
+
+        protected async Task PublishEvents(IHoldAllConfiguration configuration, object[] events, CancellationToken? cancellationToken = null)
         {
-            currentState = storedState;
+            for (var i = 0; i < events.Length; i++)
+            {
+                //We await each one to guarantee ordering of publishing, even though it would have been more performant
+                // to publish and await all of them with a WhenAll
+                await eventPublisher.Publish(events[i], cancellationToken);
+            }
+        }
+
+        protected void PublishEventsSync(IHoldAllConfiguration configuration, object[] events)
+        {
+            for (var i = 0; i < events.Length; i++)
+            {
+                eventPublisher.PublishSync(events[i]);
+            }
         }
 
         protected virtual void Dispose(bool disposing)

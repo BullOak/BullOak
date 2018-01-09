@@ -1,21 +1,16 @@
-﻿using System;
-using BullOak.Repositories.StateEmit;
-
-namespace BullOak.Repositories.Config
+﻿namespace BullOak.Repositories.Config
 {
-    using System.Collections.Generic;
+    using System;
+    using BullOak.Repositories.StateEmit;
 
-    internal class ContainerFactory : ICreateStateInstances
+    internal class ContainerFactory : BaseTypeFactory
     {
         private Func<Type, Func<object>> container;
 
         public ContainerFactory(Func<Type, Func<object>> container)
             => this.container = container ?? throw new ArgumentNullException(nameof(container));
 
-        public object GetState(Type type)
+        public override object GetState(Type type)
             => container(type)();
-
-        public void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)
-        { }
     }
 }

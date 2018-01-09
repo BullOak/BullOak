@@ -37,7 +37,7 @@
             {
                 session.AddEvents(eventsContainer.LastEventsCreated);
 
-                recordedException = Record.Exception(() => session.SaveChanges());
+                recordedException = Record.ExceptionAsync(() => session.SaveChanges()).Result;
             }
         }
 

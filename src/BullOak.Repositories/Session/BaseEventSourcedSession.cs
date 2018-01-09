@@ -6,22 +6,18 @@
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
 
-    public abstract class BaseEventSourcedSession<TState, TConcurrencyId> : BaseRepoSession<TState>, IManageAndSaveSessionWithExplicitSnapshot<TState>
+    public abstract class BaseEventSourcedSession<TState, TConcurrencyId> : BaseRepoSession<TState>, IManageAndSaveSessionWithSnapshot<TState>
     {
         private static readonly Type typeOfState = typeof(TState);
 
         private TConcurrencyId concurrencyId;
         public TConcurrencyId ConcurrencyId => concurrencyId;
 
-        protected readonly IPublishEvents eventPublisher;
-
         public sealed override bool IsOptimisticConcurrencySupported => true;
 
         public BaseEventSourcedSession(IHoldAllConfiguration configuration, IDisposable disposableHandle = null)
             : base(configuration, disposableHandle)
-        {
-            eventPublisher = configuration.EventPublisher;
-        }
+        { }
 
         public void LoadFromEvents(object[] storedEvents, TConcurrencyId concurrencyId)
         {
@@ -55,17 +51,6 @@
             await SaveChanges(newEvents, shouldSnapshot, currentState);
             if (!sendEventsBeforeSaving) await PublishEvents(configuration, newEvents);
         }
-
-        protected async Task PublishEvents(IHoldAllConfiguration configuration, object[] events)
-        {
-            for (var i = 0; i < events.Length; i++)
-            {
-                //We await each one to guarantee ordering of publishing, even though it would have been more performant
-                // to publish and await all of them with a WhenAll
-                await eventPublisher.Publish(events[i]);
-            }
-        }
-
         protected abstract Task SaveChanges(object[] eventsToAdd, bool shouldSaveSnapshot, TState snapshot);
     }
 }

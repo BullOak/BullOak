@@ -53,9 +53,9 @@
         private ScenarioContext scenarioContext;
         private InMemoryEventSourcedRepository<string, IHoldHigherOrder> repository;
 
-        public IManageAndSaveSynchronousSession<IHoldHigherOrder> LastSession
+        public IManageAndSaveSession<IHoldHigherOrder> LastSession
         {
-            get => (IManageAndSaveSynchronousSession<IHoldHigherOrder>) scenarioContext[id];
+            get => (IManageAndSaveSession<IHoldHigherOrder>) scenarioContext[id];
             private set => scenarioContext[id] = value;
         }
 
@@ -71,7 +71,7 @@
             repository = new InMemoryEventSourcedRepository<string, IHoldHigherOrder>(configuration);
         }
 
-        public IManageAndSaveSynchronousSession<IHoldHigherOrder> StartSession(string streamId)
+        public IManageAndSaveSession<IHoldHigherOrder> StartSession(string streamId)
         {
             LastSession = repository.BeginSessionFor(streamId);
 

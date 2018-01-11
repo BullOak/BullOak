@@ -1,9 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net451;net47</TargetFrameworks>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>A base repostitory implementation to be used in message-drive, CQRS-based architectures</Description>
+    <Authors>Savvas Kleanthous</Authors>
+    <Company>BullOak</Company>
+    <PackageLicenseUrl>https://github.com/BullOak/BullOak/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/BullOak/BullOak</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
+    <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
+    <Version>1.0.46</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.0|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <OutputPath>bin\Any CPU\release</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net451|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <OutputPath>bin\Any CPU\release</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net47|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <OutputPath>bin\Any CPU\release</OutputPath>
+  </PropertyGroup>
 </Project>

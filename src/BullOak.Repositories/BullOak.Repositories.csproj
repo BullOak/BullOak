@@ -1,7 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net451;net47</TargetFrameworks>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>A base repostitory implementation to be used in message-drive, CQRS-based architectures</Description>
+    <Authors>Savvas Kleanthous</Authors>
+    <Company>BullOak</Company>
+    <PackageLicenseUrl>https://github.com/BullOak/BullOak/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/BullOak/BullOak</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
+    <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

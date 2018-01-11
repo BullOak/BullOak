@@ -12,14 +12,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.0|AnyCPU'">
     <LangVersion>latest</LangVersion>
-    <OutputPath>bin\Any CPU\release\netcoreapp2.0\</OutputPath>
+    <OutputPath>bin\Any CPU\release</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net451|AnyCPU'">
     <LangVersion>latest</LangVersion>
-    <OutputPath>bin\Any CPU\release\netcoreapp2.0\</OutputPath>
+    <OutputPath>bin\Any CPU\release</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net47|AnyCPU'">
     <LangVersion>latest</LangVersion>
-    <OutputPath>bin\Any CPU\release\netcoreapp2.0\</OutputPath>
+    <OutputPath>bin\Any CPU\release</OutputPath>
   </PropertyGroup>
 </Project>

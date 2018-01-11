@@ -17,6 +17,8 @@
     <tags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</tags>
   </metadata>
   <files>
-    <file src="bin\Release\BullOak.Repositories.dll" target="lib\net45" />
+    <file src="bin\Release\net451\BullOak.Repositories.dll" target="lib\net451" />
+    <file src="bin\Release\net47\BullOak.Repositories.dll" target="lib\net47" />
+    <file src="bin\Release\netcoreapp2.0\BullOak.Repositories.dll" target="lib\netcoreapp2.0" />
   </files>
 </package>

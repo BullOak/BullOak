@@ -44,7 +44,7 @@
         {
             var assemblyName = Assembly.GetExecutingAssembly().GetName();
             assemblyName.Name += ".Emitter.Group" + Interlocked.Increment(ref emittedIndex);
-            var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
+            var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
             return assemblyBuilder.DefineDynamicModule(assemblyName.Name);
         }
     }

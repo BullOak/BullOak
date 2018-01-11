@@ -71,7 +71,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EndToEndTests", "EndToEndTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Test.EndToEnd", "BullOak.Test.EndToEnd\BullOak.Test.EndToEnd.csproj", "{76145EE3-3F46-4D54-9B55-BFFB40229EDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories", "BullOak.Repositories\BullOak.Repositories.csproj", "{5934536F-FB5D-42AD-841B-3395B4C1D76D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BullOak.Repositories", "BullOak.Repositories\BullOak.Repositories.csproj", "{5934536F-FB5D-42AD-841B-3395B4C1D76D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.NEventStore", "BullOak.Repositories.NEventStore\BullOak.Repositories.NEventStore.csproj", "{68401C19-68BA-45B3-BC69-82EF38583A5D}"
 EndProject

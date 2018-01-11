@@ -11,7 +11,7 @@
         private static BaseClassEmitter ownedState = new OwnedStateClassEmitter();
         private ConcurrentDictionary<Type, Func<object>> TypeFactories = new ConcurrentDictionary<Type, Func<object>>();
 
-        public void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)
+        public override void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)
         {
             base.WarmupWith(typesToCreateFactoriesFor);
             lock (TypeFactories)

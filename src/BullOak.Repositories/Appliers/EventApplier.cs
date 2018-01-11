@@ -68,22 +68,16 @@
         private object ApplyAssumeWritable(Type stateType, object state, Type eventType, object @event)
         {
             var key = new EventAndStateTypes(stateType, eventType);
-            
-            return GetApplierRetrieverFor(key)
-                .GetApplier()
-                .Apply(state, @event);
-        }
 
-        private ApplierRetriever GetApplierRetrieverFor(EventAndStateTypes index)
-        {
-            if (!indexedStateAppliers.TryGetValue(index, out var indexedApplier))
+            if (!indexedStateAppliers.TryGetValue(key, out var indexedApplier))
             {
-                indexedApplier = GetApplierFromUnindexed(index);
+                indexedApplier = GetApplierFromUnindexed(key);
 
-                indexedStateAppliers.Add(index, indexedApplier);
+                indexedStateAppliers.Add(key, indexedApplier);
             }
 
-            return indexedApplier;
+            return indexedApplier.GetApplier()
+                .Apply(state, @event);
         }
 
         private ApplierRetriever GetApplierFromUnindexed(EventAndStateTypes index)

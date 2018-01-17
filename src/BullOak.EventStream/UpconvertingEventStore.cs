@@ -17,9 +17,7 @@
 
         public UpconvertingEventStore(IEventStore originalStore, IEnumerable<IEventConverter> eventConverters)
         {
-            if (originalStore == null) throw new ArgumentNullException(nameof(originalStore));
-
-            this.eventStore = originalStore;
+            this.eventStore = originalStore ?? throw new ArgumentNullException(nameof(originalStore));
             this.recursiveEventUpconverter = new RecursiveEventUpconverter(eventConverters);
         }
 

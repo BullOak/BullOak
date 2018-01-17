@@ -2,6 +2,7 @@
 {
     using System;
     using System.Reflection;
+    using BullOak.Repositories.Config;
     using TechTalk.SpecFlow;
 
     public class ConfigurationContainer
@@ -28,6 +29,8 @@
                 .NeverUseThreadSafe()
                 .WithNoEventPublisher()
                 .WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
+                .AndNoMoreAppliers()
+                .WithNoUpconverters()
                 .Build();
     }
 }

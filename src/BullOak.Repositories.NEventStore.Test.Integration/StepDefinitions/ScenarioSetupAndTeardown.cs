@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.NEventStore.Test.Integration.StepDefinitions
 {
     using System.Reflection;
+    using BullOak.Repositories.Config;
     using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
     using TechTalk.SpecFlow;
 
@@ -31,6 +32,8 @@
                 .NeverUseThreadSafe()
                 .WithNoEventPublisher()
                 .WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
+                .AndNoMoreAppliers()
+                .WithNoUpconverters()
                 .Build();
 
             sessionContainer.Setup(configuration);

@@ -9,6 +9,7 @@
     using BullOak.Repositories.InMemory;
     using BullOak.Repositories.Session;
     using BullOak.Repositories.StateEmit;
+    using BullOak.Repositories.Upconverting;
     using FakeItEasy;
     using FluentAssertions;
     using Xunit;
@@ -52,10 +53,13 @@
         public Func<Type, bool> ThreadSafetySelector { get; private set; }
         public ICreateStateInstances StateFactory => MockStateFactory.FakedObject;
 
+        public IUpconvertStoredItems EventUpconverter { get; private set; }
+
         public ConfigurationStub()
         {
             mockStateFactory = new Fake<ICreateStateInstances>();
             mockEventApplier = new Fake<IApplyEventsToStates>();
+            EventUpconverter = new NullUpconverter();
 
             typesForWhichEventCollectionHasBeenAskedFor = new List<Type>();
             eventsThatHaveBeenPublished = new List<object>();

@@ -3,10 +3,13 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
+    using BullOak.Repositories.Upconverting;
 
     public abstract class BaseRepoSession<TState> : IManageSessionOf<TState>
     {
@@ -56,7 +59,8 @@
             foreach (var @event in events)
                 NewEventsCollection.Add(@event);
 
-            currentState = (TState) EventApplier.Apply(stateType, currentState, events);
+            currentState =
+                (TState) EventApplier.Apply(stateType, currentState, events.Select(x => new ItemWithType(x)));
         }
 
         public void AddEvents(object[] events)
@@ -66,7 +70,8 @@
             for (int i = 0; i < events.Length; i++)
                 NewEventsCollection.Add(events[i]);
 
-            currentState = (TState)EventApplier.Apply(stateType, currentState, events);
+            currentState =
+                (TState) EventApplier.Apply(stateType, currentState, events.Select(x => new ItemWithType(x)));
         }
 
         public void AddEvent(object @event)
@@ -82,7 +87,7 @@
             else
             {
                 NewEventsCollection.Add(@event);
-                currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, @event);
+                currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, new ItemWithType(@event));
             }
         }
 

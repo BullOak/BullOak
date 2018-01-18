@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace BullOak.Repositories.NEventStore.Test.Integration.Specifications
+namespace BullOak.Repositories.Test.Acceptance.Specifications
 {
     using TechTalk.SpecFlow;
     
@@ -76,17 +76,68 @@ namespace BullOak.Repositories.NEventStore.Test.Integration.Specifications
         [Xunit.FactAttribute(DisplayName="Load stored entity with single event")]
         [Xunit.TraitAttribute("FeatureTitle", "ReconstituteState")]
         [Xunit.TraitAttribute("Description", "Load stored entity with single event")]
+        [Xunit.TraitAttribute("Category", "WithNoUpconverters")]
         public virtual void LoadStoredEntityWithSingleEvent()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Load stored entity with single event", ((string[])(null)));
-#line 6
-this.ScenarioSetup(scenarioInfo);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Load stored entity with single event", new string[] {
+                        "WithNoUpconverters"});
 #line 7
- testRunner.Given("an existing stream with 2 events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 8
- testRunner.When("I load my entity", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("an existing stream with 2 events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 9
+ testRunner.When("I load my entity", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 10
  testRunner.Then("HighOrder property should be 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.FactAttribute(DisplayName="An event gets upconverted and loaded without upconverter of original event")]
+        [Xunit.TraitAttribute("FeatureTitle", "ReconstituteState")]
+        [Xunit.TraitAttribute("Description", "An event gets upconverted and loaded without upconverter of original event")]
+        [Xunit.TraitAttribute("Category", "WithBuyerNameUpconverter")]
+        public virtual void AnEventGetsUpconvertedAndLoadedWithoutUpconverterOfOriginalEvent()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("An event gets upconverted and loaded without upconverter of original event", new string[] {
+                        "WithBuyerNameUpconverter"});
+#line 14
+this.ScenarioSetup(scenarioInfo);
+#line hidden
+            TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Title",
+                        "Name",
+                        "Surname"});
+            table1.AddRow(new string[] {
+                        "Mr.",
+                        "Funny",
+                        "Surname"});
+#line 15
+ testRunner.Given("a buyer name set event which can be upconverted as below in the stream", ((string)(null)), table1, "Given ");
+#line 18
+ testRunner.When("I load my entity", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 19
+ testRunner.Then("FullName property of the entity should be \"Mr. Funny Surname\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.FactAttribute(DisplayName="An event gets split upconverted and loaded without upconverter of original event")]
+        [Xunit.TraitAttribute("FeatureTitle", "ReconstituteState")]
+        [Xunit.TraitAttribute("Description", "An event gets split upconverted and loaded without upconverter of original event")]
+        [Xunit.TraitAttribute("Category", "WithBalanceUpdateUpconverter")]
+        public virtual void AnEventGetsSplitUpconvertedAndLoadedWithoutUpconverterOfOriginalEvent()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("An event gets split upconverted and loaded without upconverter of original event", new string[] {
+                        "WithBalanceUpdateUpconverter"});
+#line 23
+this.ScenarioSetup(scenarioInfo);
+#line 24
+ testRunner.Given("a balance set event with balance 50.00 and date 2017-12-30", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 25
+ testRunner.When("I load my entity", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 26
+ testRunner.Then("the loaded entity should have a balance of 50.00 and last update date 2017-12-30", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

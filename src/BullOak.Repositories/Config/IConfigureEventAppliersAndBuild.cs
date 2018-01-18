@@ -12,11 +12,11 @@ namespace BullOak.Repositories
 
         //IManuallyConfigureEventAppliers WithEventApplier(Type typeOfState, object stateApplier);
         // IManuallyConfigureEventAppliers WithApplierFactory(Type typeOfState, Func<object> factory);
-        IBuildConfiguration AndNoMoreAppliers();
+        IConfigureUpconverter AndNoMoreAppliers();
     }
-    public interface IConfigureEventAppliers : IBuildConfiguration
+    public interface IConfigureEventAppliers
     {
-        IBuildConfiguration WithEventApplier(IApplyEventsToStates eventApplier);
+        IConfigureUpconverter WithEventApplier(IApplyEventsToStates eventApplier);
     }
 
     public interface IBuildConfiguration

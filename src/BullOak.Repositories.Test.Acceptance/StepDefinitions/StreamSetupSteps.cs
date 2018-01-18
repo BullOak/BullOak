@@ -1,9 +1,10 @@
-﻿namespace BullOak.Repositories.NEventStore.Test.Integration.StepDefinitions
+﻿namespace BullOak.Repositories.Test.Acceptance.StepDefinitions
 {
     using System;
     using System.Collections.Generic;
-    using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
+    using BullOak.Repositories.Test.Acceptance.Contexts;
     using TechTalk.SpecFlow;
+    using TechTalk.SpecFlow.Assist;
 
     [Binding]
     internal class StreamSetupSteps
@@ -37,6 +38,26 @@
             combined.AddRange(events);
 
             sessionContainer.SaveStream(streamInfo.Id, combined.ToArray());
+        }
+
+        [Given(@"a buyer name set event which can be upconverted as below in the stream")]
+        public void GivenABuyerNameSetEventWhichCanBeUpconvertedAsBelowInTheStream(Table table)
+        {
+            var @event = table.CreateInstance<BuyerNameSetEvent>();
+
+            sessionContainer.SaveStream(streamInfo.Id, new object[] {@event});
+        }
+
+        [Given(@"a balance set event with balance (.*) and date (.*)")]
+        public void GivenABalanceSetEventWithBalanceAndDate(Decimal balance, DateTime timestamp)
+        {
+            var @event = new BalanceUpdatedSetEvent()
+            {
+                Balance = balance,
+                UpdatedDate = timestamp,
+            };
+
+            sessionContainer.SaveStream(streamInfo.Id, new object[] {@event});
         }
     }
 }

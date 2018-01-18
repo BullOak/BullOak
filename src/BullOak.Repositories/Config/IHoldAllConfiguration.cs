@@ -5,6 +5,7 @@ namespace BullOak.Repositories
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
     using BullOak.Repositories.StateEmit;
+    using BullOak.Repositories.Upconverting;
 
     public interface IHoldAllConfiguration
     {
@@ -13,5 +14,6 @@ namespace BullOak.Repositories
         IApplyEventsToStates EventApplier { get; }
         Func<Type, bool> ThreadSafetySelector { get; }
         ICreateStateInstances StateFactory { get; }
+        IUpconvertStoredItems EventUpconverter { get; }
     }
 }

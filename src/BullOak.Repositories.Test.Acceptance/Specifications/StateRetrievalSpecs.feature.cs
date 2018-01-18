@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace BullOak.Repositories.NEventStore.Test.Integration.Specifications
+namespace BullOak.Repositories.Test.Acceptance.Specifications
 {
     using TechTalk.SpecFlow;
     

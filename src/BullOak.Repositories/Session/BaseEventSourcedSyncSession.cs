@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
+    using BullOak.Repositories.Upconverting;
 
     public abstract class BaseEventSourcedSession<TState, TConcurrencyId> : BaseRepoSession<TState>, IManageAndSaveSessionWithSnapshot<TState>
     {
@@ -24,9 +25,17 @@
 
         public void LoadFromEvents(object[] storedEvents, TConcurrencyId concurrencyId)
         {
+            var eventsWithTypes = storedEvents
+                .Select(x => new ItemWithType(x))
+                .ToArray();
+
+            var upconvertedEvents = configuration
+                .EventUpconverter
+                .Upconvert(eventsWithTypes);
+
             var initialState = configuration.StateFactory.GetState(typeOfState);
 
-            initialState = eventApplier.Apply(typeOfState, initialState, storedEvents);
+            initialState = eventApplier.Apply(typeOfState, initialState, upconvertedEvents);
 
             Initialize((TState) initialState);
             this.concurrencyId = concurrencyId;

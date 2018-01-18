@@ -6,6 +6,7 @@
     using BullOak.Infrastructure.TestHelpers.Application.Stubs;
     using BullOak.Messages;
     using BullOak.Repositories;
+    using BullOak.Repositories.Config;
     using BullOak.Repositories.InMemory;
     using BullOak.Test.EndToEnd.Stub.AggregateBased;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate;
@@ -35,6 +36,8 @@
                 .WithNoEventPublisher()
                 .WithAnyAppliersFromInstances((IEnumerable<object>) appliers ?? new List<object>())
                 .WithAnyAppliersFrom(Assembly.GetAssembly(typeof(CinemaAggregateRepository)))
+                .AndNoMoreAppliers()
+                .WithNoUpconverters()
                 .Build();
 
             this.name = name;

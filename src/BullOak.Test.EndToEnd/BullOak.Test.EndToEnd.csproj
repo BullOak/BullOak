@@ -1,49 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{76145EE3-3F46-4D54-9B55-BFFB40229EDE}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>BullOak.Test.EndToEnd</RootNamespace>
-    <AssemblyName>BullOak.Test.EndToEnd</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>net462</TargetFramework>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="FluentAssertions, Version=4.19.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.19.2\lib\net45\FluentAssertions.dll</HintPath>
-    </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.19.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.19.2\lib\net45\FluentAssertions.Core.dll</HintPath>
-    </Reference>
+  <ItemGroup Condition="'$(TargetFramework)'=='net462'">
+    <PackageReference Include="SpecFlow" Version="2.2.0" />
+    <PackageReference Include="SpecFlow.xUnit" Version="2.2.0" />
+    <PackageReference Include="xunit.abstractions" Version="2.0.0" />
+    <PackageReference Include="xunit.assert" Version="2.0.0" />
+    <PackageReference Include="xunit.core" Version="2.0.0" />
+    <PackageReference Include="xunit.extensibility.core" Version="2.0.0" />
+    <PackageReference Include="EntityFramework" Version="6.2.0" />
+    <PackageReference Include="FluentAssertions" Version="4.19.4" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,122 +25,14 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="TechTalk.SpecFlow, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0778194805d6db41, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SpecFlow.2.1.0\lib\net45\TechTalk.SpecFlow.dll</HintPath>
-    </Reference>
-    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.abstractions.2.0.1\lib\net35\xunit.abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="xunit.assert, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.assert.2.2.0\lib\netstandard1.1\xunit.assert.dll</HintPath>
-    </Reference>
-    <Reference Include="xunit.core, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.extensibility.core.2.2.0\lib\netstandard1.1\xunit.core.dll</HintPath>
-    </Reference>
-    <Reference Include="xunit.execution.desktop, Version=2.2.0.3545, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.extensibility.execution.2.2.0\lib\net452\xunit.execution.desktop.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\BullOak.EventStream\BullOak.EventStream.csproj" />
+    <ProjectReference Include="..\BullOak.Repositories\BullOak.Repositories.csproj" />
+    <ProjectReference Include="..\BullOak.Application\BullOak.Application.csproj" />
+    <ProjectReference Include="..\BullOak.Common\BullOak.Common.csproj" />
+    <ProjectReference Include="..\BullOak.Infrastructure.TestHelpers.Application\BullOak.Infrastructure.TestHelpers.Application.csproj" />
+    <ProjectReference Include="..\BullOak.Messages\BullOak.Messages.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="StepDefinitions\AggregateBasedChildEntityESSteps.cs" />
-    <Compile Include="StepDefinitions\Context.cs" />
-    <Compile Include="StepDefinitions\RepositoryBasedChildEntityESSteps.cs" />
-    <Compile Include="Stub\AggregateBased\CinemaAggregateRepository.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Specifications\RepositoryBasedES.feature.cs">
-      <DependentUpon>RepositoryBasedES.feature</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Specifications\AggregateBasedES.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AggregateBasedES.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Specifications\DenormalizerSimpleSpecs.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DenormalizerSimpleSpecs.feature</DependentUpon>
-    </Compile>
-    <Compile Include="StepDefinitions\AggregateBasedESStepDefinitions.cs" />
-    <Compile Include="StepDefinitions\RepositoryBasedESStepDefinition.cs" />
-    <Compile Include="Stub\AggregateBased\CinemaAggregate\CinemaAggregateRoot.cs" />
-    <Compile Include="Stub\AggregateBased\ViewingAggregateRepository.cs" />
-    <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaAggregateRoot.cs" />
-    <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaAggregateState.cs" />
-    <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaCreatedReconstitutor.cs" />
-    <Compile Include="Stub\Shared\Messages\SeatInViewingInitialized.cs" />
-    <Compile Include="Stub\RepositoryBased\ViewingAggregate\ViewingReconstitutor.cs" />
-    <Compile Include="Stub\RepositoryBased\ViewingAggregate\IViewingState.cs" />
-    <Compile Include="Stub\Shared\Ids\SeatId.cs" />
-    <Compile Include="Stub\RepositoryBased\ViewingAggregate\SeatInViewingEntity.cs" />
-    <Compile Include="Stub\RepositoryBased\ViewingAggregate\ViewingAggregateRoot.cs" />
-    <Compile Include="Stub\Shared\Ids\ViewingId.cs" />
-    <Compile Include="Stub\Shared\Ids\CinemaAggregateRootId.cs" />
-    <Compile Include="Stub\AggregateBased\Repository.cs" />
-    <Compile Include="Stub\Shared\Messages\SeatReservedEvent.cs" />
-    <Compile Include="Stub\Shared\Messages\ViewingCreatedEvent.cs" />
-    <Compile Include="Stub\Shared\SeatInViewingQuery\SeatInViewingDenormalizer.cs" />
-    <Compile Include="Stub\Shared\SeatInViewingQuery\SeatInViewingVM.cs" />
-    <Compile Include="Stub\AggregateBased\ViewingAggregate\SeatsInViewing.cs" />
-    <Compile Include="Stub\AggregateBased\ViewingAggregate\ViewingAggregateRoot.cs" />
-    <Compile Include="Stub\Shared\ViewingQuery\VewingVM.cs" />
-    <Compile Include="Stub\Shared\ViewingQuery\ViewingDenormalizer.cs" />
-    <Compile Include="Stub\Shared\Messages\CinemaCreated.cs" />
+    <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-    <None Include="Specifications\RepositoryBasedES.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>RepositoryBasedES.feature.cs</LastGenOutput>
-    </None>
-    <None Include="Specifications\AggregateBasedES.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>AggregateBasedES.feature.cs</LastGenOutput>
-    </None>
-    <None Include="Specifications\DenormalizerSimpleSpecs.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>DenormalizerSimpleSpecs.feature.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BullOak.Application\BullOak.Application.csproj">
-      <Project>{fdbec3d7-4d0e-4d15-bf63-f3a846c34288}</Project>
-      <Name>BullOak.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Common\BullOak.Common.csproj">
-      <Project>{432e21ec-ef22-490c-b2bb-c2606fff156b}</Project>
-      <Name>BullOak.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.EventStream\BullOak.EventStream.csproj">
-      <Project>{90e2d13e-b1ca-47ad-87dd-d3707d150b0b}</Project>
-      <Name>BullOak.EventStream</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Infrastructure.TestHelpers.Application\BullOak.Infrastructure.TestHelpers.Application.csproj">
-      <Project>{A25FC776-91B0-4481-B1D4-4878FD15B100}</Project>
-      <Name>BullOak.Infrastructure.TestHelpers.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Messages\BullOak.Messages.csproj">
-      <Project>{3a8876f8-ca9a-404d-ab35-4e5ea0081859}</Project>
-      <Name>BullOak.Messages</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Repositories\BullOak.Repositories.csproj">
-      <Project>{5934536f-fb5d-42ad-841b-3395b4c1d76d}</Project>
-      <Name>BullOak.Repositories</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Contexts\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props'))" />
-  </Target>
 </Project>

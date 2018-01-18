@@ -5,11 +5,11 @@
 
     public class CinemaCreated : BullOak.Messages.ParcelVisionEvent
     {
-        public CinemaAggregateRootId Id { get; }
+        public CinemaAggregateRootId CinemaId { get; }
         public int Capacity { get; }
-        public CinemaCreated(Guid correlationId, CinemaAggregateRootId id, int capacity) : base(correlationId)
+        public CinemaCreated(Guid correlationId, CinemaAggregateRootId cinemaId, int capacity) : base(correlationId)
         {
-            Id = id;
+            CinemaId = cinemaId;
             Capacity = capacity;
         }
     }

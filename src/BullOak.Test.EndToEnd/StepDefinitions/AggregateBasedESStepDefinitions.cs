@@ -84,6 +84,6 @@
 
         [Then(@"the cinema creation event should have a cinema name of ""(.*)""")]
         public void ThenTheCinemaCreationEventShouldHaveACinemaNameOf(string name)
-            => (cinemaRepo[CinemaName][0].Event as CinemaCreated).Id.Name.Should().Be(name);
+            => (cinemaRepo[CinemaName][0].Event as CinemaCreated).CinemaId.Name.Should().Be(name);
     }
 }

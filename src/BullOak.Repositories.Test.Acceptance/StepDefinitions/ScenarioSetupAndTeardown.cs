@@ -1,8 +1,9 @@
-﻿namespace BullOak.Repositories.NEventStore.Test.Integration.StepDefinitions
+﻿namespace BullOak.Repositories.Test.Acceptance.StepDefinitions
 {
+    using System;
     using System.Reflection;
     using BullOak.Repositories.Config;
-    using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
+    using BullOak.Repositories.Test.Acceptance.Contexts;
     using TechTalk.SpecFlow;
 
     [Binding]
@@ -18,22 +19,37 @@
             this.sessionContainer = sessionContainer;
         }
 
-        [BeforeScenario]
-        public void Setup()
+        private bool isAlreadySetup = false;
+        private void Set(Func<IConfigureUpconverter, IBuildConfiguration> upconverterSetup)
         {
+            if (isAlreadySetup) return;
             streamInfoContainer.ResetToNew();
-            
-            var configuration = Configuration.Begin()
+
+            var upconverterConfig = Configuration.Begin()
                 .WithDefaultCollection()
                 .WithDefaultStateFactory()
                 .NeverUseThreadSafe()
                 .WithNoEventPublisher()
                 .WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
-                .AndNoMoreAppliers()
-                .WithNoUpconverters()
+                .AndNoMoreAppliers();
+
+            var configuration = upconverterSetup(upconverterConfig)
                 .Build();
 
             sessionContainer.Setup(configuration);
+            isAlreadySetup = true;
         }
+
+        [BeforeScenario(Order=10)]
+        public void Setup() 
+            => Set(c => c.WithNoUpconverters());
+
+        [BeforeScenario("WithBuyerNameUpconverter", Order = 1)]
+        public void SetupWithBuyerNameUpconverter()
+            => Set(c => c.WithUpconvertersFrom(typeof(BuyerNameUpconverter)).AndNoMoreUpconverters());
+
+        [BeforeScenario("WithBalanceUpdateUpconverter", Order = 1)]
+        public void SetupWithBalanceUpconverter()
+            => Set(c => c.WithUpconvertersFrom(typeof(BalanceUpconverter)).AndNoMoreUpconverters());
     }
 }

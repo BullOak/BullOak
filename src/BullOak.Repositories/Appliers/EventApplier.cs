@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using BullOak.Repositories.StateEmit;
+    using BullOak.Repositories.Upconverting;
 
     internal class EventApplier : IApplyEventsToStates
     {
@@ -20,14 +21,14 @@
             SupportedStateTypes = unindexedAppliers.Select(x => x.StateType);
         }
 
-        public object Apply(Type stateType, object state, IEnumerable<object> events)
+        public object Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
         {
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
 
             foreach(var @event in events)
             {
-                state = ApplyAssumeWritable(stateType, state, @event.GetType(), @event);
+                state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
             }
 
             if (switchable != null) switchable.CanEdit = false;
@@ -35,17 +36,17 @@
             return state;
         }
 
-        public object Apply(Type stateType, object state, object[] events)
+        public object Apply(Type stateType, object state, ItemWithType[] events)
         {
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
 
             int length = events.Length;
-            object @event;
+            ItemWithType @event;
             for (int i = 0; i < length; i++)
             {
                 @event = events[i];
-                state = ApplyAssumeWritable(stateType, state, @event.GetType(), @event);
+                state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
             }
 
             if (switchable != null) switchable.CanEdit = false;
@@ -53,12 +54,12 @@
             return state;
         }
 
-        public object ApplyEvent(Type stateType, object state, object @event)
+        public object ApplyEvent(Type stateType, object state, ItemWithType @event)
         {
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
 
-            state = ApplyAssumeWritable(stateType, state, @event.GetType(), @event);
+            state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
 
             if (switchable != null) switchable.CanEdit = false;
 

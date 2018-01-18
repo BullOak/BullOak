@@ -82,13 +82,13 @@
 
         private void WithJustReturnEventApplier()
         {
-            mockEventApplier.CallsTo(a => a.ApplyEvent(typeof(object), new object(), new object()))
+            mockEventApplier.CallsTo(a => a.ApplyEvent(typeof(object), new object(), new ItemWithType()))
                 .WithAnyArguments()
                 .ReturnsLazily(c => c.Arguments.ToArray()[1]);
-            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new object[0]))
+            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new ItemWithType[0]))
                 .WithAnyArguments()
                 .ReturnsLazily(c => c.Arguments.ToArray()[1]);
-            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new List<object>()))
+            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new List<ItemWithType>()))
                 .WithAnyArguments()
                 .ReturnsLazily(c => c.Arguments.ToArray()[1]);
         }

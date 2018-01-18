@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
     using BullOak.Repositories.Upconverting;
 
@@ -17,6 +16,10 @@
 
         public static IConfigureUpconverters WithUpconvertersFrom(this IConfigureUpconverter config,
             IEnumerable<Type> types)
+            => (new UpconverterConfig(config)).WithUpconvertersFrom(types);
+
+        public static IConfigureUpconverters WithUpconvertersFrom(this IConfigureUpconverter config,
+            params Type[] types)
             => (new UpconverterConfig(config)).WithUpconvertersFrom(types);
 
         public static IConfigureUpconverters WithUpconverter<TUpconverter>(this IConfigureUpconverter config)

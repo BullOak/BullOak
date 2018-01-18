@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BullOak.Repositories.NEventStore</id>
-    <version>$version$</version>
+    <version>1.0.48</version>
     <title>BullOak.Repositories.NEventStore</title>
     <authors>Savvas Kleanthous</authors>
     <owners>Savvas Kleanthous</owners>

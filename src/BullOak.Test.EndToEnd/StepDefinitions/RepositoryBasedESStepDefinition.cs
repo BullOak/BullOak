@@ -70,7 +70,7 @@
 
                 session.AddEvent(@event);
 
-                await session.SaveChanges();
+                session.SaveChanges();
             }
         }
 

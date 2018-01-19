@@ -6,13 +6,13 @@
 
     public class ViewingCreatedEvent : ParcelVisionEvent
     {
-        public ViewingId ViewingId { get; }
+        public ViewingId Id { get; }
         public int Seats { get; }
 
-        public ViewingCreatedEvent(ViewingId viewingAggregateViewingId, int numberOfSeats)
+        public ViewingCreatedEvent(ViewingId viewingAggregateId, int numberOfSeats)
             :base(Guid.NewGuid())
         {
-            ViewingId = viewingAggregateViewingId;
+            Id = viewingAggregateId;
             Seats = numberOfSeats;
         }
     }

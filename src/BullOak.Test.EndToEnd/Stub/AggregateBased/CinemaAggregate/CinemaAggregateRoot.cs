@@ -22,7 +22,7 @@
 
         void IPublish<CinemaCreated>.Apply(CinemaCreated @event)
         {
-            Id = @event.Id;
+            Id = @event.CinemaId;
             NumberOfSeats = @event.Capacity;
         }
     }

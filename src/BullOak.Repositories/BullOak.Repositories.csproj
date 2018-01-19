@@ -1,7 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net451;net47</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;net451;net462;net47</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyName>BullOak.Repositories</AssemblyName>
+	<PackageId>BullOak.Repositories</PackageId>
     <Description>A base repostitory implementation to be used in message-drive, CQRS-based architectures</Description>
     <Authors>Savvas Kleanthous</Authors>
     <Company>BullOak</Company>
@@ -13,16 +15,10 @@
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <LangVersion>latest</LangVersion>
     <OutputPath>bin\Any CPU\release</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net451|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-    <OutputPath>bin\Any CPU\release</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net47|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-    <OutputPath>bin\Any CPU\release</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 </Project>

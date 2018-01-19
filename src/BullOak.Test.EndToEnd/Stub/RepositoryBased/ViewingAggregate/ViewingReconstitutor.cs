@@ -31,7 +31,7 @@
         public IViewingState Apply(IViewingState state, ViewingCreatedEvent envelope)
         {
             //Use Automapper here??
-            state.ViewingId = envelope.Id;
+            state.ViewingId = envelope.ViewingId;
             state.Seats = new Seats[envelope.Seats];
             for (int i = 0; i < state.Seats.Length; i++)
                 state.Seats[i] = new Seats {Id = i, IsReserved = false};

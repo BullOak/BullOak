@@ -34,8 +34,8 @@
 
         public void Apply(ViewingCreatedEvent @event)
         {
-            Id = @event.Id;
-            TimeOfShowing = @event.Id.ShowingDate;
+            Id = @event.ViewingId;
+            TimeOfShowing = @event.ViewingId.ShowingDate;
         }
 
         public SeatsInViewing GetOrAdd(SeatId id, Func<SeatId, SeatsInViewing> factory)

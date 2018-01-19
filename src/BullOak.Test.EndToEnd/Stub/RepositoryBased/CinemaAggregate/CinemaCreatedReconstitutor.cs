@@ -7,7 +7,7 @@
     {
         public override CinemaAggregateState Apply(CinemaAggregateState state, CinemaCreated @event)
         {
-            state.Id = @event.Id;
+            state.Id = @event.CinemaId;
             state.NumberOfSeats = @event.Capacity;
 
             return state;

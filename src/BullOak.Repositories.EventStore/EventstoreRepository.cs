@@ -1,30 +1,32 @@
-﻿using BullOak.Repositories.Session;
-using EventStore.ClientAPI;
-using System;
-using System.Linq;
-
-namespace BullOak.Repositories.EventStore
+﻿namespace BullOak.Repositories.EventStore
 {
-    public class EventstoreRepository<TId, TState>
+    using BullOak.Repositories.Session;
+    using global::EventStore.ClientAPI;
+    using System;
+    using System.Threading.Tasks;
+
+    public class EventStoreRepository<TId, TState>
     {
+        private readonly IHoldAllConfiguration configs;
         private readonly IEventStoreConnection connection;
 
-        public EventstoreRepository(IEventStoreConnection connection)
+
+        public EventStoreRepository(IHoldAllConfiguration configs, IEventStoreConnection connection)
         {
+            this.configs = configs ?? throw new ArgumentNullException(nameof(connection));
             this.connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            GetConnection().Wait(); //TODO: connection lazy init
         }
 
-        public IManageAndSaveSessionWithSnapshot<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
+        private async Task GetConnection()
         {
-            connection.ConnectAsync().Wait();
+            await connection.ConnectAsync().ConfigureAwait(false);
+        }
 
-            var stream = store.OpenStream(id.ToString(), 0);
-
-            if (throwIfNotExists && stream.CommittedEvents.Count <= 0)
-                throw new StreamNotFoundException();
-
-            var session = new NEventStoreSession<TState>(configuration, stream);
-            session.Initialize();
+        public async Task<IManageAndSaveSessionWithSnapshot<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
+        {
+            var session = new EventStoreSession<TState>(configs, connection, id.ToString());
+            await session.Initialize();
             return session;
         }
 

@@ -1,9 +1,9 @@
 ﻿namespace BullOak.Test.Benchmark
 {
-    using System;
-    using System.Collections.Generic;
     using BenchmarkDotNet.Running;
     using BullOak.Test.Benchmark.Behavioural;
+    using System;
+    using System.Collections.Generic;
 
     class Program
     {
@@ -21,7 +21,7 @@
             RunBenchmark();
         }
 
-        private static void RunForVSProfiling<TBenchmark>(Action<TBenchmark> methodToCall, 
+        private static void RunForVSProfiling<TBenchmark>(Action<TBenchmark> methodToCall,
             Action<TBenchmark> setupParameters)
         {
             var instance = Activator.CreateInstance<TBenchmark>();
@@ -71,10 +71,10 @@
 
             //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(CodeTests)));
 
-            benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(SaveAggregateBenchmark)));
-            benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(LoadAggregateWithChildEntitiesBenchmark)));
-            benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(EditChildEntitiesBenchmark)));
-            benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(RepoBasedWithVariableReconstitutors)));
+            //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(SaveAggregateBenchmark)));
+            //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(LoadAggregateWithChildEntitiesBenchmark)));
+            //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(EditChildEntitiesBenchmark)));
+            //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(RepoBasedWithVariableReconstitutors)));
 
             //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(LoadAggregateOneEventNoChildsBenchmark)));
             //benchmarks.AddRange(BenchmarkConverter.TypeToBenchmarks(typeof(SaveChildEntityBenchmark)));

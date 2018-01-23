@@ -2,9 +2,9 @@
 namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
 {
     using BoDi;
+    using BullOak.Repositories.EventStore.Test.Integration.Components;
     using BullOak.Repositories.EventStore.Test.Integration.Contexts;
     using System;
-    using System.Reflection;
     using TechTalk.SpecFlow;
 
     [Binding]
@@ -26,16 +26,24 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
                .WithDefaultStateFactory()
                .NeverUseThreadSafe()
                .WithNoEventPublisher()
-               .WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
+               //.WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
+               .WithEventApplier(new StateApplier())
                .Build();
 
             var storeContainer = new InProcEventStoreIntegrationContext();
             storeContainer.Setup(configuration);
 
-            objectContainer.RegisterInstanceAs<InProcEventStoreIntegrationContext>(storeContainer);
+            objectContainer.RegisterInstanceAs(storeContainer);
 
         }
 
+
+        [AfterScenario]
+        public void Teardown()
+        {
+            var context = objectContainer.Resolve<InProcEventStoreIntegrationContext>();
+            context.Teardown();
+        }
 
     }
 }

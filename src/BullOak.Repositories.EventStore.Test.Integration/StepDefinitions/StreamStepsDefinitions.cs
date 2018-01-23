@@ -30,8 +30,18 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
             testDataContext.ResetStream();
         }
 
-        [Given(@"(.*) new event")]
-        public void GivenNewEvent(int eventsNumber)
+        [Given(@"an existing stream with (.*) events")]
+        public void GivenAnExistingStreamWithEvents(int count)
+        {
+            testDataContext.ResetStream();
+            eventStoreContainer.WriteEventsToStreamRaw(
+                testDataContext.CurrentStreamInUse,
+                eventGenerator.GenerateEvents(count));
+        }
+
+
+        [Given(@"(.*) new events")]
+        public void GivenNewEvents(int eventsNumber)
         {
             var events = eventGenerator.GenerateEvents(eventsNumber);
             testDataContext.LastGeneratedEvents = events;

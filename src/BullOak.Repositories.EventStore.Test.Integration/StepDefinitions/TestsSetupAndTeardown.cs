@@ -5,6 +5,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
     using BullOak.Repositories.EventStore.Test.Integration.Components;
     using BullOak.Repositories.EventStore.Test.Integration.Contexts;
     using System;
+    using BullOak.Repositories.Config;
     using TechTalk.SpecFlow;
 
     [Binding]
@@ -28,6 +29,8 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
                .WithNoEventPublisher()
                //.WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
                .WithEventApplier(new StateApplier())
+               .AndNoMoreAppliers()
+               .WithNoUpconverters()
                .Build();
 
             var storeContainer = new InProcEventStoreIntegrationContext();

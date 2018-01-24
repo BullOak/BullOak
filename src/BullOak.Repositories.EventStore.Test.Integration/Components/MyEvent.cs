@@ -4,13 +4,13 @@
 
     public class MyEvent
     {
-        public Guid Id { get; private set; }
-        public int Value { get; private set; }
+        public Guid Id { get; set; }
+        public int Value { get; set; }
 
-        public MyEvent(int order)
+        public MyEvent(int value)
         {
             Id = Guid.NewGuid();
-            Value = order;
+            Value = value;
         }
     }
 

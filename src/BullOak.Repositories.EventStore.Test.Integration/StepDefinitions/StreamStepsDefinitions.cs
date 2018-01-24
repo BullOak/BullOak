@@ -36,7 +36,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         {
             testDataContext.ResetStream();
             eventStoreContainer.WriteEventsToStreamRaw(
-                testDataContext.CurrentStreamInUse,
+                testDataContext.CurrentStreamId,
                 eventGenerator.GenerateEvents(count));
         }
 
@@ -52,7 +52,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         public void WhenITryToSaveTheNewEventsInTheStream()
         {
             testDataContext.RecordedException = Record.Exception(() =>
-                eventStoreContainer.AppendEventsToStream(testDataContext.CurrentStreamInUse, testDataContext.LastGeneratedEvents).Wait());
+                eventStoreContainer.AppendEventsToCurrentStream(testDataContext.CurrentStreamId, testDataContext.LastGeneratedEvents).Wait());
         }
 
         [Then(@"the save process should succeed")]
@@ -64,8 +64,23 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         [Then(@"there should be (.*) events in the stream")]
         public void ThenThereShouldBeEventsInTheStream(int count)
         {
-            var recordedEvents = eventStoreContainer.ReadEventsFromStreamRaw(testDataContext.CurrentStreamInUse);
+            var recordedEvents = eventStoreContainer.ReadEventsFromStreamRaw(testDataContext.CurrentStreamId);
             recordedEvents.Length.Should().Be(count);
+        }
+
+        [When(@"I load my entity")]
+        public void WhenILoadMyEntity()
+        {
+            using (var session = eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result)
+            {
+                testDataContext.LatestLoadedState = session.GetCurrentState();
+            }
+        }
+
+        [Then(@"HighOrder property should be (.*)")]
+        public void ThenHighOrderPropertyShouldBe(int highestOrderValue)
+        {
+            testDataContext.LatestLoadedState.HigherOrder.Should().Be(highestOrderValue);
         }
 
     }

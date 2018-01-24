@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.EventStore.Test.Integration.Contexts
 {
     using BullOak.Repositories.EventStore.Test.Integration.Components;
+    using BullOak.Repositories.Session;
     using global::EventStore.ClientAPI;
     using global::EventStore.ClientAPI.Embedded;
     using global::EventStore.Core;
@@ -34,9 +35,16 @@
             node.Stop();
         }
 
-        public async Task AppendEventsToStream(Guid id, MyEvent[] events)
+        public async Task<IManageAndSaveSessionWithSnapshot<IHoldHigherOrder>> StartSession(Guid currentStreamId)
         {
-            using (var session = await repository.BeginSessionFor(id.ToString()))
+            var session = await repository.BeginSessionFor(currentStreamId.ToString());
+            return session;
+
+        }
+
+        public async Task AppendEventsToCurrentStream(Guid id, MyEvent[] events)
+        {
+            using (var session = await StartSession(id))
             {
                 session.AddEvents(events);
                 await session.SaveChanges().ConfigureAwait(false);
@@ -77,5 +85,7 @@
             node.StartAndWaitUntilReady().Wait();
             return node;
         }
+
+
     }
 }

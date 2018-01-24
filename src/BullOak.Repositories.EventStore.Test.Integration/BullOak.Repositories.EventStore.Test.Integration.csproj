@@ -81,6 +81,11 @@
     <Compile Include="Contexts\InProcEventStoreIntegrationContext.cs" />
     <Compile Include="Contexts\TestDataContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Specification\ReconstituteState.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReconstituteState.feature</DependentUpon>
+    </Compile>
     <Compile Include="Specification\SaveEventStream.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -92,6 +97,10 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Specification\ReconstituteState.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ReconstituteState.feature.cs</LastGenOutput>
+    </None>
     <None Include="Specification\SaveEventStream.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>SaveEventStream.feature.cs</LastGenOutput>

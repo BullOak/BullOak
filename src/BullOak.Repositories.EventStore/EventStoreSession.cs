@@ -90,18 +90,21 @@ namespace BullOak.Repositories.EventStore
 
         private EventData CreateEventData(object eventObject)
         {
-            return new EventData(
+            var eventData = new EventData(
                 Guid.NewGuid(),
                 eventObject.GetType().AssemblyQualifiedName,
                 true,
                 System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(eventObject)),
                 null);
+            return eventData;
         }
 
         private object GetEventFromEventData(ResolvedEvent resolvedEvent)
         {
-            var result = JsonConvert.DeserializeObject(System.Text.Encoding.UTF8.GetString(resolvedEvent.Event.Data),
+            var result = JsonConvert.DeserializeObject(
+                System.Text.Encoding.UTF8.GetString(resolvedEvent.Event.Data),
                 Type.GetType(resolvedEvent.Event.EventType));
+
             return result;
         }
 

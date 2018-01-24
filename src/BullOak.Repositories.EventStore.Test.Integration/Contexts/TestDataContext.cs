@@ -5,14 +5,15 @@ namespace BullOak.Repositories.EventStore.Test.Integration.Contexts
 {
     internal class TestDataContext
     {
-        internal Guid CurrentStreamInUse { get; set; } = Guid.NewGuid();
+        internal Guid CurrentStreamId { get; set; } = Guid.NewGuid();
         public Exception RecordedException { get; internal set; }
+        public IHoldHigherOrder LatestLoadedState { get; internal set; }
 
         internal MyEvent[] LastGeneratedEvents;
 
         internal void ResetStream()
         {
-            CurrentStreamInUse = Guid.NewGuid();
+            CurrentStreamId = Guid.NewGuid();
         }
 
 

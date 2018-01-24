@@ -1,6 +1,8 @@
 ﻿namespace BullOak.Repositories.NEventStore.Test.Integration.StepDefinitions
 {
+    using System.Linq;
     using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
+    using FluentAssertions;
     using TechTalk.SpecFlow;
 
     [Binding]
@@ -18,5 +20,10 @@
         [Given(@"(.*) new events?")]
         public void GivenNewEvent(int count)
             => eventsContainer.LastEventsCreated = generator.GenerateEvents(count);
+
+        [Given(@"(.*) new events? starting with Order of (.*)")]
+        public void GivenNewEvent(int count, int order)
+            => eventsContainer.LastEventsCreated = generator.GenerateEvents(count).Select(x =>
+                new MyEvent(x.Order + order)).ToArray();
     }
 }

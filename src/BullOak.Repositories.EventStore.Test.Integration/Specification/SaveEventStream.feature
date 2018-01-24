@@ -8,15 +8,19 @@ Scenario: Save one event in a new stream
 	And 1 new events
 	When I try to save the new events in the stream
 	Then the save process should succeed
+	 And there should be 1 events in the stream
+
 
 Scenario: Save multiple events in a new stream
 	Given a new stream
-	And 3 new events
+	And 30 new events
 	When I try to save the new events in the stream
 	Then the save process should succeed
+	And there should be 30 events in the stream
 
-Scenario: Save one event in an existing stream
-	Given an existing stream with 1 events
-	And 1 new events
+Scenario: Save additional events in an existing stream
+	Given an existing stream with 10 events
+	And 10 new events
 	When I try to save the new events in the stream
 	Then the save process should succeed
+	And there should be 20 events in the stream

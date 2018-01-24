@@ -15,7 +15,6 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         private readonly EventGenerator eventGenerator;
         private readonly TestDataContext testDataContext;
 
-        private int eventCount = 0;
 
         public SaveEventsStreamSteps(InProcEventStoreIntegrationContext eventStoreContainer,
             EventGenerator eventGenerator,
@@ -39,7 +38,6 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
             eventStoreContainer.WriteEventsToStreamRaw(
                 testDataContext.CurrentStreamInUse,
                 eventGenerator.GenerateEvents(count));
-            eventCount += count;
         }
 
 
@@ -55,15 +53,20 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         {
             testDataContext.RecordedException = Record.Exception(() =>
                 eventStoreContainer.AppendEventsToStream(testDataContext.CurrentStreamInUse, testDataContext.LastGeneratedEvents).Wait());
-            eventCount += testDataContext.LastGeneratedEvents.Length;
         }
 
         [Then(@"the save process should succeed")]
         public void ThenTheSaveProcessShouldSucceed()
         {
             testDataContext.RecordedException.Should().BeNull();
-            var recordedEvents = eventStoreContainer.ReadEventsFromStreamRaw(testDataContext.CurrentStreamInUse);
-            recordedEvents.Length.Should().Be(eventCount);
         }
+
+        [Then(@"there should be (.*) events in the stream")]
+        public void ThenThereShouldBeEventsInTheStream(int count)
+        {
+            var recordedEvents = eventStoreContainer.ReadEventsFromStreamRaw(testDataContext.CurrentStreamInUse);
+            recordedEvents.Length.Should().Be(count);
+        }
+
     }
 }

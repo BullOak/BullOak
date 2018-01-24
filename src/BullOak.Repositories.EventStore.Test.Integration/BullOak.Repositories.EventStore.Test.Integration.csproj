@@ -91,6 +91,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SaveEventStream.feature</DependentUpon>
     </Compile>
+    <Compile Include="Specification\StateRetreivalSpecs.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StateRetreivalSpecs.feature</DependentUpon>
+    </Compile>
     <Compile Include="StepDefinitions\StreamStepsDefinitions.cs" />
     <Compile Include="StepDefinitions\TestsSetupAndTeardown.cs" />
   </ItemGroup>
@@ -104,6 +109,10 @@
     <None Include="Specification\SaveEventStream.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>SaveEventStream.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Specification\StateRetreivalSpecs.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>StateRetreivalSpecs.feature.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

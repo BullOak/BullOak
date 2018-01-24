@@ -83,5 +83,16 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
             testDataContext.LatestLoadedState.HigherOrder.Should().Be(highestOrderValue);
         }
 
+        [When(@"I add (.*) events in the session without saving it")]
+        public void WhenIAddEventsInTheSessionWithoutSavingIt(int eventCount)
+        {
+            using (var session = eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result)
+            {
+                session.AddEvents(eventGenerator.GenerateEvents(eventCount));
+
+                testDataContext.LatestLoadedState = session.GetCurrentState();
+            }
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace BullOak.Repositories.EventStore.Test.Integration.Contexts
 {
+    using BullOak.Repositories.Config;
     using BullOak.Repositories.EventStore.Test.Integration.Components;
     using BullOak.Repositories.Session;
     using global::EventStore.ClientAPI;
@@ -9,6 +10,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
 
     internal class InProcEventStoreIntegrationContext
@@ -16,6 +18,22 @@
         private static ClusterVNode node;
         private EventStoreRepository<string, IHoldHigherOrder> repository;
         private IEventStoreConnection connection;
+
+        public InProcEventStoreIntegrationContext()
+        {
+            var configuration = Configuration.Begin()
+               .WithDefaultCollection()
+               .WithDefaultStateFactory()
+               .NeverUseThreadSafe()
+               .WithNoEventPublisher()
+               .WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
+               //.WithEventApplier(new StateApplier())
+               .AndNoMoreAppliers()
+               .WithNoUpconverters()
+               .Build();
+
+            SetupRepository(configuration);
+        }
 
         private IEventStoreConnection CreateConnection()
         {
@@ -41,7 +59,7 @@
 
         public async Task<IManageAndSaveSessionWithSnapshot<IHoldHigherOrder>> StartSession(Guid currentStreamId)
         {
-            var session = await repository.BeginSessionFor(currentStreamId.ToString());
+            var session = await repository.BeginSessionFor(currentStreamId.ToString()).ConfigureAwait(false);
             return session;
 
         }

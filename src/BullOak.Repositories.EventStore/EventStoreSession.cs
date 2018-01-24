@@ -6,6 +6,7 @@ namespace BullOak.Repositories.EventStore
     using global::EventStore.ClientAPI;
     using Newtonsoft.Json;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace BullOak.Repositories.EventStore
         private readonly IEventStoreConnection eventStoreConnection;
         private readonly string streamName;
         private int currentVersion;
+        private int SliceSize { get; set; } = 1024; //4095 is max allowed value
 
         public EventStoreSession(IHoldAllConfiguration configuration,
                                  IEventStoreConnection eventStoreConnection,
@@ -28,17 +30,32 @@ namespace BullOak.Repositories.EventStore
         public async Task Initialize()
         {
             //TODO: user credentials
-            //TODO: paged read instead of 4096
-            var events = await eventStoreConnection.ReadStreamEventsForwardAsync(streamName, 0, 4096, false).ConfigureAwait(false);
-            currentVersion = (int)events.LastEventNumber;
-
-            LoadFromEvents(events.Events.Select(resolvedEvent =>
+            var events = await ReadAllEventsFromStream();
+            LoadFromEvents(events.Select(resolvedEvent =>
                             {
                                 return GetEventFromEventData(resolvedEvent);
                             }).ToArray(),
                             currentVersion);
+
         }
 
+        private async Task<List<ResolvedEvent>> ReadAllEventsFromStream()
+        {
+            checked
+            {
+                var result = new List<ResolvedEvent>();
+                StreamEventsSlice currentSlice;
+                long nextSliceStart = StreamPosition.Start;
+                do
+                {
+                    currentSlice = await eventStoreConnection.ReadStreamEventsForwardAsync(streamName, nextSliceStart, SliceSize, false);
+                    nextSliceStart = currentSlice.NextEventNumber;
+                    result.AddRange(currentSlice.Events);
+                } while (!currentSlice.IsEndOfStream);
+                currentVersion = (int)currentSlice.LastEventNumber;
+                return result;
+            }
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -81,6 +98,8 @@ namespace BullOak.Repositories.EventStore
                     default:
                         throw new InvalidOperationException($"Unexpected write result: {writeResult.Status}");
                 }
+
+                //currentVersion = (int)writeResult.NextExpectedVersion.Value; //TODO: write unit tests to cover this
 
                 return writeResult.NextExpectedVersion.HasValue ?
                     (int)writeResult.NextExpectedVersion.Value :

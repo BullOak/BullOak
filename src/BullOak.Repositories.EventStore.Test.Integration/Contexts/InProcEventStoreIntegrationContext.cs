@@ -13,7 +13,7 @@
 
     internal class InProcEventStoreIntegrationContext
     {
-        private ClusterVNode node;
+        private static ClusterVNode node;
         private EventStoreRepository<string, IHoldHigherOrder> repository;
         private IEventStoreConnection connection;
 
@@ -24,13 +24,17 @@
             return connection;
         }
 
-        public void Setup(IHoldAllConfiguration configuration)
+        public void SetupRepository(IHoldAllConfiguration configuration)
         {
-            node = CreateInMemoryEventStoreNode();
             repository = new EventStoreRepository<string, IHoldHigherOrder>(configuration, CreateConnection());
         }
 
-        public void Teardown()
+        public static void SetupNode()
+        {
+            node = CreateInMemoryEventStoreNode();
+        }
+
+        public static void TeardownNode()
         {
             node.Stop();
         }
@@ -84,8 +88,7 @@
                 .Wait();
         }
 
-
-        private ClusterVNode CreateInMemoryEventStoreNode()
+        private static ClusterVNode CreateInMemoryEventStoreNode()
         {
             var nodeBuilder = EmbeddedVNodeBuilder.AsSingleNode()
                                       .OnDefaultEndpoints()

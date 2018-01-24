@@ -2,10 +2,10 @@
 namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
 {
     using BoDi;
-    using BullOak.Repositories.EventStore.Test.Integration.Components;
+    using BullOak.Repositories.Config;
     using BullOak.Repositories.EventStore.Test.Integration.Contexts;
     using System;
-    using BullOak.Repositories.Config;
+    using System.Reflection;
     using TechTalk.SpecFlow;
 
     [Binding]
@@ -18,6 +18,11 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
             this.objectContainer = objectContainer ?? throw new ArgumentNullException(nameof(objectContainer));
         }
 
+        [BeforeTestRun]
+        public static void SetupEventStoreNode()
+        {
+            InProcEventStoreIntegrationContext.SetupNode();
+        }
 
         [BeforeScenario]
         public void SetupEventStore()
@@ -27,26 +32,23 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
                .WithDefaultStateFactory()
                .NeverUseThreadSafe()
                .WithNoEventPublisher()
-               //.WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
-               .WithEventApplier(new StateApplier())
+               .WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
+               //.WithEventApplier(new StateApplier())
                .AndNoMoreAppliers()
                .WithNoUpconverters()
                .Build();
 
             var storeContainer = new InProcEventStoreIntegrationContext();
-            storeContainer.Setup(configuration);
+            storeContainer.SetupRepository(configuration);
 
             objectContainer.RegisterInstanceAs(storeContainer);
 
         }
 
-
-        [AfterScenario]
-        public void Teardown()
+        [AfterTestRun]
+        public static void TeardownNode()
         {
-            var context = objectContainer.Resolve<InProcEventStoreIntegrationContext>();
-            context.Teardown();
+            InProcEventStoreIntegrationContext.TeardownNode();
         }
-
     }
 }

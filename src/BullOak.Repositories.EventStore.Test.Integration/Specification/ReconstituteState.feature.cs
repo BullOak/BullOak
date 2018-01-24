@@ -73,24 +73,27 @@ namespace BullOak.Repositories.EventStore.Test.Integration.Specification
             this.ScenarioTearDown();
         }
         
-        [Xunit.FactAttribute(DisplayName="Load stored entity with from existing events")]
+        [Xunit.TheoryAttribute(DisplayName="Load stored entity with from existing events")]
         [Xunit.TraitAttribute("FeatureTitle", "ReconstituteState")]
         [Xunit.TraitAttribute("Description", "Load stored entity with from existing events")]
-        public virtual void LoadStoredEntityWithFromExistingEvents()
+        [Xunit.InlineDataAttribute("1", "0", new string[0])]
+        [Xunit.InlineDataAttribute("5", "4", new string[0])]
+        [Xunit.InlineDataAttribute("10000", "9999", new string[0])]
+        public virtual void LoadStoredEntityWithFromExistingEvents(string eventsCount, string expectedState, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Load stored entity with from existing events", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Load stored entity with from existing events", exampleTags);
 #line 6
 this.ScenarioSetup(scenarioInfo);
 #line 7
  testRunner.Given("a new stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 8
- testRunner.And("20 new events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("{0} new events", eventsCount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
  testRunner.When("I try to save the new events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 10
  testRunner.And("I load my entity", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 11
- testRunner.Then("HighOrder property should be 19", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("HighOrder property should be {0}", expectedState), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

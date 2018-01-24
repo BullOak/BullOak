@@ -72,46 +72,27 @@ namespace BullOak.Repositories.EventStore.Test.Integration.Specification
             this.ScenarioTearDown();
         }
         
-        [Xunit.FactAttribute(DisplayName="Save one event in a new stream")]
+        [Xunit.TheoryAttribute(DisplayName="Save events in a new stream")]
         [Xunit.TraitAttribute("FeatureTitle", "SaveEventsStream")]
-        [Xunit.TraitAttribute("Description", "Save one event in a new stream")]
-        public virtual void SaveOneEventInANewStream()
+        [Xunit.TraitAttribute("Description", "Save events in a new stream")]
+        [Xunit.InlineDataAttribute("1", new string[0])]
+        [Xunit.InlineDataAttribute("30", new string[0])]
+        [Xunit.InlineDataAttribute("10000", new string[0])]
+        public virtual void SaveEventsInANewStream(string eventsCount, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Save one event in a new stream", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Save events in a new stream", exampleTags);
 #line 6
 this.ScenarioSetup(scenarioInfo);
 #line 7
  testRunner.Given("a new stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 8
- testRunner.And("1 new events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("{0} new events", eventsCount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 9
  testRunner.When("I try to save the new events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 10
  testRunner.Then("the save process should succeed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 11
-  testRunner.And("there should be 1 events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.FactAttribute(DisplayName="Save multiple events in a new stream")]
-        [Xunit.TraitAttribute("FeatureTitle", "SaveEventsStream")]
-        [Xunit.TraitAttribute("Description", "Save multiple events in a new stream")]
-        public virtual void SaveMultipleEventsInANewStream()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Save multiple events in a new stream", ((string[])(null)));
-#line 14
-this.ScenarioSetup(scenarioInfo);
-#line 15
- testRunner.Given("a new stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 16
- testRunner.And("30 new events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 17
- testRunner.When("I try to save the new events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 18
- testRunner.Then("the save process should succeed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 19
- testRunner.And("there should be 30 events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+  testRunner.And(string.Format("there should be {0} events in the stream", eventsCount), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -122,17 +103,17 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void SaveAdditionalEventsInAnExistingStream()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Save additional events in an existing stream", ((string[])(null)));
-#line 21
+#line 18
 this.ScenarioSetup(scenarioInfo);
-#line 22
+#line 19
  testRunner.Given("an existing stream with 10 events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 23
+#line 20
  testRunner.And("10 new events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 24
+#line 21
  testRunner.When("I try to save the new events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 25
+#line 22
  testRunner.Then("the save process should succeed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 26
+#line 23
  testRunner.And("there should be 20 events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();

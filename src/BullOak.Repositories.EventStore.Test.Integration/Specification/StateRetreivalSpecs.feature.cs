@@ -79,6 +79,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.Specification
         [Xunit.InlineDataAttribute("0", "3", "2", new string[0])]
         [Xunit.InlineDataAttribute("2", "3", "2", new string[0])]
         [Xunit.InlineDataAttribute("7", "3", "6", new string[0])]
+        [Xunit.InlineDataAttribute("0", "10000", "9999", new string[0])]
         public virtual void WhenIAddNewEventsInTheStreamIWantTheStateToBeUpdatedImmediately(string eventCount, string addedEvents, string highOrder, string[] exampleTags)
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("When I add new events in the stream I want the state to be updated immediately", exampleTags);

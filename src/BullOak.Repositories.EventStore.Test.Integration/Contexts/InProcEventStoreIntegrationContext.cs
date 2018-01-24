@@ -54,8 +54,17 @@
         public ResolvedEvent[] ReadEventsFromStreamRaw(Guid id)
         {
             var connection = CreateConnection();
-            var events = connection.ReadStreamEventsForwardAsync(id.ToString(), 0, 4096, false).Result;
-            return events.Events;
+            var result = new List<ResolvedEvent>();
+            StreamEventsSlice currentSlice;
+            long nextSliceStart = StreamPosition.Start;
+            do
+            {
+                currentSlice = connection.ReadStreamEventsForwardAsync(id.ToString(), nextSliceStart, 100, false).Result;
+                nextSliceStart = currentSlice.NextEventNumber;
+                result.AddRange(currentSlice.Events);
+            } while (!currentSlice.IsEndOfStream);
+
+            return result.ToArray();
         }
 
         internal void WriteEventsToStreamRaw(Guid currentStreamInUse, IEnumerable<MyEvent> myEvents)

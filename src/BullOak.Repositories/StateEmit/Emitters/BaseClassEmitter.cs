@@ -16,7 +16,7 @@
             set => Interlocked.CompareExchange(ref interfaceType, value, null);
         }
 
-        public Type EmitType(ModuleBuilder modelBuilder, Type typeToMake, string nameToUseForType = null)
+        public virtual Type EmitType(ModuleBuilder modelBuilder, Type typeToMake, string nameToUseForType = null)
         {
             //var typeToMake = typeof(TState);
             if (!typeToMake.IsInterface)
@@ -27,8 +27,8 @@
 
             InterfaceType = typeToMake;
 
-            var typeBuilder = modelBuilder.DefineType("StateGen_" + nameToUseForType ?? typeToMake.Name,
-                TypeAttributes.NotPublic | TypeAttributes.Class);
+            var typeBuilder = modelBuilder.DefineType("StateGen_" + (string.IsNullOrWhiteSpace(nameToUseForType) ? typeToMake.Name : nameToUseForType),
+                TypeAttributes.Public | TypeAttributes.Class);
             typeBuilder.AddInterfaceImplementation(typeof(ICanSwitchBackAndToReadOnly));
             typeBuilder.AddInterfaceImplementation(typeToMake);
 
@@ -48,7 +48,7 @@
         private FieldBuilder AddCanEditFieldAndProp(TypeBuilder typeBuilder)
         {
             var canEditField =
-                typeBuilder.DefineField("canEdit", typeof(bool), FieldAttributes.Private | FieldAttributes.HasDefault);
+                typeBuilder.DefineField("canEdit", typeof(bool), FieldAttributes.Public | FieldAttributes.HasDefault);
 
             typeBuilder.DefineProperty("CanEdit", PropertyAttributes.None, typeof(void),
                 new[] {typeof(bool)});
@@ -80,14 +80,14 @@
                                                          | MethodAttributes.Virtual
                                                          | MethodAttributes.NewSlot
                                                          | MethodAttributes.SpecialName,
-                CallingConventions.HasThis, prop.PropertyType, null);
+                CallingConventions.Standard, prop.PropertyType, null);
             var setMethodBuilder = typeBuilder.DefineMethod($"set_{prop.Name}", MethodAttributes.Public
                                                                                 | MethodAttributes.Final
                                                                                 | MethodAttributes.HideBySig
                                                                                 | MethodAttributes.Virtual
                                                                                 | MethodAttributes.NewSlot
                                                                                 | MethodAttributes.SpecialName,
-                CallingConventions.HasThis, typeof(void), new[] { prop.PropertyType });
+                CallingConventions.Standard, typeof(void), new[] { prop.PropertyType });
 
             PropertySetup(typeBuilder, prop);
 
@@ -102,6 +102,9 @@
             setMethodGenerator.MarkLabel(cannotEditLabel);
             setMethodGenerator.Emit(OpCodes.Ldstr, "You can only edit this item during reconstitution");
             setMethodGenerator.ThrowException(typeof(Exception));
+
+            propertyBuilder.SetSetMethod(setMethodBuilder);
+            propertyBuilder.SetGetMethod(getMethodBuilder);
         }
 
         public abstract void EmitCtor(TypeBuilder typeBuilder);

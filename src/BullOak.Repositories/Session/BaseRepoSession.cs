@@ -4,7 +4,6 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Cryptography.X509Certificates;
     using System.Threading;
     using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
@@ -25,8 +24,7 @@
         protected readonly IPublishEvents eventPublisher;
 
         private static readonly Type stateType = typeof(TState);
-        private static object eventApplierLock = new object();
-        protected static IApplyEventsToStates EventApplier;
+        protected readonly IApplyEventsToStates EventApplier;
 
         protected BaseRepoSession(IHoldAllConfiguration configuration, IDisposable disposableHandle)
         {
@@ -40,16 +38,7 @@
 
             this.eventPublisher = configuration.EventPublisher;
 
-            if (EventApplier == null)
-            {
-                lock (eventApplierLock)
-                {
-                    if (EventApplier == null)
-                    {
-                        EventApplier = this.configuration.EventApplier;
-                    }
-                }
-            }
+            EventApplier = this.configuration.EventApplier;
         }
 
         public void AddEvents(IEnumerable<object> events)

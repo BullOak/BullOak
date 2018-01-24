@@ -6,19 +6,10 @@
     using System.Linq.Expressions;
     using BullOak.Repositories.StateEmit.Emitters;
 
-    //public class FactoryAlreadyExistsException : Exception
-    //{
-    //    public FactoryAlreadyExistsException(string message)
-    //        :base(message)
-    //    { }
-    //}
-
     internal abstract class BaseTypeFactory : ICreateStateInstances
     {
         private ConcurrentDictionary<Type, WrapperCreationResult> WrapperFactories 
             = new ConcurrentDictionary<Type, WrapperCreationResult>();
-
-        private static BaseClassEmitter stateWrapper = new StateWrapperEmitter();
 
         public virtual void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)
         {
@@ -73,7 +64,7 @@
                     };
             }
 
-            var wrapperType = StateTypeEmitter.EmitType(type, stateWrapper);
+            var wrapperType = StateTypeEmitter.EmitType(type, new StateWrapperEmitter());
 
             var ctor = wrapperType.GetConstructor(new[] { type });
 

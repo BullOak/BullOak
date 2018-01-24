@@ -1,5 +1,6 @@
 ﻿namespace BullOak.Repositories.StateEmit.Emitters
 {
+    using System;
     using System.Reflection;
     using System.Reflection.Emit;
 
@@ -9,9 +10,16 @@
         private ConstructorBuilder constructorBuilder;
         private PropertyInfo property;
 
+        public override Type EmitType(ModuleBuilder modelBuilder, Type typeToMake, string nameToUseForType = null)
+            => base.EmitType(modelBuilder, typeToMake, "WrapperEmitter_" + (string.IsNullOrWhiteSpace(
+                                                           nameToUseForType)
+                                                           ? typeToMake.Name
+                                                           : nameToUseForType));
+
         public sealed override void ClassSetup(TypeBuilder typeBuilder)
         {
-            fieldToStoreValue = typeBuilder.DefineField($"_wrapped", InterfaceType, FieldAttributes.Private);
+            fieldToStoreValue = typeBuilder.DefineField($"_wrapped", InterfaceType,
+                FieldAttributes.Private | FieldAttributes.HasDefault);
         }
 
         public sealed override void EmitCtor(TypeBuilder typeBuilder)

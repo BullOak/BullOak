@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BullOak.Repositories.NEventStore")]
+[assembly: AssemblyTitle("BullOak.Repositories.Test.Unit.UpconverterContainer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BullOak.Repositories.NEventStore")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyProduct("BullOak.Repositories.Test.Unit.UpconverterContainer")]
+[assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("68401c19-68ba-45b3-bc69-82ef38583a5d")]
+[assembly: Guid("e31a2507-6ac6-4281-960f-7cebd96eef30")]
 
 // Version information for an assembly consists of the following four values:
 //

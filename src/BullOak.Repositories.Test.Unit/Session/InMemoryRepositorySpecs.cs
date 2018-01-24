@@ -9,6 +9,7 @@
     using BullOak.Repositories.InMemory;
     using BullOak.Repositories.Session;
     using BullOak.Repositories.StateEmit;
+    using BullOak.Repositories.Upconverting;
     using FakeItEasy;
     using FluentAssertions;
     using Xunit;
@@ -52,10 +53,13 @@
         public Func<Type, bool> ThreadSafetySelector { get; private set; }
         public ICreateStateInstances StateFactory => MockStateFactory.FakedObject;
 
+        public IUpconvertStoredItems EventUpconverter { get; private set; }
+
         public ConfigurationStub()
         {
             mockStateFactory = new Fake<ICreateStateInstances>();
             mockEventApplier = new Fake<IApplyEventsToStates>();
+            EventUpconverter = new NullUpconverter();
 
             typesForWhichEventCollectionHasBeenAskedFor = new List<Type>();
             eventsThatHaveBeenPublished = new List<object>();
@@ -78,13 +82,13 @@
 
         private void WithJustReturnEventApplier()
         {
-            mockEventApplier.CallsTo(a => a.ApplyEvent(typeof(object), new object(), new object()))
+            mockEventApplier.CallsTo(a => a.ApplyEvent(typeof(object), new object(), new ItemWithType()))
                 .WithAnyArguments()
                 .ReturnsLazily(c => c.Arguments.ToArray()[1]);
-            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new object[0]))
+            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new ItemWithType[0]))
                 .WithAnyArguments()
                 .ReturnsLazily(c => c.Arguments.ToArray()[1]);
-            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new List<object>()))
+            mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new List<ItemWithType>()))
                 .WithAnyArguments()
                 .ReturnsLazily(c => c.Arguments.ToArray()[1]);
         }

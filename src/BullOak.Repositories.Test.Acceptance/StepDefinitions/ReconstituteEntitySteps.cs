@@ -1,8 +1,7 @@
-﻿namespace BullOak.Repositories.NEventStore.Test.Integration.StepDefinitions
+﻿namespace BullOak.Repositories.Test.Acceptance.StepDefinitions
 {
     using System;
-    using System.Net.Mail;
-    using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
+    using BullOak.Repositories.Test.Acceptance.Contexts;
     using FluentAssertions;
     using TechTalk.SpecFlow;
 
@@ -36,19 +35,18 @@
         {
             lastStateContainer.LatestLoadedState.HigherOrder.Should().Be(expectedHighOrder);
         }
-    }
 
-    public class LastAccessedStateContainer
-    {
-        private static readonly string id = Guid.NewGuid().ToString();
-        private ScenarioContext scenarioContext;
-        public IHoldHigherOrder LatestLoadedState
+        [Then(@"FullName property of the entity should be ""(.*)""")]
+        public void ThenFullNamePropertyOfTheEntityShouldBe(string fullName)
         {
-            get => (IHoldHigherOrder) scenarioContext[id];
-            set => scenarioContext[id] = value;
+            lastStateContainer.LatestLoadedState.FullName.Should().Be(fullName);
         }
 
-        public LastAccessedStateContainer(ScenarioContext scenarioContext)
-            => this.scenarioContext = scenarioContext;
+        [Then(@"the loaded entity should have a balance of (.*) and last update date (.*)")]
+        public void ThenTheLoadedEntityShouldHaveABalanceOfAndLastUpdateDate(Decimal balance, DateTime dateTime)
+        {
+            lastStateContainer.LatestLoadedState.LastBalance.Should().Be(balance);
+            lastStateContainer.LatestLoadedState.BalaceUpdateTime.Should().Be(dateTime);
+        }
     }
 }

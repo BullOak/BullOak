@@ -1,6 +1,6 @@
-﻿namespace BullOak.Repositories.NEventStore.Test.Integration.StepDefinitions
+﻿namespace BullOak.Repositories.Test.Acceptance.StepDefinitions
 {
-    using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
+    using BullOak.Repositories.Test.Acceptance.Contexts;
     using TechTalk.SpecFlow;
 
     [Binding]

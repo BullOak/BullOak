@@ -80,7 +80,7 @@
             var @event = new CinemaAggregateRoot()
                 .Create(Guid.NewGuid(), capacity, name);
 
-            CinemaId = @event.Id;
+            CinemaId = @event.CinemaId;
             CinemaOperationEvents.Add(@event);
         }
 
@@ -127,7 +127,7 @@
         {
             CinemaRepo[CinemaId].First().Should().NotBeNull();
             CinemaRepo[CinemaId].First().As<CinemaCreated>()
-                .Id.Name.Should().Be(name);
+                .CinemaId.Name.Should().Be(name);
         }
 
         [Then(@"the cinema I get should not be null")]

@@ -3,6 +3,7 @@
     using System.Reflection;
     using BoDi;
     using BullOak.Repositories;
+    using BullOak.Repositories.Config;
     using TechTalk.SpecFlow;
 
     [Binding]
@@ -20,6 +21,8 @@
                 .NeverUseThreadSafe()
                 .WithNoEventPublisher()
                 .WithAnyAppliersFrom(Assembly.GetExecutingAssembly())
+                .AndNoMoreAppliers()
+                .WithNoUpconverters()
                 .Build();
 
         }

@@ -8,7 +8,7 @@
     using System.Reflection;
     using BullOak.Repositories.Appliers;
 
-    internal class ApplierConfigurationBuilder : IManuallyConfigureEventAppliers, IBuildConfiguration
+    internal class ApplierConfigurationBuilder : IManuallyConfigureEventAppliers
     {
         private readonly IConfigureEventAppliers baseConfiguration;
         private readonly BlockingCollection<ApplierRetriever> applierCollection;
@@ -20,7 +20,7 @@
             applierCollection= new BlockingCollection<ApplierRetriever>();
         }
 
-        public IBuildConfiguration WithEventApplier(IApplyEventsToStates eventApplier)
+        public IConfigureUpconverter WithEventApplier(IApplyEventsToStates eventApplier)
             => applierCollection.Count == 0
                 ? baseConfiguration.WithEventApplier(eventApplier)
                 : throw new Exception(
@@ -84,11 +84,8 @@
             return this;
         }
 
-        public IBuildConfiguration AndNoMoreAppliers()
+        public IConfigureUpconverter AndNoMoreAppliers()
             => baseConfiguration.WithEventApplier(BuildEventApplierFrom(applierCollection.ToArray()));
-
-        public IHoldAllConfiguration Build()
-            => AndNoMoreAppliers().Build();
 
         private static IApplyEventsToStates BuildEventApplierFrom(ICollection<ApplierRetriever> appliers)
         {

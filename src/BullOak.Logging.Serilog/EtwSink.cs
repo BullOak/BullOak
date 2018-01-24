@@ -11,6 +11,7 @@
     public sealed class EtwSink : PeriodicBatchingSink 
     {
         private readonly ITextFormatter formatter;
+        private static readonly Task done = Task.FromResult(0);
 
         public EtwSink(
             ITextFormatter formatter)
@@ -37,7 +38,7 @@
             return value;
         }
 
-        protected override async Task EmitBatchAsync(IEnumerable<LogEvent> events)
+        protected override Task EmitBatchAsync(IEnumerable<LogEvent> events)
         { 
             foreach (var logEvent in events)
             {
@@ -90,7 +91,9 @@
                     }
                 }
             }
-            
+
+            return done;
+
         }
     }
 }

@@ -6,6 +6,7 @@
     using BullOak.Infrastructure.TestHelpers.Application.Stubs;
     using BullOak.Messages;
     using BullOak.Repositories;
+    using BullOak.Repositories.Config;
     using BullOak.Repositories.InMemory;
     using BullOak.Test.EndToEnd.Stub.AggregateBased;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate;
@@ -35,6 +36,8 @@
                 .WithNoEventPublisher()
                 .WithAnyAppliersFromInstances((IEnumerable<object>) appliers ?? new List<object>())
                 .WithAnyAppliersFrom(Assembly.GetAssembly(typeof(CinemaAggregateRepository)))
+                .AndNoMoreAppliers()
+                .WithNoUpconverters()
                 .Build();
 
             this.name = name;
@@ -53,13 +56,13 @@
         {
             var @event = new CinemaCreated(Guid.NewGuid(), cinemaId, r.Next());
 
-            using (var session = CinemaFunctionalRepo.BeginSessionFor(@event.Id))
+            using (var session = CinemaFunctionalRepo.BeginSessionFor(@event.CinemaId))
             {
                 session.AddEvent(@event);
                 session.SaveChanges();
             }
 
-            CinemaAggregateRepository[@event.Id.Name].Add(@event.ToEnvelope(@event.Id)
+            CinemaAggregateRepository[@event.CinemaId.Name].Add(@event.ToEnvelope(@event.CinemaId)
                 .FromAggregate<BullOak.Test.EndToEnd.Stub.AggregateBased.CinemaAggregate.CinemaAggregateRoot>());
         }
 
@@ -67,17 +70,17 @@
         {
             var viewingCreatedEvent = new ViewingCreatedEvent(viewingId, capacity);
 
-            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingCreatedEvent.Id))
+            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingCreatedEvent.ViewingId))
             {
                 session.AddEvent(viewingCreatedEvent);
                 session.SaveChanges();
             }
 
-            ViewingAggregateRepository[viewingId.ToString()].Add(viewingCreatedEvent.ToEnvelope(viewingCreatedEvent.Id)
+            ViewingAggregateRepository[viewingId.ToString()].Add(viewingCreatedEvent.ToEnvelope(viewingCreatedEvent.ViewingId)
                 .FromAggregate<BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.ViewingAggregateRoot>());
 
             for (ushort i = 0; i < capacity; i++)
-                AddSeatCreatedEvent(viewingCreatedEvent.Id, i);
+                AddSeatCreatedEvent(viewingCreatedEvent.ViewingId, i);
         }
 
         private void AddSeatCreatedEvent(ViewingId viewingId, ushort seatNumber)

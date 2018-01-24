@@ -59,7 +59,7 @@
                     var serialized = JsonConvert.SerializeObject(e);
                     byte[] bytes = System.Text.Encoding.UTF8.GetBytes(serialized);
                     return new EventData(Guid.NewGuid(),
-                        e.GetType().ToString(),
+                        e.GetType().AssemblyQualifiedName,
                         true,
                         bytes,
                         null);

@@ -92,7 +92,7 @@ namespace BullOak.Repositories.EventStore
         {
             return new EventData(
                 Guid.NewGuid(),
-                eventObject.GetType().ToString(),
+                eventObject.GetType().AssemblyQualifiedName,
                 true,
                 System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(eventObject)),
                 null);

@@ -1,19 +1,18 @@
 ﻿namespace BullOak.Denormalizer.MongoDb
 {
-    using MongoDB.Driver;
-    using MongoDB.Bson;
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using EventStream;
+    using MongoDB.Bson;
     using MongoDB.Bson.Serialization.Attributes;
+    using MongoDB.Driver;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     public class MongoDb : IDocumentStore
     {
         private readonly IMongoClient client;
         private readonly IMongoDatabase database;
-        private readonly string eTagField = "ETag";
         private readonly string vmField = "VM";
 
         private class MongoDocumentWrapper : IDocumentBase
@@ -54,10 +53,10 @@
             var filter = builders.Eq(x => x.Id, documentId) & builders.Eq(x => x.ETag, initialCorrelationId);
 
             var options = new FindOneAndReplaceOptions<MongoDocumentWrapper<T>, MongoDocumentWrapper<T>>
-                {
-                    ReturnDocument = ReturnDocument.Before,
-                    IsUpsert = true
-                };
+            {
+                ReturnDocument = ReturnDocument.Before,
+                IsUpsert = true
+            };
 
             try
             {
@@ -95,7 +94,7 @@
             var collection = database.GetCollection<MongoDocumentWrapper<T>>(collectionId);
             var filter = Builders<MongoDocumentWrapper<T>>.Filter.Eq(x => x.Id, documentId);
 
-            return collection.Find(filter).Project(x=> x as DocumentBase<T>).FirstOrDefaultAsync();
+            return collection.Find(filter).Project(x => x as DocumentBase<T>).FirstOrDefaultAsync();
         }
 
         public Task<IEnumerable<T>> ReadAll<T>(string collectionId)
@@ -104,7 +103,7 @@
 
             var collection = database.GetCollection<MongoDocumentWrapper<T>>(collectionId);
             return Task.FromResult(collection.Find(new BsonDocument())
-                .Project(x=> x.VM)
+                .Project(x => x.VM)
                 .ToEnumerable());
         }
 
@@ -123,7 +122,7 @@
 
             return Task.FromResult(collection.Find(Builders<MongoDocumentWrapper<T>>.Filter.And(filters))
                 .ToEnumerable()
-                .Select(x=> x.VM));
+                .Select(x => x.VM));
         }
 
         public async Task DeleteDocument(string collectionId, string documentId)
@@ -132,7 +131,7 @@
             if (string.IsNullOrWhiteSpace(documentId)) throw new ArgumentNullException(nameof(documentId));
 
             var collection = database.GetCollection<MongoDocumentWrapper>(collectionId);
-            var filter = Builders<MongoDocumentWrapper>.Filter.Eq(x=> x.Id, documentId);
+            var filter = Builders<MongoDocumentWrapper>.Filter.Eq(x => x.Id, documentId);
 
             await collection.DeleteOneAsync(filter);
         }

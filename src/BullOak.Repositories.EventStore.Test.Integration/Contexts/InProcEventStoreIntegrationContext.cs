@@ -17,7 +17,7 @@
     {
         private static ClusterVNode node;
         private EventStoreRepository<string, IHoldHigherOrder> repository;
-        private IEventStoreConnection connection;
+        private static IEventStoreConnection connection;
 
         public InProcEventStoreIntegrationContext()
         {
@@ -35,24 +35,24 @@
             SetupRepository(configuration);
         }
 
-        private IEventStoreConnection CreateConnection()
+        private static IEventStoreConnection GetConnection()
         {
-            if (connection == null)
-            {
-                connection = EmbeddedEventStoreConnection.Create(node);
-                connection.ConnectAsync().Wait();
-            }
             return connection;
         }
 
         public void SetupRepository(IHoldAllConfiguration configuration)
         {
-            repository = new EventStoreRepository<string, IHoldHigherOrder>(configuration, CreateConnection());
+            repository = new EventStoreRepository<string, IHoldHigherOrder>(configuration, GetConnection());
         }
 
         public static void SetupNode()
         {
             node = CreateInMemoryEventStoreNode();
+            if (connection == null)
+            {
+                connection = EmbeddedEventStoreConnection.Create(node);
+                connection.ConnectAsync().Wait();
+            }
         }
 
         public static void TeardownNode()
@@ -78,7 +78,7 @@
 
         public ResolvedEvent[] ReadEventsFromStreamRaw(Guid id)
         {
-            var connection = CreateConnection();
+            var connection = GetConnection();
             var result = new List<ResolvedEvent>();
             StreamEventsSlice currentSlice;
             long nextSliceStart = StreamPosition.Start;
@@ -94,7 +94,7 @@
 
         internal void WriteEventsToStreamRaw(Guid currentStreamInUse, IEnumerable<MyEvent> myEvents)
         {
-            var connection = CreateConnection();
+            var connection = GetConnection();
             connection.AppendToStreamAsync(currentStreamInUse.ToString(), ExpectedVersion.Any,
                 myEvents.Select(e =>
                 {

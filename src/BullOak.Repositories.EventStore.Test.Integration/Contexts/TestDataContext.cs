@@ -13,7 +13,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.Contexts
         public IHoldHigherOrder LatestLoadedState { get; internal set; }
         public Dictionary<string, IManageAndSaveSessionWithSnapshot<IHoldHigherOrder>> NamedSessions { get; internal set; } =
             new Dictionary<string, IManageAndSaveSessionWithSnapshot<IHoldHigherOrder>>();
-        public Dictionary<string, Exception> NamedSessionsExceptions { get; internal set; } = new Dictionary<string, Exception>();
+        public Dictionary<string, List<Exception>> NamedSessionsExceptions { get; internal set; } = new Dictionary<string, List<Exception>>();
 
         internal MyEvent[] LastGeneratedEvents;
 

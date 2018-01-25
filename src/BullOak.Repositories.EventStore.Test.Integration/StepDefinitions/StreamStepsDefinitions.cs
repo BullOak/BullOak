@@ -5,6 +5,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
     using BullOak.Repositories.EventStore.Test.Integration.Contexts;
     using FluentAssertions;
     using System;
+    using System.Collections.Generic;
     using TechTalk.SpecFlow;
     using Xunit;
 
@@ -39,7 +40,6 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
                 testDataContext.CurrentStreamId,
                 eventGenerator.GenerateEvents(count));
         }
-
 
         [Given(@"(.*) new events")]
         public void GivenNewEvents(int eventsNumber)
@@ -100,6 +100,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
             testDataContext.NamedSessions.Add(sessionName, eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result);
         }
 
+        [When(@"I try to add (.*) new events to '(.*)'")]
         [Given(@"(.*) new events are added by '(.*)'")]
         public void GivenNewEventsAreAddedBy(int count, string sessionName)
         {
@@ -109,20 +110,27 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         [When(@"I try to save '(.*)'")]
         public void WhenITryToSave(string sessionName)
         {
-            testDataContext.NamedSessionsExceptions.Add(sessionName, Record.ExceptionAsync(
-                () => testDataContext.NamedSessions[sessionName].SaveChanges()).Result);
+            if (!testDataContext.NamedSessionsExceptions.ContainsKey(sessionName))
+            {
+                testDataContext.NamedSessionsExceptions.Add(sessionName, new List<Exception>());
+            }
+            var recordedException = Record.ExceptionAsync(() => testDataContext.NamedSessions[sessionName].SaveChanges()).Result;
+            if (recordedException != null)
+            {
+                testDataContext.NamedSessionsExceptions[sessionName].Add(recordedException);
+            }
         }
 
         [Then(@"the save process should succeed for '(.*)'")]
         public void ThenTheSaveProcessShouldSucceedFor(string sessionName)
         {
-            testDataContext.NamedSessionsExceptions[sessionName].Should().BeNull();
+            testDataContext.NamedSessionsExceptions[sessionName].Should().BeEmpty();
         }
 
         [Then(@"the save process should fail for '(.*)'")]
         public void ThenTheSaveProcessShouldFailFor(string sessionName)
         {
-            testDataContext.NamedSessionsExceptions[sessionName].Should().NotBeNull();
+            testDataContext.NamedSessionsExceptions[sessionName].Should().NotBeEmpty();
         }
 
     }

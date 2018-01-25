@@ -16,6 +16,8 @@ namespace BullOak.Repositories.EventStore
         private readonly IEventStoreConnection eventStoreConnection;
         private readonly string streamName;
         private int currentVersion;
+        private bool isInDisposedState = false;
+
         private int SliceSize { get; set; } = 1024; //4095 is max allowed value
 
         public EventStoreSession(IHoldAllConfiguration configuration,
@@ -29,6 +31,7 @@ namespace BullOak.Repositories.EventStore
 
         public async Task Initialize()
         {
+            CheckDisposedState();
             //TODO: user credentials
             var events = await ReadAllEventsFromStream();
             LoadFromEvents(events.Select(resolvedEvent =>
@@ -37,6 +40,15 @@ namespace BullOak.Repositories.EventStore
                             }).ToArray(),
                             currentVersion);
 
+        }
+
+        private void CheckDisposedState()
+        {
+            if (isInDisposedState)
+            {
+                //this is purely design decision, nothing prevents implementing the session that support any amount and any order of oeprations
+                throw new InvalidOperationException("EventStoreSession should not be used after SaveChanges call");
+            }
         }
 
         private async Task<List<ResolvedEvent>> ReadAllEventsFromStream()
@@ -59,8 +71,13 @@ namespace BullOak.Repositories.EventStore
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) { };
+            if (disposing) { ConsiderSessionDisposed(); }
             base.Dispose(disposing);
+        }
+
+        private void ConsiderSessionDisposed()
+        {
+            isInDisposedState = true;
         }
 
         /// <summary>
@@ -79,13 +96,15 @@ namespace BullOak.Repositories.EventStore
         {
             checked
             {
+                CheckDisposedState();
                 var writeResult = await eventStoreConnection.ConditionalAppendToStreamAsync(
                     streamName,
                     currentVersion,
                     eventsToAdd.Select(eventObject =>
                     {
                         return CreateEventData(eventObject);
-                    }));
+                    }))
+                    .ConfigureAwait(false);
 
                 switch (writeResult.Status)
                 {
@@ -99,11 +118,15 @@ namespace BullOak.Repositories.EventStore
                         throw new InvalidOperationException($"Unexpected write result: {writeResult.Status}");
                 }
 
-                //currentVersion = (int)writeResult.NextExpectedVersion.Value; //TODO: write unit tests to cover this
-
-                return writeResult.NextExpectedVersion.HasValue ?
-                    (int)writeResult.NextExpectedVersion.Value :
+                if (!writeResult.NextExpectedVersion.HasValue)
+                {
                     throw new InvalidOperationException("Eventstore data write outcome unexpected. NextExpectedVersion is null");
+                }
+
+                ConsiderSessionDisposed();
+                currentVersion = (int)writeResult.NextExpectedVersion.Value;
+                return (int)writeResult.NextExpectedVersion.Value;
+
             }
         }
 
@@ -128,17 +151,10 @@ namespace BullOak.Repositories.EventStore
         }
 
 
-        private async Task<int> SaveChangesWithConfiguredAwait(object[] eventsToAdd,
-            bool shouldSaveSnapshot,
-            TState snapshot)
-        {
-            return await SaveChanges(eventsToAdd, shouldSaveSnapshot, snapshot, null).ConfigureAwait(false);
-        }
-
         protected override int SaveChangesSync(object[] eventsToAdd, bool shouldSaveSnapshot, TState snapshot)
         {
             if (shouldSaveSnapshot) throw new NotSupportedException("Snapshotting not yet supported.");
-            return SaveChangesWithConfiguredAwait(eventsToAdd, shouldSaveSnapshot, snapshot).Result;
+            return SaveChanges(eventsToAdd, shouldSaveSnapshot, snapshot, null).Result;
         }
 
     }

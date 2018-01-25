@@ -1,5 +1,3 @@
-# Type of issue: Bug | Task | Feature Request
-
 Description
 ---
 

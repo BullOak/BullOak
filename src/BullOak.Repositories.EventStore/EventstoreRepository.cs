@@ -10,17 +10,10 @@
         private readonly IHoldAllConfiguration configs;
         private readonly IEventStoreConnection connection;
 
-
         public EventStoreRepository(IHoldAllConfiguration configs, IEventStoreConnection connection)
         {
             this.configs = configs ?? throw new ArgumentNullException(nameof(connection));
             this.connection = connection ?? throw new ArgumentNullException(nameof(connection));
-            GetConnection().Wait(); //TODO: connection lazy init
-        }
-
-        private async Task GetConnection()
-        {
-            await connection.ConnectAsync().ConfigureAwait(false);
         }
 
         public async Task<IManageAndSaveSessionWithSnapshot<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)

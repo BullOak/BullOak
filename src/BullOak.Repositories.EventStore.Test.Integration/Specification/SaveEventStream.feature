@@ -21,3 +21,15 @@ Scenario: Save additional events in an existing stream
 	When I try to save the new events in the stream
 	Then the save process should succeed
 	And there should be 20 events in the stream
+
+Scenario: Concurrent write should fail for outdated session
+	Given an existing stream with 10 events
+	And session 'Session1' is open
+	And session 'Session2' is open
+	And 10 new events are added by 'Session1'
+	And 10 new events are added by 'Session2'	
+	When I try to save 'Session1'
+	And I try to save 'Session2'
+	Then the save process should succeed for 'Session1'
+	And the save process should fail for 'Session2'
+	And there should be 20 events in the stream

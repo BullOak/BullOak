@@ -38,7 +38,10 @@
         private IEventStoreConnection CreateConnection()
         {
             if (connection == null)
+            {
                 connection = EmbeddedEventStoreConnection.Create(node);
+                connection.ConnectAsync().Wait();
+            }
             return connection;
         }
 
@@ -115,7 +118,5 @@
             node.StartAndWaitUntilReady().Wait();
             return node;
         }
-
-
     }
 }

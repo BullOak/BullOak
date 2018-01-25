@@ -94,5 +94,36 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
             }
         }
 
+        [Given(@"session '(.*)' is open")]
+        public void GivenSessionIsOpen(string sessionName)
+        {
+            testDataContext.NamedSessions.Add(sessionName, eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result);
+        }
+
+        [Given(@"(.*) new events are added by '(.*)'")]
+        public void GivenNewEventsAreAddedBy(int count, string sessionName)
+        {
+            testDataContext.NamedSessions[sessionName].AddEvents(eventGenerator.GenerateEvents(count));
+        }
+
+        [When(@"I try to save '(.*)'")]
+        public void WhenITryToSave(string sessionName)
+        {
+            testDataContext.NamedSessionsExceptions.Add(sessionName, Record.ExceptionAsync(
+                () => testDataContext.NamedSessions[sessionName].SaveChanges()).Result);
+        }
+
+        [Then(@"the save process should succeed for '(.*)'")]
+        public void ThenTheSaveProcessShouldSucceedFor(string sessionName)
+        {
+            testDataContext.NamedSessionsExceptions[sessionName].Should().BeNull();
+        }
+
+        [Then(@"the save process should fail for '(.*)'")]
+        public void ThenTheSaveProcessShouldFailFor(string sessionName)
+        {
+            testDataContext.NamedSessionsExceptions[sessionName].Should().NotBeNull();
+        }
+
     }
 }

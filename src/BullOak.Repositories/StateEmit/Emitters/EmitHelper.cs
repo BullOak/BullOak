@@ -17,9 +17,9 @@
             return generator;
         }
 
-        public static ILGenerator ILEmit(this ILGenerator generator, OpCode code, MethodInfo fieldInfo)
+        public static ILGenerator ILEmit(this ILGenerator generator, OpCode code, MethodInfo methodInfo)
         {
-            generator.Emit(code, fieldInfo);
+            generator.Emit(code, methodInfo);
             return generator;
         }
     }

@@ -7,7 +7,7 @@
     using System.Reflection.Emit;
     using System.Threading;
 
-    internal class StateTypeEmitter
+    internal static class StateTypeEmitter
     {
         private static int emittedIndex = 0;
 

@@ -1,10 +1,17 @@
 ﻿namespace BullOak.Repositories.StateEmit.Emitters
 {
+    using System;
     using System.Reflection;
     using System.Reflection.Emit;
 
     internal class OwnedStateClassEmitter : BaseClassEmitter
     {
+        public override Type EmitType(ModuleBuilder modelBuilder, Type typeToMake, string nameToUseForType = null) 
+            => base.EmitType(modelBuilder, typeToMake, "OwneddStateEmitter_" + (string.IsNullOrWhiteSpace(
+                                                                                       nameToUseForType)
+                                                                                       ? typeToMake.Name
+                                                                                       : nameToUseForType));
+
         private FieldBuilder fieldToStoreValue;
 
         public sealed override void ClassSetup(TypeBuilder typeBuilder)
@@ -12,9 +19,10 @@
         public sealed override void EmitCtor(TypeBuilder typeBuilder)
         { }
 
-        public sealed override void PropertySetup(TypeBuilder typeBuilder, PropertyInfo prop)
+        public sealed override void PropertySetup(TypeBuilder typeBuilder, PropertyInfo propInfo)
         {
-            fieldToStoreValue = typeBuilder.DefineField($"_{prop.Name}", prop.PropertyType, FieldAttributes.Private);
+            fieldToStoreValue = typeBuilder.DefineField($"_{propInfo.Name}", propInfo.PropertyType,
+                FieldAttributes.Private | FieldAttributes.HasDefault);
         }
 
         public sealed override void EmitGetValueOpCodes(ILGenerator getMethodGenerator)

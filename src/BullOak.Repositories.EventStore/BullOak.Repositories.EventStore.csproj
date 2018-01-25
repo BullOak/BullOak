@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultEventStoreConnectionFactory.cs" />
     <Compile Include="EventStoreRepository.cs" />
     <Compile Include="EventStoreSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

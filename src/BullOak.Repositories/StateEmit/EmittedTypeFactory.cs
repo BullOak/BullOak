@@ -8,7 +8,6 @@
 
     internal class EmittedTypeFactory : BaseTypeFactory
     {
-        private static BaseClassEmitter ownedState = new OwnedStateClassEmitter();
         private ConcurrentDictionary<Type, Func<object>> TypeFactories = new ConcurrentDictionary<Type, Func<object>>();
 
         public override void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)
@@ -43,7 +42,7 @@
 
         private static Func<object> CreateTypeFactoryMethod(Type type)
         {
-            var typeToCreate = type.IsInterface ? StateTypeEmitter.EmitType(type, ownedState) : type;
+            var typeToCreate = type.IsInterface ? StateTypeEmitter.EmitType(type, new OwnedStateClassEmitter()) : type;
 
             var ctor = typeToCreate.GetConstructor(Type.EmptyTypes);
 

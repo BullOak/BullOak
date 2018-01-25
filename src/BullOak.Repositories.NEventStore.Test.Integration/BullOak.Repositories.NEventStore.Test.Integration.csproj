@@ -92,7 +92,7 @@
     <Compile Include="StepDefinitions\ReconstituteEntitySteps.cs" />
     <Compile Include="StepDefinitions\SaveStreamSteps.cs" />
     <Compile Include="StepDefinitions\ScenarioSetupAndTeardown.cs" />
-    <Compile Include="StepDefinitions\StreamSetupSteps.cs" />
+    <Compile Include="StepDefinitions\RawStreamSpecs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BullOak.Repositories.NEventStore\BullOak.Repositories.NEventStore.csproj">

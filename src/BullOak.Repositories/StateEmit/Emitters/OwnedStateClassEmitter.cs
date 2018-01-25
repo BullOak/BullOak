@@ -22,7 +22,7 @@
         public sealed override void PropertySetup(TypeBuilder typeBuilder, PropertyInfo propInfo)
         {
             fieldToStoreValue = typeBuilder.DefineField($"_{propInfo.Name}", propInfo.PropertyType,
-                FieldAttributes.Public | FieldAttributes.HasDefault);
+                FieldAttributes.Private | FieldAttributes.HasDefault);
         }
 
         public sealed override void EmitGetValueOpCodes(ILGenerator getMethodGenerator)

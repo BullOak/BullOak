@@ -1,17 +1,15 @@
 ﻿namespace BullOak.Test.EndToEnd.StepDefinitions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Threading.Tasks;
     using BullOak.Repositories;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
     using BullOak.Test.EndToEnd.Stub.Shared.Messages;
     using FluentAssertions;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using TechTalk.SpecFlow;
-
     using CinemaRepository = BullOak.Repositories.InMemory.InMemoryEventSourcedRepository<
         Stub.Shared.Ids.CinemaAggregateRootId, Stub.RepositoryBased.CinemaAggregate.CinemaAggregateState>;
 
@@ -23,7 +21,7 @@
 
         private string CinemaName
         {
-            get => (string) scenarioContext["SimpleSpecStepDefinitions.CinemaName"];
+            get => (string)scenarioContext["SimpleSpecStepDefinitions.CinemaName"];
             set => scenarioContext["SimpleSpecStepDefinitions.CinemaName"] = value;
         }
 
@@ -35,19 +33,19 @@
 
         private CinemaAggregateState CinemaState
         {
-            get => (CinemaAggregateState) scenarioContext[nameof(CinemaState)];
+            get => (CinemaAggregateState)scenarioContext[nameof(CinemaState)];
             set => scenarioContext[nameof(CinemaState)] = value;
         }
 
         private CinemaAggregateRootId CinemaId
         {
-            get => (CinemaAggregateRootId) scenarioContext[nameof(CinemaId)];
+            get => (CinemaAggregateRootId)scenarioContext[nameof(CinemaId)];
             set => scenarioContext[nameof(CinemaId)] = value;
         }
 
         private List<object> CinemaOperationEvents
         {
-            get => (List<object>) scenarioContext[nameof(CinemaOperationEvents)];
+            get => (List<object>)scenarioContext[nameof(CinemaOperationEvents)];
             set => scenarioContext[nameof(CinemaOperationEvents)] = value;
         }
 
@@ -70,7 +68,7 @@
 
                 session.AddEvent(@event);
 
-                session.SaveChanges();
+                await session.SaveChanges();
             }
         }
 

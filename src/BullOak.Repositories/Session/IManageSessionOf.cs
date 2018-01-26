@@ -18,6 +18,6 @@ namespace BullOak.Repositories.Session
 
         void AddEvents(IEnumerable<object> events);
         void AddEvents(object[] events);
-        void AddEvent(object events);
+        void AddEvent(object @event);
     }
 }

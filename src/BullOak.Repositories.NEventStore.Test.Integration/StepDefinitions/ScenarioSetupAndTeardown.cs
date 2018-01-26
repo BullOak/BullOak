@@ -1,8 +1,8 @@
 ﻿namespace BullOak.Repositories.NEventStore.Test.Integration.StepDefinitions
 {
-    using System.Reflection;
     using BullOak.Repositories.Config;
     using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
+    using System.Reflection;
     using TechTalk.SpecFlow;
 
     [Binding]
@@ -25,7 +25,7 @@
         {
             streamInfoContainer.ResetToNew();
             neventStoreContainer.Setup();
-            
+
             var configuration = Configuration.Begin()
                 .WithDefaultCollection()
                 .WithDefaultStateFactory()

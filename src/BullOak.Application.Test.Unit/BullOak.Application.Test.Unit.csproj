@@ -144,6 +144,14 @@
       <Project>{3a8876f8-ca9a-404d-ab35-4e5ea0081859}</Project>
       <Name>BullOak.Messages</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Willow.Application.Ids\Willow.Application.Ids.csproj">
+      <Project>{D946276E-49CA-462A-8F8D-ACBF85B415E6}</Project>
+      <Name>Willow.Application.Ids</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Willow.Application\Willow.Application.csproj">
+      <Project>{9D068D19-CFDE-4A69-845F-6F7CA59B115C}</Project>
+      <Name>Willow.Application</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -2,7 +2,7 @@
 {
     using System;
     using System.Data.Entity;
-    using System.Linq.Expressions;
+    using System.Linq;
     using System.Threading.Tasks;
     using BullOak.Repositories.Session;
 
@@ -30,7 +30,7 @@
                 session = new EntityFrameworkSession<TState>(configuration, dbContext);
                 dbContext.Set<TEntityFrameworkEntity>()
                     .Add(newEntity);
-                session.SetEntity(newEntity);
+                session.SetEntity(newEntity, true);
                 return session;
             }
             finally
@@ -40,6 +40,7 @@
         }
 
         public IManageAndSaveSession<TState> BeginSessionFor<TState>(Func<TContext, TState> entitySelector)
+            where TState : class
         {
             TContext dbContext = null;
             EntityFrameworkSession<TState> session = null;
@@ -47,7 +48,11 @@
             {
                 dbContext = dbContextFactory();
                 session = new EntityFrameworkSession<TState>(configuration, dbContext);
-                session.SetEntity(entitySelector(dbContext));
+                var state = entitySelector(dbContext);
+
+                var isExisting = AttachAndReturnIfAlreadyAttached(state, dbContext);
+
+                session.SetEntity(state, !isExisting);
                 return session;
             }
             finally
@@ -58,6 +63,7 @@
 
         public async Task<IManageAndSaveSession<TState>> BeginSessionFor<TState>(
             Func<TContext, Task<TState>> entitySelector)
+            where TState: class
         {
             TContext dbContext = null;
             EntityFrameworkSession<TState> session = null;
@@ -66,7 +72,10 @@
                 dbContext = dbContextFactory();
                 session = new EntityFrameworkSession<TState>(configuration, dbContext);
                 var state = await entitySelector(dbContext);
-                session.SetEntity(state);
+
+                var isExisting = AttachAndReturnIfAlreadyAttached(state, dbContext);
+
+                session.SetEntity(state, !isExisting);
 
                 return session;
             }
@@ -74,6 +83,16 @@
             {
                 if (session == null) dbContext?.Dispose();
             }
+        }
+
+        private static bool AttachAndReturnIfAlreadyAttached(object state, TContext dbContext)
+        {
+            var set = dbContext.Set(state.GetType());
+            var isAttached = set.Local.Contains(state);
+
+            if(!isAttached) set.Attach(state);
+
+            return isAttached;
         }
     }
 }

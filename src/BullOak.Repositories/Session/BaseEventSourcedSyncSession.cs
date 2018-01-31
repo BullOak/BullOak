@@ -37,7 +37,7 @@
 
             initialState = eventApplier.Apply(typeOfState, initialState, upconvertedEvents);
 
-            Initialize((TState) initialState);
+            Initialize((TState) initialState, storedEvents.Length == 0);
             this.concurrencyId = concurrencyId;
         }
 

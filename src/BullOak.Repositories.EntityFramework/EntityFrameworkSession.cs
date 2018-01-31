@@ -33,7 +33,7 @@
             this.useStateImmutabilityWrapping = useStateImmutabilityWrapping;
         }
 
-        internal void SetEntity(TState state)
+        internal void SetEntity(TState state, bool isNewEntity)
         {
             if (canWrap && useStateImmutabilityWrapping)
             {
@@ -41,7 +41,7 @@
                 state = wrapperFactory(state);
             }
 
-            this.Initialize(state);
+            this.Initialize(state, isNewEntity);
         }
 
         public int SaveChangesSync(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce)

@@ -13,9 +13,9 @@
     <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
     <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
-    <Version>1.0.49</Version>
-    <AssemblyVersion>1.0.48.0</AssemblyVersion>
-    <FileVersion>1.0.48.0</FileVersion>
+    <Version>1.0.50</Version>
+    <AssemblyVersion>1.0.50.0</AssemblyVersion>
+    <FileVersion>1.0.50.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <LangVersion>latest</LangVersion>

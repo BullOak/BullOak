@@ -13,6 +13,7 @@ namespace BullOak.Repositories.Session
     /// <typeparam name="TState">The type of the state that this session manages</typeparam>
     public interface IManageSessionOf<out TState> : IDisposable
     {
+        bool IsNewState { get; }
         bool IsOptimisticConcurrencySupported { get; }
         TState GetCurrentState();
 

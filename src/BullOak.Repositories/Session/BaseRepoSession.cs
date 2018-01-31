@@ -26,6 +26,8 @@
         private static readonly Type stateType = typeof(TState);
         protected readonly IApplyEventsToStates EventApplier;
 
+        public bool IsNewState { get; private set; }
+
         protected BaseRepoSession(IHoldAllConfiguration configuration, IDisposable disposableHandle)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -80,8 +82,11 @@
             }
         }
 
-        protected void Initialize(TState storedState)
-            => currentState = storedState;
+        protected void Initialize(TState storedState, bool isNew)
+        {
+            currentState = storedState;
+            IsNewState = isNew;
+        }
 
         protected async Task PublishEvents(IHoldAllConfiguration configuration, object[] events, CancellationToken? cancellationToken = null)
         {

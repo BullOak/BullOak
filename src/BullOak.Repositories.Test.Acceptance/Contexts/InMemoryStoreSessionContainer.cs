@@ -9,25 +9,12 @@
     {
         private static readonly string id = Guid.NewGuid().ToString();
 
-        private ScenarioContext scenarioContext;
         private InMemoryEventSourcedRepository<string, IHoldHigherOrder> repository;
 
-        public IManageAndSaveSession<IHoldHigherOrder> LastSession
-        {
-            get
-            {
-                if(scenarioContext.ContainsKey(id))
-                    return (IManageAndSaveSession<IHoldHigherOrder>) scenarioContext[id];
+        public IManageAndSaveSession<IHoldHigherOrder> LastSession { get; private set; }
 
-                return null;
-            }
-            private set => scenarioContext[id] = value;
-        }
-
-        public InMemoryStoreSessionContainer(StreamInfoContainer streamInfo, ScenarioContext scenarioContext)
-        {
-            this.scenarioContext = scenarioContext;
-        }
+        public InMemoryStoreSessionContainer()
+        { }
 
         public void Setup(IHoldAllConfiguration configuration)
         {

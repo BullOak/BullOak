@@ -47,7 +47,10 @@
 
         public IManageAndSaveSession<IHoldHighOrders> StartSession(string clientId)
         {
-            LastSession = Repo.BeginSessionFor<IHoldHighOrders>(x => x.Orders.FirstOrDefault(o => o.ClientId == clientId));
+            LastSession = Repo.BeginSessionFor<IHoldHighOrders>(x => x.Orders.FirstOrDefault(o => o.ClientId == clientId) ?? new HoldHighOrders()
+            {
+                ClientId = clientId
+            });
 
             return LastSession;
         }

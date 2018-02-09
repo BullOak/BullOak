@@ -1,11 +1,16 @@
 ﻿namespace BullOak.Repositories.NEventStore
 {
     using System;
+    using System.Threading.Tasks;
+    using BullOak.Repositories.Repository;
     using BullOak.Repositories.Session;
     using global::NEventStore;
 
-    public class NEventStoreRepository<TId, TState>
+    public class NEventStoreRepository<TId, TState> : IStartSessions<TId, TState>
     {
+        private static readonly Task<bool> falseResult = Task.FromResult(false);
+        private static readonly Task<bool> trueResult = Task.FromResult(true);
+
         private readonly IStoreEvents store;
         private readonly IHoldAllConfiguration configuration;
 
@@ -15,7 +20,7 @@
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public IManageAndSaveSessionWithSnapshot<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
+        public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
             var stream = store.OpenStream(id.ToString(), 0);
 
@@ -24,23 +29,26 @@
 
             var session = new NEventStoreSession<TState>(configuration, stream);
             session.Initialize();
-            return session;
+            return Task.FromResult((IManageSessionOf<TState>)session);
         }
 
-        public void Clear(TId id) 
-            => store.Advanced.DeleteStream("bucketId", id.ToString());
-
-        public bool Exists(TId id)
+        public Task<bool> Contains(TId id)
         {
             try
             {
                 var stream = store.OpenStream("bucketId", id.ToString(), int.MinValue, int.MaxValue);
-                return stream.CommittedEvents.Count > 0;
+                return stream.CommittedEvents.Count > 0 ? trueResult : falseResult;
             }
             catch (StreamNotFoundException)
             {
-                return false;
+                return falseResult;
             }
+        }
+
+        public Task Delete(TId id)
+        {
+            store.Advanced.DeleteStream("bucketId", id.ToString());
+            return falseResult;
         }
     }
 }

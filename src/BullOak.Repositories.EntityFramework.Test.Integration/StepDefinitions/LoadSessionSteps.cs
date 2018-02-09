@@ -1,5 +1,6 @@
 ﻿namespace BullOak.Repositories.EntityFramework.Test.Integration.StepDefinitions
 {
+    using System.Threading.Tasks;
     using BullOak.Repositories.EntityFramework.Test.Integration.Contexts;
     using FluentAssertions;
     using TechTalk.SpecFlow;
@@ -18,7 +19,7 @@
         }
 
         [When(@"I load the session")]
-        public void WhenILoadTheSession()
+        public Task WhenILoadTheSession()
             => entityFrameworkRepositoryContainer.StartSession(clientIdContainer.Id);
 
         [Then(@"the IsNewState should be (.*)")]

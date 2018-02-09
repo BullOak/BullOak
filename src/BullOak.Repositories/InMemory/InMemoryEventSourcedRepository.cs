@@ -4,10 +4,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using BullOak.Repositories.Exceptions;
+    using BullOak.Repositories.Repository;
     using BullOak.Repositories.Session;
 
-    public class InMemoryEventSourcedRepository<TId, TState>
+    public class InMemoryEventSourcedRepository<TId, TState> : IStartSessions<TId, TState>
     {
         private Dictionary<TId, object[]> eventStore = new Dictionary<TId, object[]>();
         private readonly IHoldAllConfiguration configuration;
@@ -31,7 +33,7 @@
             useThreadSafeOps = configuration.ThreadSafetySelector(typeof(TState));
         }
 
-        public IManageAndSaveSession<TState> BeginSessionFor(TId id, bool throwIfNotExists = false)
+        public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
             object[] eventStream;
             bool lockTaken = false;
@@ -69,22 +71,23 @@
                 if(lockTaken) Monitor.Exit(eventStore);
             }
 
-            return session;
+            return Task.FromResult((IManageSessionOf<TState>)session);
         }
 
-        public void Clear(TId id)
+        public Task Delete(TId id)
         {
             lock (eventStore)
             {
                 if (eventStore.ContainsKey(id)) eventStore.Remove(id);
+                return Task.FromResult(0);
             }
         }
 
-        public bool Exists(TId id)
+        public Task<bool> Contains(TId id)
         {
             lock (eventStore)
             {
-                return eventStore.ContainsKey(id) && eventStore[id] != null && eventStore[id].Length > 0;
+                return Task.FromResult(eventStore.ContainsKey(id) && eventStore[id] != null && eventStore[id].Length > 0);
             }
         }
     }

@@ -11,8 +11,8 @@ namespace BullOak.Repositories.EventStore.Test.Integration.Contexts
         internal Guid CurrentStreamId { get; set; } = Guid.NewGuid();
         public Exception RecordedException { get; internal set; }
         public IHoldHigherOrder LatestLoadedState { get; internal set; }
-        public Dictionary<string, IManageAndSaveSessionWithSnapshot<IHoldHigherOrder>> NamedSessions { get; internal set; } =
-            new Dictionary<string, IManageAndSaveSessionWithSnapshot<IHoldHigherOrder>>();
+        public Dictionary<string, IManageSessionOf<IHoldHigherOrder>> NamedSessions { get; internal set; } =
+            new Dictionary<string, IManageSessionOf<IHoldHigherOrder>>();
         public Dictionary<string, List<Exception>> NamedSessionsExceptions { get; internal set; } = new Dictionary<string, List<Exception>>();
 
         internal MyEvent[] LastGeneratedEvents;

@@ -4,9 +4,9 @@
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EntityFramework.Test.Integration.DbModel;
 
-    public class StateApplier : IApplyEvent<IHoldHighOrders, MyEvent>
+    public class StateApplier : IApplyEvent<HoldHighOrders, MyEvent>
     {
-        public IHoldHighOrders Apply(IHoldHighOrders state, MyEvent @event)
+        public HoldHighOrders Apply(HoldHighOrders state, MyEvent @event)
         {
             state.HigherOrder = Math.Max(@event.Order, state.HigherOrder);
 
@@ -14,9 +14,9 @@
         }
     }
 
-    public class InitializeEventApplier : IApplyEvent<IHoldHighOrders, InitializeClientOrderEvent>
+    public class InitializeEventApplier : IApplyEvent<HoldHighOrders, InitializeClientOrderEvent>
     {
-        public IHoldHighOrders Apply(IHoldHighOrders state, InitializeClientOrderEvent @event)
+        public HoldHighOrders Apply(HoldHighOrders state, InitializeClientOrderEvent @event)
         {
             state.ClientId = @event.ClientId.ToString();
 

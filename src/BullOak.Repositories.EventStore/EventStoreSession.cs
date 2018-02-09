@@ -1,6 +1,4 @@
-﻿
-
-namespace BullOak.Repositories.EventStore
+﻿namespace BullOak.Repositories.EventStore
 {
     using BullOak.Repositories.Session;
     using global::EventStore.ClientAPI;
@@ -10,6 +8,7 @@ namespace BullOak.Repositories.EventStore
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+
     public class EventStoreSession<TState> : BaseEventSourcedSession<TState, int>
     {
         private static readonly Task<int> done = Task.FromResult(0);
@@ -85,12 +84,10 @@ namespace BullOak.Repositories.EventStore
         /// NOTES: Current implementation doesn't support cancellation token
         /// </summary>
         /// <param name="eventsToAdd"></param>
-        /// <param name="shouldSaveSnapshot"></param>
         /// <param name="snapshot"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         protected override async Task<int> SaveChanges(object[] eventsToAdd,
-            bool shouldSaveSnapshot,
             TState snapshot,
             CancellationToken? cancellationToken)
         {
@@ -126,7 +123,6 @@ namespace BullOak.Repositories.EventStore
                 ConsiderSessionDisposed();
                 currentVersion = (int)writeResult.NextExpectedVersion.Value;
                 return (int)writeResult.NextExpectedVersion.Value;
-
             }
         }
 
@@ -149,13 +145,5 @@ namespace BullOak.Repositories.EventStore
 
             return result;
         }
-
-
-        protected override int SaveChangesSync(object[] eventsToAdd, bool shouldSaveSnapshot, TState snapshot)
-        {
-            if (shouldSaveSnapshot) throw new NotSupportedException("Snapshotting not yet supported.");
-            return SaveChanges(eventsToAdd, shouldSaveSnapshot, snapshot, null).Result;
-        }
-
     }
 }

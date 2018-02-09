@@ -11,7 +11,7 @@
 
         private InMemoryEventSourcedRepository<string, IHoldHigherOrder> repository;
 
-        public IManageAndSaveSession<IHoldHigherOrder> LastSession { get; private set; }
+        public IManageSessionOf<IHoldHigherOrder> LastSession { get; private set; }
 
         public InMemoryStoreSessionContainer()
         { }
@@ -23,9 +23,9 @@
             repository = new InMemoryEventSourcedRepository<string, IHoldHigherOrder>(configuration);
         }
 
-        public IManageAndSaveSession<IHoldHigherOrder> StartSession(string streamId)
+        public IManageSessionOf<IHoldHigherOrder> StartSession(string streamId)
         {
-            LastSession = repository.BeginSessionFor(streamId);
+            LastSession = repository.BeginSessionFor(streamId).Result;
 
             return LastSession;
         }

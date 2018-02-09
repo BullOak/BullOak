@@ -2,6 +2,7 @@
 {
     using System;
     using System.Net.Mail;
+    using System.Threading.Tasks;
     using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
     using FluentAssertions;
     using TechTalk.SpecFlow;
@@ -23,9 +24,9 @@
         }
 
         [When(@"I load my entity")]
-        public void WhenILoadMyEntity()
+        public async Task WhenILoadMyEntity()
         {
-            using (var session = sessionContainer.StartSession(streamInfo.Id))
+            using (var session = await sessionContainer.StartSession(streamInfo.Id))
             {
                 lastStateContainer.LatestLoadedState = session.GetCurrentState();
             }

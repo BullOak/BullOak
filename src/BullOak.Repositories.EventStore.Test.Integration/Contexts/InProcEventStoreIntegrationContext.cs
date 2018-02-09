@@ -60,7 +60,7 @@
             node.Stop();
         }
 
-        public async Task<IManageAndSaveSessionWithSnapshot<IHoldHigherOrder>> StartSession(Guid currentStreamId)
+        public async Task<IManageSessionOf<IHoldHigherOrder>> StartSession(Guid currentStreamId)
         {
             var session = await repository.BeginSessionFor(currentStreamId.ToString()).ConfigureAwait(false);
             return session;

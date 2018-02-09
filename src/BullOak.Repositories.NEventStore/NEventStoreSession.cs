@@ -29,29 +29,21 @@
             base.Dispose(disposing);
         }
 
-        protected override Task<int> SaveChanges(object[] eventsToAdd,
-            bool shouldSaveSnapshot,
-            TState snapshot,
+        protected override Task<int> SaveChanges(object[] newEvents,
+            TState currentState,
             CancellationToken? cancellationToken)
-            => Task.FromResult(SaveChangesSync(eventsToAdd, shouldSaveSnapshot, snapshot));
-
-        protected override int SaveChangesSync(object[] eventsToAdd, bool shouldSaveSnapshot, TState snapshot)
         {
-            if (!shouldSaveSnapshot)
+            for (var index = 0; index < newEvents.Length; index++)
             {
-                for (var index = 0; index < eventsToAdd.Length; index++)
+                eventStream.Add(new EventMessage()
                 {
-                    eventStream.Add(new EventMessage()
-                    {
-                        Body = eventsToAdd[index]
-                    });
-                }
-
-                eventStream.CommitChanges(Guid.NewGuid());
-
-                return eventStream.StreamRevision;
+                    Body = newEvents[index]
+                });
             }
-            else throw new NotSupportedException("Snapshotting not yet supported.");
+
+            eventStream.CommitChanges(Guid.NewGuid());
+
+            return Task.FromResult(eventStream.StreamRevision);
         }
     }
 }

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
     using BullOak.Repositories.Exceptions;
@@ -130,7 +131,7 @@
     public class InMemoryRepositorySpecs
     {
         [Fact]
-        public void BeginSession_WithNewIdAndThrowIfNotExist_ShouldThrowException()
+        public async Task BeginSession_WithNewIdAndThrowIfNotExist_ShouldThrowException()
         {
             //Arrangements
             var sut = new ConfigurationStub<TestState>()
@@ -138,7 +139,7 @@
                 .GetNewSUT<int>();
 
             //Act
-            var exception = Record.Exception(() => sut.BeginSessionFor(123, throwIfNotExists: true));
+            var exception = await Record.ExceptionAsync(() => sut.BeginSessionFor(123, throwIfNotExists: true));
 
             //Assert
             exception.Should().NotBeNull();
@@ -146,7 +147,7 @@
         }
 
         [Fact]
-        public void BeginSession_WithNewId_ShouldReturnSession()
+        public async Task BeginSession_WithNewId_ShouldReturnSession()
         {
             //Arrangements
             var sut = new ConfigurationStub<TestState>()
@@ -154,7 +155,7 @@
                 .GetNewSUT<int>();
 
             //Act
-            var session = sut.BeginSessionFor(123);
+            var session = await sut.BeginSessionFor(123);
 
             //Assert
             session.Should().NotBeNull();
@@ -162,7 +163,7 @@
         }
 
         [Fact]
-        public void SaveEvents_WithOneNewEvent_ShouldAddEventInStore()
+        public async Task SaveEvents_WithOneNewEvent_ShouldAddEventInStore()
         {
             //Arrangements
             var sut = new ConfigurationStub<TestState>()
@@ -171,11 +172,11 @@
             var @event = new object();
             var id = 42;
 
-            using (var session = sut.BeginSessionFor(id))
+            using (var session = await sut.BeginSessionFor(id))
             {
                 //Act
                 session.AddEvent(@event);
-                session.SaveChanges();
+                await session.SaveChanges();
             }
 
             //Assert
@@ -185,7 +186,7 @@
         }
 
         [Fact]
-        public void SaveEvents_WithOneNewEvent_ShouldPublishEvent()
+        public async Task SaveEvents_WithOneNewEvent_ShouldPublishEvent()
         {
             //Arrangements
             var config = new ConfigurationStub<TestState>()
@@ -194,11 +195,11 @@
             var @event = new object();
             var id = 42;
 
-            using (var session = sut.BeginSessionFor(id))
+            using (var session = await sut.BeginSessionFor(id))
             {
                 //Act
                 session.AddEvent(@event);
-                session.SaveChanges();
+                await session.SaveChanges();
             }
 
             //Assert
@@ -207,7 +208,7 @@
         }
 
         [Fact]
-        public void DisposeSession_WithOneEvent_ShouldNotSaveEvents()
+        public async Task DisposeSession_WithOneEvent_ShouldNotSaveEvents()
         {
             //Arrangements
             var sut = new ConfigurationStub<TestState>()
@@ -216,7 +217,7 @@
             var @event = new object();
             var id = 42;
 
-            using (var session = sut.BeginSessionFor(id))
+            using (var session = await sut.BeginSessionFor(id))
             {
                 //Act
                 session.AddEvent(@event);
@@ -227,7 +228,7 @@
         }
 
         [Fact]
-        public void DisposeSession_WithOneEvent_ShouldNotPublishEvents()
+        public async Task DisposeSession_WithOneEvent_ShouldNotPublishEvents()
         {
             //Arrangements
             var config = new ConfigurationStub<TestState>()
@@ -236,7 +237,7 @@
             var @event = new object();
             var id = 42;
 
-            using (var session = sut.BeginSessionFor(id))
+            using (var session = await sut.BeginSessionFor(id))
             {
                 //Act
                 session.AddEvent(@event);
@@ -247,7 +248,7 @@
         }
 
         [Fact]
-        public void StreamWithOneEvent_Clear_ShouldEmptyStream()
+        public async Task StreamWithOneEvent_Clear_ShouldEmptyStream()
         {
             //Arrange
             int id = 42;
@@ -258,14 +259,14 @@
                 .WithEventInStream(@event, id);
 
             //Act
-            sut.Clear(id);
+            await sut.Delete(id);
 
             //Assert
             sut[id].Should().BeEmpty();
         }
 
         [Fact]
-        public void StreamWithOneEvent_BeginSessionAndAddOneEvent_ShouldHaveStreamWith2Events()
+        public async Task StreamWithOneEvent_BeginSessionAndAddOneEvent_ShouldHaveStreamWith2Events()
         {
             //Arrange
             int id = 42;
@@ -277,10 +278,10 @@
             object newEvent = new object();
 
             //Act
-            using (var session = sut.BeginSessionFor(id))
+            using (var session = await sut.BeginSessionFor(id))
             {
                 session.AddEvent(newEvent);
-                session.SaveChanges();
+                await session.SaveChanges();
             }
 
             //Assert
@@ -289,7 +290,7 @@
         }
 
         [Fact]
-        public void StreamWithOneEvent_ClearThenBeginSessionWiththrowIfNotExist_ShouldThrow()
+        public async Task StreamWithOneEvent_ClearThenBeginSessionWiththrowIfNotExist_ShouldThrow()
         {
             //Arrange
             int id = 42;
@@ -298,10 +299,10 @@
                 .WithDefaultSetup()
                 .GetNewSUT<int>()
                 .WithEventInStream(@event, id);
-            sut.Clear(id);
+            await sut.Delete(id);
 
             //Act
-            var exception = Record.Exception(() => sut.BeginSessionFor(id, true));
+            var exception = await Record.ExceptionAsync(() => sut.BeginSessionFor(id, true));
 
             //Assert
             exception.Should().NotBeNull();
@@ -309,7 +310,7 @@
         }
 
         [Fact]
-        public void StreamWithOneEvent_Exists_ShouldReturnTrue()
+        public async Task StreamWithOneEvent_Exists_ShouldReturnTrue()
         {
             //Arrange
             int id = 42;
@@ -320,14 +321,14 @@
                 .WithEventInStream(@event, id);
 
             //Act
-            var exists = sut.Exists(id);
+            var exists = await sut.Contains(id);
 
             //Assert
             exists.Should().BeTrue();
         }
 
         [Fact]
-        public void StreamWithOneEvent_ExistsWithDifferentId_ShouldReturnFalse()
+        public async Task StreamWithOneEvent_ExistsWithDifferentId_ShouldReturnFalse()
         {
             //Arrange
             int idWithEvent = 42;
@@ -338,14 +339,14 @@
                 .WithEventInStream(@event, idWithEvent);
 
             //Act
-            var exists = sut.Exists(idWithEvent+1);
+            var exists = await sut.Contains(idWithEvent+1);
 
             //Assert
             exists.Should().BeFalse();
         }
 
         [Fact]
-        public void StreamWithoutEvents_Exists_ShouldReturnFalse()
+        public async Task StreamWithoutEvents_Exists_ShouldReturnFalse()
         {
             //Arrange
             int id = 42;
@@ -354,7 +355,7 @@
                 .GetNewSUT<int>();
 
             //Act
-            var exists = sut.Exists(id);
+            var exists = await sut.Contains(id);
 
             //Assert
             exists.Should().BeFalse();

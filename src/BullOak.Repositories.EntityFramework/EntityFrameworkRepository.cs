@@ -3,12 +3,17 @@
     using System;
     using System.Data.Entity;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Threading.Tasks;
+    using BullOak.Repositories.Repository;
     using BullOak.Repositories.Session;
 
-    public class EntityFrameworkRepository<TContext>
+    public class EntityFrameworkRepository<TContext, TState> : IStartSessions<Expression<Func<TState, bool>>, TState>
+        where TState: class
         where TContext : DbContext
     {
+        private static Type stateType = typeof(TState);
+
         protected readonly Func<TContext> dbContextFactory;
         protected readonly IHoldAllConfiguration configuration;
 
@@ -18,64 +23,21 @@
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public IManageAndSaveSession<TState> BeginSessionWithNewEntity<TState, TEntityFrameworkEntity>(
-            TEntityFrameworkEntity newEntity)
-            where TEntityFrameworkEntity : class, TState
+        public async Task<IManageSessionOf<TState>> BeginSessionFor(Expression<Func<TState, bool>> entitySelector, bool throwIfNotExists = false)
         {
             TContext dbContext = null;
             EntityFrameworkSession<TState> session = null;
             try
             {
                 dbContext = dbContextFactory();
-                session = new EntityFrameworkSession<TState>(configuration, dbContext);
-                dbContext.Set<TEntityFrameworkEntity>()
-                    .Add(newEntity);
-                session.SetEntity(newEntity, true);
-                return session;
-            }
-            finally
-            {
-                if (session == null) dbContext?.Dispose();
-            }
-        }
+                var set = dbContext.Set<TState>();
 
-        public IManageAndSaveSession<TState> BeginSessionFor<TState>(Func<TContext, TState> entitySelector)
-            where TState : class
-        {
-            TContext dbContext = null;
-            EntityFrameworkSession<TState> session = null;
-            try
-            {
-                dbContext = dbContextFactory();
-                session = new EntityFrameworkSession<TState>(configuration, dbContext);
-                var state = entitySelector(dbContext);
+                var entity = await set.FirstOrDefaultAsync(entitySelector) ?? set.Create();
+                var isExisting = set.Local.Contains(entity);
 
-                var isExisting = AttachAndReturnIfAlreadyAttached(state, dbContext);
-
-                session.SetEntity(state, !isExisting);
-                return session;
-            }
-            finally
-            {
-                if (session == null) dbContext?.Dispose();
-            }
-        }
-
-        public async Task<IManageAndSaveSession<TState>> BeginSessionFor<TState>(
-            Func<TContext, Task<TState>> entitySelector)
-            where TState: class
-        {
-            TContext dbContext = null;
-            EntityFrameworkSession<TState> session = null;
-            try
-            {
-                dbContext = dbContextFactory();
-                session = new EntityFrameworkSession<TState>(configuration, dbContext);
-                var state = await entitySelector(dbContext);
-
-                var isExisting = AttachAndReturnIfAlreadyAttached(state, dbContext);
-
-                session.SetEntity(state, !isExisting);
+                session = new EntityFrameworkSession<TState>(configuration, dbContext, set, isExisting);
+                //TODO (Savvas) -> wrap for editability before setting entity
+                session.SetEntity(entity, !isExisting);
 
                 return session;
             }
@@ -85,14 +47,29 @@
             }
         }
 
-        private static bool AttachAndReturnIfAlreadyAttached(object state, TContext dbContext)
+        public async Task Delete(Expression<Func<TState, bool>> selector)
         {
-            var set = dbContext.Set(state.GetType());
-            var isAttached = set.Local.Contains(state);
+            using (var dbContext = dbContextFactory())
+            {
+                var set = dbContext.Set<TState>();
+                var entity = await set.FirstOrDefaultAsync(selector);
 
-            if(!isAttached) set.Attach(state);
+                if (entity != null)
+                {
+                    set.Remove(entity);
+                }
 
-            return isAttached;
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
+        public Task<bool> Contains(Expression<Func<TState, bool>> selector)
+        {
+            using (var dbContext = dbContextFactory())
+            {
+                var set = dbContext.Set<TState>();
+                return set.AnyAsync(selector);
+            }
         }
     }
 }

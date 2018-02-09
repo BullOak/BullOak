@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.NEventStore.Test.Integration.Contexts
 {
     using System;
+    using System.Threading.Tasks;
     using BullOak.Repositories.Session;
     using TechTalk.SpecFlow;
     using global::NEventStore;
@@ -84,9 +85,9 @@
         private NEventStoreContainer nEventStoreContainer;
         private NEventStoreRepository<string, IHoldHigherOrder> repository;
 
-        public IManageAndSaveSession<IHoldHigherOrder> LastSession
+        public IManageSessionOf<IHoldHigherOrder> LastSession
         {
-            get => (IManageAndSaveSession<IHoldHigherOrder>) scenarioContext[id];
+            get => (IManageSessionOf<IHoldHigherOrder>) scenarioContext[id];
             private set => scenarioContext[id] = value;
         }
 
@@ -103,9 +104,9 @@
             repository = new NEventStoreRepository<string, IHoldHigherOrder>(nEventStoreContainer.EventStore, configuration);
         }
 
-        public IManageAndSaveSession<IHoldHigherOrder> StartSession(string streamId)
+        public async Task<IManageSessionOf<IHoldHigherOrder>> StartSession(string streamId)
         {
-            LastSession = repository.BeginSessionFor(streamId);
+            LastSession = await repository.BeginSessionFor(streamId);
 
             return LastSession;
         }

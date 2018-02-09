@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.NEventStore.Test.Integration.StepDefinitions
 {
     using System;
+    using System.Threading.Tasks;
     using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
     using FluentAssertions;
     using TechTalk.SpecFlow;
@@ -31,21 +32,21 @@
         }
 
         [When(@"I try to save the new events in the stream")]
-        public void WhenITryToSaveTheNewEventsInTheStream()
+        public async Task WhenITryToSaveTheNewEventsInTheStream()
         {
-            using (var session = sessionContainer.StartSession(streamInfo.Id))
+            using (var session = await sessionContainer.StartSession(streamInfo.Id))
             {
                 session.AddEvents(eventsContainer.LastEventsCreated);
 
                 //The implementation is sync-based. Async it stubbed.
-                recordedException = Record.Exception(() => session.SaveChangesSync());
+                recordedException = await Record.ExceptionAsync(() => session.SaveChanges());
             }
         }
 
         [When(@"I add (.*) events? in the session without saving it")]
-        public void WhenIAddEventsInTheSession(int eventCount)
+        public async Task WhenIAddEventsInTheSession(int eventCount)
         {
-            using (var session = sessionContainer.StartSession(streamInfo.Id))
+            using (var session = await sessionContainer.StartSession(streamInfo.Id))
             {
                 session.AddEvents(eventGenerator.GenerateEvents(eventCount));
                 

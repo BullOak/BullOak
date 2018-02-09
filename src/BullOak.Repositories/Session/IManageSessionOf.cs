@@ -2,6 +2,8 @@ namespace BullOak.Repositories.Session
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Manages a session. A session represents the operations that relate
@@ -14,11 +16,13 @@ namespace BullOak.Repositories.Session
     public interface IManageSessionOf<out TState> : IDisposable
     {
         bool IsNewState { get; }
-        bool IsOptimisticConcurrencySupported { get; }
         TState GetCurrentState();
 
         void AddEvents(IEnumerable<object> events);
         void AddEvents(object[] events);
         void AddEvent(object @event);
+
+        Task<int> SaveChanges(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce,
+            CancellationToken? cancellationToken = null);
     }
 }

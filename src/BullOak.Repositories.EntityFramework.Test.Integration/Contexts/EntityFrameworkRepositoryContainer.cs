@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using BullOak.Repositories.EntityFramework.Test.Integration.DbModel;
     using BullOak.Repositories.Session;
     using TechTalk.SpecFlow;
@@ -14,19 +15,19 @@
         private ScenarioContext scenarioContext;
         private TestContextContainer testContextContainer;
 
-        public IManageAndSaveSession<IHoldHighOrders> LastSession
+        public IManageSessionOf<HoldHighOrders> LastSession
         {
-            get => (IManageAndSaveSession<IHoldHighOrders>) scenarioContext[id];
+            get => (IManageSessionOf<HoldHighOrders>) scenarioContext[id];
             private set => scenarioContext[id] = value;
         }
 
-        public EntityFrameworkRepository<TestContext> Repo
+        public EntityFrameworkRepository<TestContext, HoldHighOrders> Repo
         {
             get
             {
                 if (scenarioContext.ContainsKey(repoId))
-                    return (EntityFrameworkRepository<TestContext>) scenarioContext[repoId];
-                return default(EntityFrameworkRepository<TestContext>);
+                    return (EntityFrameworkRepository<TestContext, HoldHighOrders>) scenarioContext[repoId];
+                return default(EntityFrameworkRepository<TestContext, HoldHighOrders>);
             }
             private set => scenarioContext[repoId] = value;
         }
@@ -42,15 +43,12 @@
             if (Repo != null) throw new Exception($"{nameof(Repo)} already setup");
 
             testContextContainer.StartContext();
-            Repo = new EntityFrameworkRepository<TestContext>(configuration, () => testContextContainer.TestContext);
+            Repo = new EntityFrameworkRepository<TestContext, HoldHighOrders>(configuration, () => testContextContainer.TestContext);
         }
 
-        public IManageAndSaveSession<IHoldHighOrders> StartSession(string clientId)
+        public async Task<IManageSessionOf<HoldHighOrders>> StartSession(string clientId)
         {
-            LastSession = Repo.BeginSessionFor<IHoldHighOrders>(x => x.Orders.FirstOrDefault(o => o.ClientId == clientId) ?? new HoldHighOrders()
-            {
-                ClientId = clientId
-            });
+            LastSession = await Repo.BeginSessionFor(o => o.ClientId == clientId);
 
             return LastSession;
         }

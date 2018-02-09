@@ -61,7 +61,7 @@
         {
             CinemaId = new CinemaAggregateRootId(name);
 
-            using (var session = CinemaRepo.BeginSessionFor(CinemaId))
+            using (var session = await CinemaRepo.BeginSessionFor(CinemaId))
             {
                 var @event = new CinemaAggregateRoot()
                     .Create(Guid.NewGuid(), capacity, name);
@@ -83,25 +83,25 @@
         }
 
         [When(@"I load the ""(.*)"" cinema from the repository")]
-        public void WhenILoadTheCinemaFromTheRepository(string name)
+        public async Task WhenILoadTheCinemaFromTheRepository(string name)
         {
             var id = new CinemaAggregateRootId(name);
 
-            using (var session = CinemaRepo.BeginSessionFor(id))
+            using (var session = await CinemaRepo.BeginSessionFor(id))
             {
                 CinemaState = session.GetCurrentState();
             }
         }
 
         [When(@"I save the cinema")]
-        public void WhenISaveTheCinema()
+        public async Task WhenISaveTheCinema()
         {
-            using (var session = CinemaRepo.BeginSessionFor(CinemaId))
+            using (var session = await CinemaRepo.BeginSessionFor(CinemaId))
             {
                 session.AddEvent(CinemaOperationEvents.ToArray());
                 CinemaOperationEvents.Clear();
 
-                session.SaveChanges();
+                await session.SaveChanges();
             }
         }
 
@@ -129,27 +129,27 @@
         }
 
         [Then(@"the cinema I get should not be null")]
-        public void ThenTheCinemaIGetShouldNotBeNull()
+        public async Task ThenTheCinemaIGetShouldNotBeNull()
         {
-            using (var session = CinemaRepo.BeginSessionFor(CinemaId))
+            using (var session = await CinemaRepo.BeginSessionFor(CinemaId))
             {
                 session.GetCurrentState().Should().NotBeNull();
             }
         }
 
         [Then(@"the cinema aggregate state should have seats set to (.*)")]
-        public void ThenTheCinemaAggregateShouldHaveSeatsSetTo(int capacity)
+        public async Task ThenTheCinemaAggregateShouldHaveSeatsSetTo(int capacity)
         {
-            using (var session = CinemaRepo.BeginSessionFor(CinemaId))
+            using (var session = await CinemaRepo.BeginSessionFor(CinemaId))
             {
                 session.GetCurrentState().NumberOfSeats.Should().Be(capacity);
             }
         }
 
         [Then(@"the cinema aggregate state should have a cinema name of ""(.*)""")]
-        public void ThenTheCinemaAggregateShouldHaveACinemaNameOf(string name)
+        public async Task ThenTheCinemaAggregateShouldHaveACinemaNameOf(string name)
         {
-            using (var session = CinemaRepo.BeginSessionFor(CinemaId))
+            using (var session = await CinemaRepo.BeginSessionFor(CinemaId))
             {
                 session.GetCurrentState().Id.Name.Should().Be(name);
             }

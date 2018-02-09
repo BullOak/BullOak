@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.EntityFramework.Test.Integration.StepDefinitions
 {
     using System;
+    using System.Threading.Tasks;
     using BullOak.Repositories.EntityFramework.Test.Integration.Contexts;
     using BullOak.Repositories.EntityFramework.Test.Integration.DbModel;
     using FluentAssertions;
@@ -23,9 +24,9 @@
         }
 
         [When(@"I load my entity")]
-        public void WhenILoadMyEntity()
+        public async Task WhenILoadMyEntity()
         {
-            using (var session = repoContainer.StartSession(clientIdContainer.Id))
+            using (var session = await repoContainer.StartSession(clientIdContainer.Id))
             {
                 lastStateContainer.LatestLoadedState = session.GetCurrentState();
             }

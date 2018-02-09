@@ -7,16 +7,18 @@
     using System.Threading.Tasks;
     using BullOak.Repositories.Session;
 
-    public class EntityFrameworkSession<TState> : BaseRepoSession<TState>, IManageAndSaveSession<TState>
+    public class EntityFrameworkSession<TState> : BaseRepoSession<TState>
+        where TState : class
     {
         private readonly DbContext dbContext;
-        public override bool IsOptimisticConcurrencySupported => false;
 
         private static readonly Type stateType;
         private static readonly bool canWrap;
         public static bool CanWrap => canWrap;
 
         private readonly bool useStateImmutabilityWrapping;
+        private readonly DbSet<TState> set;
+        private readonly bool isNew;
 
         static EntityFrameworkSession()
         {
@@ -26,9 +28,13 @@
 
         public EntityFrameworkSession(IHoldAllConfiguration configuration,
             DbContext dbContext,
+            DbSet<TState> set,
+            bool isNew,
             bool useStateImmutabilityWrapping = true)
             : base(configuration, dbContext)
         {
+            this.isNew = isNew;
+            this.set = set;
             this.dbContext = dbContext;
             this.useStateImmutabilityWrapping = useStateImmutabilityWrapping;
         }
@@ -44,41 +50,15 @@
             this.Initialize(state, isNewEntity);
         }
 
-        public int SaveChangesSync(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce)
+        protected override Task<int> SaveChanges(object[] newEvents,
+            TState currentState,
+            CancellationToken? cancellationToken)
         {
-            if (targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce)
-            {
-                PublishEventsSync(configuration, this.NewEventsCollection.ToArray());
-            }
+            if (isNew) set.Attach(currentState);
 
-            var result = dbContext.SaveChanges();
-
-            if (targetGuarantee == DeliveryTargetGuarntee.AtMostOnce)
-            {
-                PublishEventsSync(configuration, this.NewEventsCollection.ToArray());
-            }
-
-            return result;
-        }
-
-        public async Task<int> SaveChanges(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce,
-            CancellationToken? cancellationToken = null)
-        {
-            if (targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce)
-            {
-                await PublishEvents(configuration, this.NewEventsCollection.ToArray(), cancellationToken);
-            }
-
-            var result = await (cancellationToken != null
+            return (cancellationToken != null
                 ? dbContext.SaveChangesAsync(cancellationToken.Value)
                 : dbContext.SaveChangesAsync());
-
-            if (targetGuarantee == DeliveryTargetGuarntee.AtMostOnce)
-            {
-                await PublishEvents(configuration, this.NewEventsCollection.ToArray(), cancellationToken);
-            }
-
-            return result;
         }
     }
 }

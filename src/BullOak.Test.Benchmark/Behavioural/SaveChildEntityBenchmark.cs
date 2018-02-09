@@ -22,10 +22,10 @@
         {
             var id = new ViewingId(Guid.NewGuid().ToString(), fixture.dateOfViewing, fixture.cinemaId);
 
-            using (var session = fixture.ViewingFunctionalRepo.BeginSessionFor(id))
+            using (var session = fixture.ViewingFunctionalRepo.BeginSessionFor(id).Result)
             {
                 session.AddEvent(RepoBasedViewing.CreateViewing(id.CinemaId, id.MovieName, id.ShowingDate, Capacity));
-                session.SaveChanges();
+                session.SaveChanges().Wait();
             }
         }
 

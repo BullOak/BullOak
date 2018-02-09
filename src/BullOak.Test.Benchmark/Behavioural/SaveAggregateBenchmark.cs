@@ -17,14 +17,14 @@
         {
             var cinemaId = new CinemaAggregateRootId(Guid.NewGuid().ToString());
 
-            using (var session = fixture.CinemaFunctionalRepo.BeginSessionFor(cinemaId))
+            using (var session = fixture.CinemaFunctionalRepo.BeginSessionFor(cinemaId).Result)
             {
                 var @event = new BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate.CinemaAggregateRoot()
                     .Create(fixture.correlationId, capacity, Guid.NewGuid().ToString());
 
                 session.AddEvent(@event);
 
-                session.SaveChanges();
+                session.SaveChanges().Wait();
             }
         }
 

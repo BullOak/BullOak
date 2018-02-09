@@ -17,7 +17,6 @@
         protected readonly IHoldAllConfiguration configuration;
         protected ICollection<object> NewEventsCollection { get; private set; }
 
-        public abstract bool IsOptimisticConcurrencySupported { get; }
         private TState currentState;
         public TState GetCurrentState() => currentState;
 
@@ -88,21 +87,31 @@
             IsNewState = isNew;
         }
 
-        protected async Task PublishEvents(IHoldAllConfiguration configuration, object[] events, CancellationToken? cancellationToken = null)
+        public async Task<int> SaveChanges(DeliveryTargetGuarntee targetGuarantee =
+                DeliveryTargetGuarntee.AtLeastOnce,
+            CancellationToken? cancellationToken = null)
+        {
+            var newEvents = NewEventsCollection.ToArray();
+            var sendEventsBeforeSaving = targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce;
+
+            if (sendEventsBeforeSaving) await PublishEvents(configuration, newEvents, cancellationToken);
+            var retVal = await SaveChanges(newEvents, GetCurrentState(), cancellationToken);
+            if (!sendEventsBeforeSaving) await PublishEvents(configuration, newEvents, cancellationToken);
+
+            return retVal;
+        }
+
+        protected abstract Task<int> SaveChanges(object[] newEvents,
+            TState currentState,
+            CancellationToken? cancellationToken);
+
+        private async Task PublishEvents(IHoldAllConfiguration configuration, object[] events, CancellationToken? cancellationToken = null)
         {
             for (var i = 0; i < events.Length; i++)
             {
                 //We await each one to guarantee ordering of publishing, even though it would have been more performant
                 // to publish and await all of them with a WhenAll
                 await eventPublisher.Publish(events[i], cancellationToken);
-            }
-        }
-
-        protected void PublishEventsSync(IHoldAllConfiguration configuration, object[] events)
-        {
-            for (var i = 0; i < events.Length; i++)
-            {
-                eventPublisher.PublishSync(events[i]);
             }
         }
 
@@ -117,5 +126,6 @@
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
     }
 }

@@ -20,30 +20,21 @@
             this.id = id;
         }
 
-        protected override Task<int> SaveChanges(object[] eventsToAdd, bool shouldSaveSnapshot, TState snapshot, CancellationToken? cancellationToken)
+        /// <inheritdoc />
+        protected override Task<int> SaveChanges(object[] newEvents, TState currentState, CancellationToken? cancellationToken)
         {
-            SaveChangesSync(eventsToAdd, shouldSaveSnapshot, snapshot);
-
-            return done;
-        }
-
-        protected override int SaveChangesSync(object[] eventsToAdd, bool shouldSaveSnapshot, TState snapshot)
-        {
-            if (shouldSaveSnapshot)
-                throw new ArgumentException("Saving snapshots is not supported.");
-
             lock (data)
             {
                 if (data.ContainsKey(id))
                 {
                     var events = data[id].ToList();
-                    events.AddRange(eventsToAdd);
+                    events.AddRange(newEvents);
 
                     data[id] = events.ToArray();
                 }
-                else data[id] = eventsToAdd;
+                else data[id] = newEvents;
 
-                return data[id].Length;
+                return Task.FromResult(data[id].Length);
             }
         }
     }

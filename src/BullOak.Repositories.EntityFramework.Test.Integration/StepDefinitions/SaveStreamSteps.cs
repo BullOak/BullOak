@@ -1,8 +1,8 @@
 ﻿namespace BullOak.Repositories.EntityFramework.Test.Integration.StepDefinitions
 {
     using System;
+    using System.Threading.Tasks;
     using BullOak.Repositories.EntityFramework.Test.Integration.Contexts;
-    using BullOak.Repositories.EntityFramework.Test.Integration.DbModel;
     using FluentAssertions;
     using TechTalk.SpecFlow;
     using Xunit;
@@ -32,34 +32,34 @@
         }
 
         [When(@"I try to save a new entity with the new events? in the stream")]
-        public void WhenITryToSaveANewEntityWithTheNewEventsInTheStream()
+        public async Task WhenITryToSaveANewEntityWithTheNewEventsInTheStream()
         {
-            using (var session = repositoryContainer.Repo.BeginSessionWithNewEntity<IHoldHighOrders, HoldHighOrders>(new HoldHighOrders()))
+            using (var session = await repositoryContainer.Repo.BeginSessionFor(x=> x.ClientId == clientIdContainer.Id))
             {
                 session.AddEvent(new InitializeClientOrderEvent(Guid.Parse(clientIdContainer.Id)));
                 session.AddEvents(eventsContainer.LastEventsCreated);
 
                 //The implementation is sync-based. Async it stubbed.
-                recordedException = Record.Exception(() => session.SaveChangesSync());
+                recordedException = await Record.ExceptionAsync(() => session.SaveChanges());
             }
         }
 
         [When(@"I try to update an existing entity with the new events in the stream")]
-        public void WhenITryToUpdateAnExistingEntityWithTheNewEventsInTheStream()
+        public async Task WhenITryToUpdateAnExistingEntityWithTheNewEventsInTheStream()
         {
-            using (var session = repositoryContainer.StartSession(clientIdContainer.Id))
+            using (var session = await repositoryContainer.StartSession(clientIdContainer.Id))
             {
                 session.AddEvents(eventsContainer.LastEventsCreated);
 
                 //The implementation is sync-based. Async it stubbed.
-                recordedException = Record.Exception(() => session.SaveChangesSync());
+                recordedException = await Record.ExceptionAsync(() => session.SaveChanges());
             }
         }
 
         [When(@"I add (.*) events? in the session of existing entity without saving it")]
-        public void WhenIAddEventsInTheSession(int eventCount)
+        public async Task WhenIAddEventsInTheSession(int eventCount)
         {
-            using (var session = repositoryContainer.StartSession(clientIdContainer.Id))
+            using (var session = await repositoryContainer.StartSession(clientIdContainer.Id))
             {
                 session.AddEvents(eventGenerator.GenerateEvents(eventCount));
 

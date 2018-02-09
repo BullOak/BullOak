@@ -3,12 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Reflection;
-    using BullOak.Infrastructure.TestHelpers.Application.Stubs;
-    using BullOak.Messages;
     using BullOak.Repositories;
     using BullOak.Repositories.Config;
     using BullOak.Repositories.InMemory;
-    using BullOak.Test.EndToEnd.Stub.AggregateBased;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.ViewingAggregate;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
@@ -17,11 +14,9 @@
     internal class AggregateFixture
     {
         public readonly InMemoryEventSourcedRepository<CinemaAggregateRootId, CinemaAggregateState> CinemaFunctionalRepo;
-        public readonly CinemaAggregateRepository CinemaAggregateRepository;
         public CinemaAggregateRootId cinemaId;
 
         public readonly InMemoryEventSourcedRepository<ViewingId, IViewingState> ViewingFunctionalRepo;
-        public readonly ViewingAggregateRepository ViewingAggregateRepository;
 
         public Guid correlationId;
         public string name;
@@ -35,7 +30,7 @@
                 .AlwaysUseThreadSafe()
                 .WithNoEventPublisher()
                 .WithAnyAppliersFromInstances((IEnumerable<object>) appliers ?? new List<object>())
-                .WithAnyAppliersFrom(Assembly.GetAssembly(typeof(CinemaAggregateRepository)))
+                .WithAnyAppliersFrom(Assembly.GetAssembly(typeof(CinemaAggregateState)))
                 .AndNoMoreAppliers()
                 .WithNoUpconverters()
                 .Build();
@@ -44,8 +39,6 @@
             correlationId = Guid.NewGuid();
             CinemaFunctionalRepo = new InMemoryEventSourcedRepository<CinemaAggregateRootId, CinemaAggregateState>(configuration);
             ViewingFunctionalRepo = new InMemoryEventSourcedRepository<ViewingId, IViewingState>(configuration);
-            CinemaAggregateRepository = new CinemaAggregateRepository(new InMemoryEventStore());
-            ViewingAggregateRepository = new ViewingAggregateRepository(new InMemoryEventStore());
 
             cinemaId = new CinemaAggregateRootId(name);
             dateOfViewing = DateTime.Now.AddDays(3);
@@ -61,9 +54,6 @@
                 session.AddEvent(@event);
                 session.SaveChanges().Wait();
             }
-
-            CinemaAggregateRepository[@event.CinemaId.Name].Add(@event.ToEnvelope(@event.CinemaId)
-                .FromAggregate<BullOak.Test.EndToEnd.Stub.AggregateBased.CinemaAggregate.CinemaAggregateRoot>());
         }
 
         public void AddViewingAndSeatCreationEvents(ViewingId viewingId, int capacity)
@@ -75,9 +65,6 @@
                 session.AddEvent(viewingCreatedEvent);
                 session.SaveChanges().Wait();
             }
-
-            ViewingAggregateRepository[viewingId.ToString()].Add(viewingCreatedEvent.ToEnvelope(viewingCreatedEvent.ViewingId)
-                .FromAggregate<BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.ViewingAggregateRoot>());
 
             for (ushort i = 0; i < capacity; i++)
                 AddSeatCreatedEvent(viewingCreatedEvent.ViewingId, i);
@@ -92,10 +79,6 @@
                 session.AddEvent(seatCreated);
                 session.SaveChanges().Wait();
             }
-
-            ViewingAggregateRepository[viewingId.ToString()].Add(seatCreated.ToEnvelope(new SeatId(seatNumber))
-                .FromChildEntity<BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.SeatsInViewing>()
-                .WithParentId(viewingId));
         }
 
         public void AddSeatReservationEvent(ViewingId viewingId, ushort seatNumber)
@@ -107,10 +90,6 @@
                 session.AddEvent(seatReserved);
                 session.SaveChanges().Wait();
             }
-
-            ViewingAggregateRepository[viewingId.ToString()].Add(seatReserved.ToEnvelope(new SeatId(seatNumber))
-                .FromChildEntity<BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.SeatsInViewing>()
-                .WithParentId(viewingId));
         }
     }
 }

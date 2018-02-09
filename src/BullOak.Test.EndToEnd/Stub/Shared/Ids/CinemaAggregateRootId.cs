@@ -1,9 +1,7 @@
 ﻿namespace BullOak.Test.EndToEnd.Stub.Shared.Ids
 {
     using System;
-    using BullOak.Common;
-
-    public class CinemaAggregateRootId : IId, IEquatable<CinemaAggregateRootId>
+    public class CinemaAggregateRootId : IEquatable<CinemaAggregateRootId>
     {
         public string Name { get; }
 

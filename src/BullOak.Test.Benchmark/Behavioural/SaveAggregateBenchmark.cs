@@ -27,13 +27,5 @@
                 session.SaveChanges().Wait();
             }
         }
-
-        //[Benchmark(Baseline = true)]
-        public void SaveAnAggregateBasedAggregate()
-        {
-            var aggregate = new BullOak.Test.EndToEnd.Stub.AggregateBased.CinemaAggregate.CinemaAggregateRoot(fixture.correlationId, capacity, Guid.NewGuid().ToString());
-            fixture.CinemaAggregateRepository.Save(aggregate).Wait();
-        }
-
     }
 }

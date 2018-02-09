@@ -73,33 +73,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="StepDefinitions\AggregateBasedChildEntityESSteps.cs" />
     <Compile Include="StepDefinitions\Context.cs" />
     <Compile Include="StepDefinitions\RepositoryBasedChildEntityESSteps.cs" />
-    <Compile Include="Stub\AggregateBased\CinemaAggregateRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Specifications\RepositoryBasedES.feature.cs">
       <DependentUpon>RepositoryBasedES.feature</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Specifications\AggregateBasedES.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AggregateBasedES.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Specifications\DenormalizerSimpleSpecs.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DenormalizerSimpleSpecs.feature</DependentUpon>
-    </Compile>
-    <Compile Include="StepDefinitions\AggregateBasedESStepDefinitions.cs" />
     <Compile Include="StepDefinitions\RepositoryBasedESStepDefinition.cs" />
-    <Compile Include="Stub\AggregateBased\CinemaAggregate\CinemaAggregateRoot.cs" />
-    <Compile Include="Stub\AggregateBased\ViewingAggregateRepository.cs" />
     <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaAggregateRoot.cs" />
     <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaAggregateState.cs" />
     <Compile Include="Stub\RepositoryBased\CinemaAggregate\CinemaCreatedReconstitutor.cs" />
+    <Compile Include="Stub\Shared\Messages\BullOakEvent.cs" />
     <Compile Include="Stub\Shared\Messages\SeatInViewingInitialized.cs" />
     <Compile Include="Stub\RepositoryBased\ViewingAggregate\ViewingReconstitutor.cs" />
     <Compile Include="Stub\RepositoryBased\ViewingAggregate\IViewingState.cs" />
@@ -108,13 +94,10 @@
     <Compile Include="Stub\RepositoryBased\ViewingAggregate\ViewingAggregateRoot.cs" />
     <Compile Include="Stub\Shared\Ids\ViewingId.cs" />
     <Compile Include="Stub\Shared\Ids\CinemaAggregateRootId.cs" />
-    <Compile Include="Stub\AggregateBased\Repository.cs" />
     <Compile Include="Stub\Shared\Messages\SeatReservedEvent.cs" />
     <Compile Include="Stub\Shared\Messages\ViewingCreatedEvent.cs" />
     <Compile Include="Stub\Shared\SeatInViewingQuery\SeatInViewingDenormalizer.cs" />
     <Compile Include="Stub\Shared\SeatInViewingQuery\SeatInViewingVM.cs" />
-    <Compile Include="Stub\AggregateBased\ViewingAggregate\SeatsInViewing.cs" />
-    <Compile Include="Stub\AggregateBased\ViewingAggregate\ViewingAggregateRoot.cs" />
     <Compile Include="Stub\Shared\ViewingQuery\VewingVM.cs" />
     <Compile Include="Stub\Shared\ViewingQuery\ViewingDenormalizer.cs" />
     <Compile Include="Stub\Shared\Messages\CinemaCreated.cs" />
@@ -126,36 +109,8 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>RepositoryBasedES.feature.cs</LastGenOutput>
     </None>
-    <None Include="Specifications\AggregateBasedES.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>AggregateBasedES.feature.cs</LastGenOutput>
-    </None>
-    <None Include="Specifications\DenormalizerSimpleSpecs.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>DenormalizerSimpleSpecs.feature.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BullOak.Application\BullOak.Application.csproj">
-      <Project>{fdbec3d7-4d0e-4d15-bf63-f3a846c34288}</Project>
-      <Name>BullOak.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Common\BullOak.Common.csproj">
-      <Project>{432e21ec-ef22-490c-b2bb-c2606fff156b}</Project>
-      <Name>BullOak.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.EventStream\BullOak.EventStream.csproj">
-      <Project>{90e2d13e-b1ca-47ad-87dd-d3707d150b0b}</Project>
-      <Name>BullOak.EventStream</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Infrastructure.TestHelpers.Application\BullOak.Infrastructure.TestHelpers.Application.csproj">
-      <Project>{A25FC776-91B0-4481-B1D4-4878FD15B100}</Project>
-      <Name>BullOak.Infrastructure.TestHelpers.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Messages\BullOak.Messages.csproj">
-      <Project>{3a8876f8-ca9a-404d-ab35-4e5ea0081859}</Project>
-      <Name>BullOak.Messages</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BullOak.Repositories\BullOak.Repositories.csproj">
       <Project>{5934536f-fb5d-42ad-841b-3395b4c1d76d}</Project>
       <Name>BullOak.Repositories</Name>

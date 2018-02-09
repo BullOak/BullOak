@@ -163,26 +163,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BullOak.Application\BullOak.Application.csproj">
-      <Project>{fdbec3d7-4d0e-4d15-bf63-f3a846c34288}</Project>
-      <Name>BullOak.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Common\BullOak.Common.csproj">
-      <Project>{432e21ec-ef22-490c-b2bb-c2606fff156b}</Project>
-      <Name>BullOak.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.EventStream\BullOak.EventStream.csproj">
-      <Project>{90e2d13e-b1ca-47ad-87dd-d3707d150b0b}</Project>
-      <Name>BullOak.EventStream</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Infrastructure.TestHelpers.Application\BullOak.Infrastructure.TestHelpers.Application.csproj">
-      <Project>{A25FC776-91B0-4481-B1D4-4878FD15B100}</Project>
-      <Name>BullOak.Infrastructure.TestHelpers.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\BullOak.Messages\BullOak.Messages.csproj">
-      <Project>{3a8876f8-ca9a-404d-ab35-4e5ea0081859}</Project>
-      <Name>BullOak.Messages</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BullOak.Repositories\BullOak.Repositories.csproj">
       <Project>{5934536f-fb5d-42ad-841b-3395b4c1d76d}</Project>
       <Name>BullOak.Repositories</Name>

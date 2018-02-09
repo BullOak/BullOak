@@ -74,10 +74,6 @@
     <Compile Include="Upconverter\UpconverterConfigTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BullOak.Common\BullOak.Common.csproj">
-      <Project>{432E21EC-EF22-490C-B2BB-C2606FFF156B}</Project>
-      <Name>BullOak.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BullOak.Repositories.Test.Unit.UpconverterContainer\BullOak.Repositories.Test.Unit.UpconverterContainer.csproj">
       <Project>{e31a2507-6ac6-4281-960f-7cebd96eef30}</Project>
       <Name>BullOak.Repositories.Test.Unit.UpconverterContainer</Name>

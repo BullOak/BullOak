@@ -1,9 +1,8 @@
 ﻿namespace BullOak.Test.EndToEnd.Stub.Shared.Ids
 {
     using System;
-    using BullOak.Common;
 
-    public class ViewingId : IId, IEquatable<ViewingId>
+    public class ViewingId : IEquatable<ViewingId>
     {
         public string MovieName { get; private set; }
         public DateTime ShowingDate { get; private set; }

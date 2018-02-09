@@ -6,7 +6,6 @@
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.ViewingAggregate;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
 
-    using AggregateBasedViewing = BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.ViewingAggregateRoot;
     using RepoBasedViewing = BullOak.Test.EndToEnd.Stub.RepositoryBased.ViewingAggregate.ViewingAggregateRoot;
 
     [ShortRunJob]
@@ -36,12 +35,6 @@
             {
                 return session.GetCurrentState();
             }
-        }
-
-        //[Benchmark]
-        public AggregateBasedViewing LoadAggregateBasedAggregateWithChilds()
-        {
-            return fixture.ViewingAggregateRepository.Load(viewingId).Result;
         }
     }
 }

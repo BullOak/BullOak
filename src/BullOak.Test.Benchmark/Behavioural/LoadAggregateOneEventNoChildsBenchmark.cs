@@ -21,9 +21,5 @@
                 return session.GetCurrentState();
             }
         }
-
-        //[Benchmark]
-        public object LoadAggregateBasedAggregate()
-            => fixture.CinemaAggregateRepository.Load(fixture.cinemaId).Result;
     }
 }

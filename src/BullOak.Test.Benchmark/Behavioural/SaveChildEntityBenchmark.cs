@@ -5,7 +5,6 @@
     using BenchmarkDotNet.Attributes.Jobs;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
 
-    using AggregateBasedViewing = BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.ViewingAggregateRoot;
     using RepoBasedViewing = BullOak.Test.EndToEnd.Stub.RepositoryBased.ViewingAggregate.ViewingAggregateRoot;
 
     [ShortRunJob]
@@ -27,16 +26,6 @@
                 session.AddEvent(RepoBasedViewing.CreateViewing(id.CinemaId, id.MovieName, id.ShowingDate, Capacity));
                 session.SaveChanges().Wait();
             }
-        }
-
-        //[Benchmark]
-        public void SaveAggregateBasedAggregatesithChilds()
-        {
-            //This will implicitly create childs as per capacity
-            var aggregate = new AggregateBasedViewing(Capacity, fixture.dateOfViewing, Guid.NewGuid().ToString(),
-                fixture.cinemaId);
-
-            fixture.ViewingAggregateRepository.Save(aggregate).Wait();
         }
     }
 }

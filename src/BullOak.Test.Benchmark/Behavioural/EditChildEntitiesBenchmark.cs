@@ -5,7 +5,6 @@
     using BenchmarkDotNet.Attributes.Jobs;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
 
-    using AggregateBasedViewing = BullOak.Test.EndToEnd.Stub.AggregateBased.ViewingAggregate.ViewingAggregateRoot;
     using RepoBasedViewing = BullOak.Test.EndToEnd.Stub.RepositoryBased.ViewingAggregate.ViewingAggregateRoot;
 
     [ShortRunJob]
@@ -48,20 +47,6 @@
             var buffer = fixture.ViewingFunctionalRepo[viewingId];
             Array.Resize(ref buffer, eventCount - SeatsToReserve);
             fixture.ViewingFunctionalRepo[viewingId] = buffer;
-        }
-
-        //[Benchmark]
-        public void EditChildFromAggregateBasedAggregate()
-        {
-            var aggregate = fixture.ViewingAggregateRepository.Load(viewingId).Result;
-
-            for (int i = 0; i < SeatsToReserve; i++)
-                aggregate.ReserveSeat((ushort) i);
-
-            fixture.ViewingAggregateRepository.Save(aggregate).Wait();
-
-            var eventCount = fixture.ViewingAggregateRepository[viewingId.ToString()].Count;
-            fixture.ViewingAggregateRepository[viewingId.ToString()].RemoveRange(eventCount - SeatsToReserve, SeatsToReserve);
         }
     }
 }

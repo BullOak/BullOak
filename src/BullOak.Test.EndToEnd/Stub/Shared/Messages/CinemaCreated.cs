@@ -3,7 +3,7 @@
     using System;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
 
-    public class CinemaCreated : BullOak.Messages.ParcelVisionEvent
+    public class CinemaCreated : BullOakEvent
     {
         public CinemaAggregateRootId CinemaId { get; }
         public int Capacity { get; }

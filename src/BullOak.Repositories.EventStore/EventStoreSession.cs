@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using BullOak.Repositories.Exceptions;
 
     public class EventStoreSession<TState> : BaseEventSourcedSession<TState, int>
     {
@@ -94,14 +95,19 @@
             checked
             {
                 CheckDisposedState();
-                var writeResult = await eventStoreConnection.ConditionalAppendToStreamAsync(
-                    streamName,
-                    currentVersion,
-                    eventsToAdd.Select(eventObject =>
-                    {
-                        return CreateEventData(eventObject);
-                    }))
-                    .ConfigureAwait(false);
+                ConditionalWriteResult writeResult;
+                try
+                {
+                    writeResult = await eventStoreConnection.ConditionalAppendToStreamAsync(
+                            streamName,
+                            currentVersion,
+                            eventsToAdd.Select(eventObject => { return CreateEventData(eventObject); }))
+                        .ConfigureAwait(false);
+                }
+                catch (global::EventStore.ClientAPI.Exceptions.WrongExpectedVersionException weve)
+                {
+                    throw new ConcurrencyException(streamName, weve);
+                }
 
                 switch (writeResult.Status)
                 {

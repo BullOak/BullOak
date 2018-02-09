@@ -2,9 +2,11 @@
 {
     using System;
     using System.Data.Entity;
+    using System.Data.Entity.Core;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.Session;
 
     public class EntityFrameworkSession<TState> : BaseRepoSession<TState>
@@ -50,15 +52,22 @@
             this.Initialize(state, isNewEntity);
         }
 
-        protected override Task<int> SaveChanges(object[] newEvents,
+        protected override async Task<int> SaveChanges(object[] newEvents,
             TState currentState,
             CancellationToken? cancellationToken)
         {
             if (isNew) set.Attach(currentState);
 
-            return (cancellationToken != null
-                ? dbContext.SaveChangesAsync(cancellationToken.Value)
-                : dbContext.SaveChangesAsync());
+            try
+            {
+                return await (cancellationToken != null
+                    ? dbContext.SaveChangesAsync(cancellationToken.Value)
+                    : dbContext.SaveChangesAsync());
+            }
+            catch (OptimisticConcurrencyException oce)
+            {
+                throw new ConcurrencyException(typeof(TState), oce);
+            }
         }
     }
 }

@@ -56,10 +56,10 @@
         {
             var @event = new CinemaCreated(Guid.NewGuid(), cinemaId, r.Next());
 
-            using (var session = CinemaFunctionalRepo.BeginSessionFor(@event.CinemaId))
+            using (var session = CinemaFunctionalRepo.BeginSessionFor(@event.CinemaId).Result)
             {
                 session.AddEvent(@event);
-                session.SaveChanges();
+                session.SaveChanges().Wait();
             }
 
             CinemaAggregateRepository[@event.CinemaId.Name].Add(@event.ToEnvelope(@event.CinemaId)
@@ -70,10 +70,10 @@
         {
             var viewingCreatedEvent = new ViewingCreatedEvent(viewingId, capacity);
 
-            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingCreatedEvent.ViewingId))
+            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingCreatedEvent.ViewingId).Result)
             {
                 session.AddEvent(viewingCreatedEvent);
-                session.SaveChanges();
+                session.SaveChanges().Wait();
             }
 
             ViewingAggregateRepository[viewingId.ToString()].Add(viewingCreatedEvent.ToEnvelope(viewingCreatedEvent.ViewingId)
@@ -87,10 +87,10 @@
         {
             var seatCreated = new SeatInViewingInitialized(new SeatId(seatNumber));
 
-            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingId))
+            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingId).Result)
             {
                 session.AddEvent(seatCreated);
-                session.SaveChanges();
+                session.SaveChanges().Wait();
             }
 
             ViewingAggregateRepository[viewingId.ToString()].Add(seatCreated.ToEnvelope(new SeatId(seatNumber))
@@ -102,10 +102,10 @@
         {
             var seatReserved = new SeatReservedEvent(viewingId, new SeatId(seatNumber));
 
-            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingId))
+            using (var session = ViewingFunctionalRepo.BeginSessionFor(viewingId).Result)
             {
                 session.AddEvent(seatReserved);
-                session.SaveChanges();
+                session.SaveChanges().Wait();
             }
 
             ViewingAggregateRepository[viewingId.ToString()].Add(seatReserved.ToEnvelope(new SeatId(seatNumber))

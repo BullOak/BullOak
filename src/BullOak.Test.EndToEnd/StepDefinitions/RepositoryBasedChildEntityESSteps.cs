@@ -36,29 +36,29 @@
         }
 
         [Given(@"a viewing for ""(.*)"" with (.*) seats in (.*) hours from now")]
-        public void GivenAViewingForWithSeatsInDaysFromNow(string movie, int seats, int hoursUntilViewing)
+        public async Task GivenAViewingForWithSeatsInDaysFromNow(string movie, int seats, int hoursUntilViewing)
         {
             var cinemaId= new CinemaAggregateRootId("CinemaId");
             ViewingId = new ViewingId(movie, DateTime.Now.AddHours(hoursUntilViewing), cinemaId);
-            using (var session = ViewingRepository.BeginSessionFor(ViewingId))
+            using (var session = await ViewingRepository.BeginSessionFor(ViewingId))
             {
                 var creationEvent = ViewingAggregate.CreateViewing(cinemaId, movie, ViewingId.ShowingDate, seats);
 
                 session.AddEvent(creationEvent);
-                session.SaveChanges();
+                await session.SaveChanges();
             }
         }
 
         [When(@"I try to reserve seat (.*)")]
-        public void WhenITryToReserveSeat(int seatToReserve)
+        public async Task WhenITryToReserveSeat(int seatToReserve)
         {
-            using (var session = ViewingRepository.BeginSessionFor(ViewingId))
+            using (var session = await ViewingRepository.BeginSessionFor(ViewingId))
             {
                 var state = session.GetCurrentState();
                 Event = ViewingAggregate.ReserveSeat(state, seatToReserve);
 
                 session.AddEvent(Event);
-                session.SaveChanges();
+                await session.SaveChanges();
             }
         }
 

@@ -16,7 +16,7 @@
         [Benchmark]
         public object LoadRepoBaseAggregate()
         {
-            using (var session = fixture.CinemaFunctionalRepo.BeginSessionFor(fixture.cinemaId))
+            using (var session = fixture.CinemaFunctionalRepo.BeginSessionFor(fixture.cinemaId).Result)
             {
                 return session.GetCurrentState();
             }

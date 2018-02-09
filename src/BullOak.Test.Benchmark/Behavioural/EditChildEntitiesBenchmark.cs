@@ -33,7 +33,7 @@
         [Benchmark]
         public void EditChildFromRepoBasedAggregate()
         {
-            using (var session = fixture.ViewingFunctionalRepo.BeginSessionFor(viewingId))
+            using (var session = fixture.ViewingFunctionalRepo.BeginSessionFor(viewingId).Result)
             {
                 for (int i = 0; i < SeatsToReserve; i++)
                 {
@@ -41,7 +41,7 @@
 
                     session.AddEvent(events);
                 }
-                session.SaveChanges();
+                session.SaveChanges().Wait();
             }
 
             var eventCount = fixture.ViewingFunctionalRepo[viewingId].Length;

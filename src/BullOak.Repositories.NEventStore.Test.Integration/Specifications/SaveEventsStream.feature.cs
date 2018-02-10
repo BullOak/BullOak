@@ -118,25 +118,53 @@ this.ScenarioSetup(scenarioInfo);
             this.ScenarioCleanup();
         }
         
+        [Xunit.FactAttribute(DisplayName="Throw concurrency exception if two stream try to save at the same time")]
+        [Xunit.TraitAttribute("FeatureTitle", "SaveEventsStream")]
+        [Xunit.TraitAttribute("Description", "Throw concurrency exception if two stream try to save at the same time")]
+        public virtual void ThrowConcurrencyExceptionIfTwoStreamTryToSaveAtTheSameTime()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Throw concurrency exception if two stream try to save at the same time", ((string[])(null)));
+#line 21
+this.ScenarioSetup(scenarioInfo);
+#line 22
+ testRunner.Given("an existing stream with 1 events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 23
+ testRunner.And("I start session 1 and I add 1 event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 24
+ testRunner.And("I start session 2 and I add 1 event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 25
+ testRunner.When("I try to save all sessions", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 26
+ testRunner.Then("1 save session should fail", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 27
+ testRunner.And("1 save session should succeed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 28
+ testRunner.And("all failed sessions should have failed with ConcurrencyException", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 29
+ testRunner.And("there should be 2 events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
         [Xunit.FactAttribute(DisplayName="Save one event in an existing stream")]
         [Xunit.TraitAttribute("FeatureTitle", "SaveEventsStream")]
         [Xunit.TraitAttribute("Description", "Save one event in an existing stream")]
         public virtual void SaveOneEventInAnExistingStream()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Save one event in an existing stream", ((string[])(null)));
-#line 21
+#line 31
 this.ScenarioSetup(scenarioInfo);
-#line 22
+#line 32
  testRunner.Given("an existing stream with 1 events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 23
+#line 33
  testRunner.And("1 new event starting with Order of 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 24
+#line 34
  testRunner.When("I try to save the new events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 25
+#line 35
  testRunner.Then("the save process should succeed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 26
+#line 36
  testRunner.And("there should be 2 events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 27
+#line 37
  testRunner.And("there should be 1 event in the stream with Order higher or equal to 2", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();

@@ -41,7 +41,14 @@
                 });
             }
 
-            eventStream.CommitChanges(Guid.NewGuid());
+            try
+            {
+                eventStream.CommitChanges(Guid.NewGuid());
+            }
+            catch (ConcurrencyException nce)
+            {
+                throw new Exceptions.ConcurrencyException(eventStream.StreamId, nce);
+            }
 
             return Task.FromResult(eventStream.StreamRevision);
         }

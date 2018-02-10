@@ -93,6 +93,7 @@
     <Compile Include="StepDefinitions\SaveStreamSteps.cs" />
     <Compile Include="StepDefinitions\ScenarioSetupAndTeardown.cs" />
     <Compile Include="StepDefinitions\RawStreamSpecs.cs" />
+    <Compile Include="StepDefinitions\SessionSteps.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BullOak.Repositories.NEventStore\BullOak.Repositories.NEventStore.csproj">

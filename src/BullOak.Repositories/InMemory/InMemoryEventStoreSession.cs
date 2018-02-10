@@ -5,18 +5,20 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.Session;
 
     internal class InMemoryEventStoreSession<TState, TId> : BaseEventSourcedSession<TState, int>
     {
+        private readonly int initialVersion;
         private readonly Dictionary<TId, object[]> data;
         private readonly TId id;
-        private static readonly Task<int> done = Task.FromResult(0);
 
         public InMemoryEventStoreSession(IHoldAllConfiguration configuration, Dictionary<TId, object[]> data, TId id)
-            : base(configuration, null)
+            : base(configuration)
         {
             this.data = data ?? throw new ArgumentNullException(nameof(data));
+            initialVersion = data[id].Length;
             this.id = id;
         }
 
@@ -28,6 +30,10 @@
                 if (data.ContainsKey(id))
                 {
                     var events = data[id].ToList();
+
+                    if (events.Count != initialVersion)
+                        throw new ConcurrencyException(id.ToString(), null);
+
                     events.AddRange(newEvents);
 
                     data[id] = events.ToArray();

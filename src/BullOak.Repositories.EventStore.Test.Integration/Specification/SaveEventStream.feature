@@ -31,9 +31,8 @@ Scenario: Concurrent write should fail for outdated session
 	When I try to save 'Session1'
 	And I try to save 'Session2'
 	Then the save process should succeed for 'Session1'
-	And the save process should fail for 'Session2'
+	And the save process should fail for 'Session2' with ConcurrencyException
 	And there should be 20 events in the stream
-
 
 Scenario: Saving already saved session should throw meaningful usage advice exception
 	Given an existing stream with 10 events

@@ -18,6 +18,16 @@ Scenario: Save multiple events in a new stream
 	Then the save process should succeed
 	And there should be 3 events in the stream
 
+Scenario: Throw concurrency exception if two stream try to save at the same time
+	Given an existing stream with 1 events
+	And I start session 1 and I add 1 event
+	And I start session 2 and I add 1 event
+	When I try to save all sessions
+	Then 1 save session should fail
+	And 1 save session should succeed
+	And all failed sessions should have failed with ConcurrencyException
+	And there should be 2 events in the stream
+
 Scenario: Save one event in an existing stream
 	Given an existing stream with 1 events
 	And 1 new event starting with Order of 2

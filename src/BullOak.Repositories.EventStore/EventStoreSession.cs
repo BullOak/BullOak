@@ -96,25 +96,19 @@
             {
                 CheckDisposedState();
                 ConditionalWriteResult writeResult;
-                try
-                {
-                    writeResult = await eventStoreConnection.ConditionalAppendToStreamAsync(
-                            streamName,
-                            currentVersion,
-                            eventsToAdd.Select(eventObject => { return CreateEventData(eventObject); }))
-                        .ConfigureAwait(false);
-                }
-                catch (global::EventStore.ClientAPI.Exceptions.WrongExpectedVersionException weve)
-                {
-                    throw new ConcurrencyException(streamName, weve);
-                }
 
+                writeResult = await eventStoreConnection.ConditionalAppendToStreamAsync(
+                        streamName,
+                        currentVersion,
+                        eventsToAdd.Select(eventObject => { return CreateEventData(eventObject); }))
+                    .ConfigureAwait(false);
+             
                 switch (writeResult.Status)
                 {
                     case ConditionalWriteStatus.Succeeded:
                         break;
                     case ConditionalWriteStatus.VersionMismatch:
-                        throw new InvalidOperationException($"Stream expected version mismatched actual version. StreamId: {streamName}");
+                        throw new ConcurrencyException(streamName, null);
                     case ConditionalWriteStatus.StreamDeleted:
                         throw new InvalidOperationException($"Stream was deleted. StreamId: {streamName}");
                     default:

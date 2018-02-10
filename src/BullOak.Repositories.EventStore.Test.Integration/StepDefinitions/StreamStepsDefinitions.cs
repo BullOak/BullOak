@@ -6,6 +6,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
     using FluentAssertions;
     using System;
     using System.Collections.Generic;
+    using BullOak.Repositories.Exceptions;
     using TechTalk.SpecFlow;
     using Xunit;
 
@@ -127,11 +128,18 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
             testDataContext.NamedSessionsExceptions[sessionName].Should().BeEmpty();
         }
 
+        [Then(@"the save process should fail for '(.*)' with ConcurrencyException")]
+        public void ThenTheSaveProcessShouldFailForWithConcurrencyException(string sessionName)
+        {
+            testDataContext.NamedSessionsExceptions[sessionName].Should().NotBeEmpty();
+            testDataContext.NamedSessionsExceptions[sessionName].Count.Should().Be(1);
+            testDataContext.NamedSessionsExceptions[sessionName][0].Should().BeOfType<ConcurrencyException>();
+        }
+
         [Then(@"the save process should fail for '(.*)'")]
         public void ThenTheSaveProcessShouldFailFor(string sessionName)
         {
             testDataContext.NamedSessionsExceptions[sessionName].Should().NotBeEmpty();
         }
-
     }
 }

@@ -89,7 +89,7 @@
 
         public async Task<int> SaveChanges(DeliveryTargetGuarntee targetGuarantee =
                 DeliveryTargetGuarntee.AtLeastOnce,
-            CancellationToken? cancellationToken = null)
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var newEvents = NewEventsCollection.ToArray();
             var sendEventsBeforeSaving = targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce;
@@ -105,7 +105,7 @@
             TState currentState,
             CancellationToken? cancellationToken);
 
-        private async Task PublishEvents(IHoldAllConfiguration configuration, object[] events, CancellationToken? cancellationToken = null)
+        private async Task PublishEvents(IHoldAllConfiguration configuration, object[] events, CancellationToken cancellationToken = default(CancellationToken))
         {
             for (var i = 0; i < events.Length; i++)
             {

@@ -12,7 +12,7 @@
         public MySyncEventPublisher(Action<object> publish)
             => this.publish = publish ?? throw new ArgumentNullException(nameof(publish));
 
-        public Task Publish(object @event, CancellationToken? cancellationToken = null)
+        public Task Publish(object @event, CancellationToken cancellationToken = default(CancellationToken))
         {
             PublishSync(@event);
             return Done;

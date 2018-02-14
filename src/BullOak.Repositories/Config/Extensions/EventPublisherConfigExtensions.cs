@@ -19,7 +19,7 @@
 
         public static IManuallyConfigureEventAppliers WithEventPublisher(
             this IConfigureEventPublisher eventPublisherConfig,
-            Func<object, CancellationToken?, Task> publish)
+            Func<object, CancellationToken, Task> publish)
             => eventPublisherConfig.WithEventPublisher(new MyAsyncEventPublisher(publish));
 
         public static IManuallyConfigureEventAppliers WithNoEventPublisher(

@@ -27,7 +27,7 @@
             {
                 if (scenarioContext.ContainsKey(repoId))
                     return (EntityFrameworkRepository<TestContext, HoldHighOrders>) scenarioContext[repoId];
-                return default;
+                return default(EntityFrameworkRepository<TestContext, HoldHighOrders>);
             }
             private set => scenarioContext[repoId] = value;
         }

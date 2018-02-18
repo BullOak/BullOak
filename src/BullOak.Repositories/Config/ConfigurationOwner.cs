@@ -8,6 +8,7 @@ namespace BullOak.Repositories
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Config;
     using BullOak.Repositories.EventPublisher;
+    using BullOak.Repositories.Middleware;
     using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.Upconverting;
 
@@ -34,6 +35,8 @@ namespace BullOak.Repositories
         public ThreadSafetySelector ThreadSafetySelector { get; private set; }
         public ICreateStateInstances StateFactory { get; private set; }
         public IUpconvertStoredItems EventUpconverter { get; private set; }
+        public IInterceptEvents[] Interceptors { get; private set; } = new IInterceptEvents[0];
+        public bool HasInterceptors { get; private set; } = false;
 
         public ConfigurationOwner() { }
 

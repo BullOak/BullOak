@@ -65,7 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ConfigurationStub.cs" />
     <Compile Include="Session\InMemoryRepositorySpecs.cs" />
+    <Compile Include="Session\InterceptorSpecs.cs" />
     <Compile Include="Session\NewEventCollectionSpecs.cs" />
     <Compile Include="StateEmit\EmittedTypeFactoryTests.cs" />
     <Compile Include="StateEmit\StateTypeEmitterTests.cs" />

@@ -8,6 +8,7 @@
     using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
+    using BullOak.Repositories.Middleware;
     using BullOak.Repositories.Upconverting;
 
     public abstract class BaseRepoSession<TState> : IManageSessionOf<TState>
@@ -95,7 +96,24 @@
             var sendEventsBeforeSaving = targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce;
 
             if (sendEventsBeforeSaving) await PublishEvents(configuration, newEvents, cancellationToken);
-            var retVal = await SaveChanges(newEvents, GetCurrentState(), cancellationToken);
+
+            bool hasInterceptors = configuration.HasInterceptors;
+
+            for(int i = 0 ;i<newEvents.Length;i++)
+            {
+                TryCallInterceptor(hasInterceptors, configuration.Interceptors, newEvents[i],
+                    (interc, e, et, s, st) => interc.BeforeSave(e, et, s, st));
+            }
+
+            var retVal = await SaveChanges(newEvents, currentState, cancellationToken);
+
+            for (int i = 0; i < newEvents.Length; i++)
+            {
+                TryCallInterceptor(hasInterceptors, configuration.Interceptors, newEvents[i],
+                    (interc, e, et, s, st) => interc.AfterSave(e, et, s, st));
+            }
+
+
             if (!sendEventsBeforeSaving) await PublishEvents(configuration, newEvents, cancellationToken);
 
             return retVal;
@@ -107,11 +125,36 @@
 
         private async Task PublishEvents(IHoldAllConfiguration configuration, object[] events, CancellationToken cancellationToken = default(CancellationToken))
         {
+            bool hasInterceptors = configuration.HasInterceptors;
+            object @event;
             for (var i = 0; i < events.Length; i++)
             {
+                @event = events[i];
+
+                TryCallInterceptor(hasInterceptors, configuration.Interceptors, @event,
+                    (interc, e, et, s, st) => interc.BeforePublish(e, et, s, st));
+
                 //We await each one to guarantee ordering of publishing, even though it would have been more performant
                 // to publish and await all of them with a WhenAll
                 await eventPublisher.Publish(events[i], cancellationToken);
+
+                TryCallInterceptor(hasInterceptors, configuration.Interceptors, @event,
+                    (interc, e, et, s, st) => interc.AfterPublish(e, et, s, st));
+            }
+        }
+
+        private void TryCallInterceptor(bool hasInterceptors, IInterceptEvents[] interceptors,
+            object @event, Action<IInterceptEvents, object, Type, object, Type> interceptorMethod)
+        {
+            if (hasInterceptors)
+            {
+                var interceptorCount = interceptors?.Length ?? 0;
+                IInterceptEvents interceptor;
+                for (int j = 0; j < interceptorCount; j++)
+                {
+                    interceptor = interceptors[j];
+                    interceptorMethod(interceptor, @event, @event.GetType(), currentState, stateType);
+                }
             }
         }
 

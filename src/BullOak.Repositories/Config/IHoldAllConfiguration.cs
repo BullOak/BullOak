@@ -4,6 +4,7 @@ namespace BullOak.Repositories
     using System.Collections.Generic;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
+    using BullOak.Repositories.Middleware;
     using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.Upconverting;
 
@@ -15,5 +16,7 @@ namespace BullOak.Repositories
         Func<Type, bool> ThreadSafetySelector { get; }
         ICreateStateInstances StateFactory { get; }
         IUpconvertStoredItems EventUpconverter { get; }
+        bool HasInterceptors { get; }
+        IInterceptEvents[] Interceptors { get; }
     }
 }

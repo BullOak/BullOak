@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Reflection;
     using BullOak.Repositories.Config;
+    using BullOak.Repositories.Middleware;
     using BullOak.Repositories.Upconverting;
     using FluentAssertions;
     using Xunit;
@@ -38,6 +39,9 @@
 
                 return upconverters.ToArray();
             }
+
+            public void AddInterceptor(IInterceptEvents interceptor)
+            { }
         }
 
         [Fact]

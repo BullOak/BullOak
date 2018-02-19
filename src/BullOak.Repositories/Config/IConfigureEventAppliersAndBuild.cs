@@ -3,8 +3,9 @@ namespace BullOak.Repositories
     using System;
     using BullOak.Repositories.Appliers;
 
-    public interface IManuallyConfigureEventAppliers : IConfigureEventAppliers
+    public interface IManuallyConfigureEventAppliers
     {
+        IConfigureUpconverter WithEventApplier(IApplyEventsToStates eventApplier);
         IManuallyConfigureEventAppliers WithEventApplier<TState>(IApplyEvents<TState> stateApplier);
         IManuallyConfigureEventAppliers WithEventApplier<TState, TEvent>(IApplyEvent<TState, TEvent> stateApplier);
         IManuallyConfigureEventAppliers WithEventApplier(Type stateType, Type eventType, object applier);
@@ -14,7 +15,7 @@ namespace BullOak.Repositories
         // IManuallyConfigureEventAppliers WithApplierFactory(Type typeOfState, Func<object> factory);
         IConfigureUpconverter AndNoMoreAppliers();
     }
-    public interface IConfigureEventAppliers
+    public interface IConfigureEventAppliers : IConfigureBullOak
     {
         IConfigureUpconverter WithEventApplier(IApplyEventsToStates eventApplier);
     }

@@ -76,10 +76,21 @@
             else if (@event is IEnumerable<object> events)
                 AddEvents(events);
             else
-            {
-                NewEventsCollection.Add(@event);
-                currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, new ItemWithType(@event));
-            }
+                AddEventInternal(@event);
+        }
+
+        public void AddEvent<TEvent>(Action<TEvent> initializeEventAction)
+            where TEvent : new()
+        {
+            var @event = new TEvent();
+            initializeEventAction(@event);
+            AddEventInternal(@event);
+        }
+
+        private void AddEventInternal(object @event)
+        {
+            NewEventsCollection.Add(@event);
+            currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, new ItemWithType(@event));
         }
 
         protected void Initialize(TState storedState, bool isNew)
@@ -169,6 +180,5 @@
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
     }
 }

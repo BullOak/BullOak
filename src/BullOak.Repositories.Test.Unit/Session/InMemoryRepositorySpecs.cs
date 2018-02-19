@@ -1,11 +1,14 @@
 ﻿namespace BullOak.Repositories.Test.Unit.Session
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.InMemory;
     using BullOak.Repositories.Session;
+    using BullOak.Repositories.Upconverting;
     using FluentAssertions;
     using Xunit;
 
@@ -29,6 +32,38 @@
         {
             public int Count { get; set; }
             public string Name { get; set; }
+        }
+
+        internal class CountChangedClassEvent
+        {
+            public int NewCount { get; set; }
+        }
+
+        internal class CountChangedApplier : IApplyEventsToStates
+        {
+            public IEnumerable<Type> SupportedStateTypes => new[] {typeof(TestState)};
+
+            public TestState Apply(TestState state, CountChangedClassEvent @event)
+            {
+                state.Count = @event.NewCount;
+                return state;
+            }
+
+            public object Apply(Type stateType, object state, ItemWithType[] events)
+                => events.Aggregate(state, (s, e) => ApplyEvent(stateType, s, e));
+
+            public object Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
+                => events.Aggregate(state, (s, e) => ApplyEvent(stateType, s, e));
+
+            public object ApplyEvent(Type stateType, object state, ItemWithType @event)
+            {
+                if (@event.instance is CountChangedClassEvent countEvent)
+                {
+                    return Apply(state as TestState, countEvent);
+                }
+
+                throw new NotSupportedException();
+            }
         }
 
         [Fact]
@@ -84,6 +119,32 @@
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
             sut[id][0].Should().Be(@event);
+        }
+
+        [Fact]
+        public async Task SaveEvents_WithOneNewInitializedEvent_ShouldAddEventInStore()
+        {
+            //Arrangements
+            var sut = new ConfigurationStub<TestState>()
+                .WithDefaultSetup()
+                .WithEventApplier(new CountChangedApplier())
+                .GetNewSUT<int>();
+            var id = 5;
+            var newCount = 3;
+
+            using (var session = await sut.BeginSessionFor(id))
+            {
+                //Act
+                session.AddEvent<CountChangedClassEvent>(x => x.NewCount = newCount);
+
+                await session.SaveChanges();
+            }
+
+            //Assert
+            sut[id].Should().NotBeNull();
+            sut[id].Length.Should().Be(1);
+            sut[id][0].Should().BeOfType<CountChangedClassEvent>();
+            sut[id][0].As<CountChangedClassEvent>().NewCount.Should().Be(newCount);
         }
 
         [Fact]

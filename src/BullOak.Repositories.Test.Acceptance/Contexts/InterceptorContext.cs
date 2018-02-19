@@ -1,10 +1,9 @@
-﻿using BullOak.Repositories.Middleware;
-
-namespace BullOak.Repositories.Test.Acceptance.Contexts
+﻿namespace BullOak.Repositories.Test.Acceptance.Contexts
 {
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using BullOak.Repositories.Middleware;
 
     public class InterceptorContext: IInterceptEvents
     {

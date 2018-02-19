@@ -11,12 +11,15 @@
     {
         private readonly StreamInfoContainer streamInfoContainer;
         private readonly InMemoryStoreSessionContainer sessionContainer;
+        private readonly InterceptorContext interceptorContext;
 
         public ScenarioSetupAndTeardown(StreamInfoContainer streamInfoContainer,
-            InMemoryStoreSessionContainer sessionContainer)
+            InMemoryStoreSessionContainer sessionContainer,
+            InterceptorContext interceptorContext)
         {
             this.streamInfoContainer = streamInfoContainer;
             this.sessionContainer = sessionContainer;
+            this.interceptorContext = interceptorContext;
         }
 
         private bool isAlreadySetup = false;
@@ -28,6 +31,7 @@
             var upconverterConfig = Configuration.Begin()
                 .WithDefaultCollection()
                 .WithDefaultStateFactory()
+                .WithInterceptor(interceptorContext)
                 .NeverUseThreadSafe()
                 .WithNoEventPublisher()
                 .WithAnyAppliersFrom(Assembly.GetExecutingAssembly())

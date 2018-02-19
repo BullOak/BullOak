@@ -76,12 +76,18 @@
     <Compile Include="Contexts\EventGenerator.cs" />
     <Compile Include="Contexts\IHoldHigherOrder.cs" />
     <Compile Include="Contexts\InMemoryStoreSessionContainer.cs" />
+    <Compile Include="Contexts\InterceptorContext.cs" />
     <Compile Include="Contexts\MyEvent.cs" />
     <Compile Include="Contexts\StreamInfoContainer.cs" />
     <Compile Include="Contexts\NewEventsContainer.cs" />
     <Compile Include="Contexts\StateApplier.cs" />
     <Compile Include="Contexts\TimeOfLastBalanceUpdateSetEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Specifications\EventsCanBeIntercepted.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EventsCanBeIntercepted.feature</DependentUpon>
+    </Compile>
     <Compile Include="Specifications\IsNewSessionSpecs.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -103,6 +109,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="StepDefinitions\EventSetupSteps.cs" />
+    <Compile Include="StepDefinitions\InterceptorSteps.cs" />
     <Compile Include="StepDefinitions\LastAccessedStateContainer.cs" />
     <Compile Include="StepDefinitions\LoadStreamSteps.cs" />
     <Compile Include="StepDefinitions\ReconstituteEntitySteps.cs" />
@@ -113,6 +120,10 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Specifications\EventsCanBeIntercepted.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>EventsCanBeIntercepted.feature.cs</LastGenOutput>
+    </None>
     <None Include="Specifications\IsNewSessionSpecs.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>IsNewSessionSpecs.feature.cs</LastGenOutput>

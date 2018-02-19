@@ -8,13 +8,14 @@ namespace BullOak.Repositories
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Config;
     using BullOak.Repositories.EventPublisher;
+    using BullOak.Repositories.Middleware;
     using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.Upconverting;
 
     using StateTypeToCollectionTypeSelector = Func<Type, Func<ICollection<object>>>;
     using ThreadSafetySelector = Func<Type, bool>;
 
-    public interface IConfigureUpconverter
+    public interface IConfigureUpconverter : IConfigureBullOak
     {
         IBuildConfiguration WithUpconverter(IUpconvertStoredItems upconverter);
     }
@@ -23,6 +24,11 @@ namespace BullOak.Repositories
     {
         IConfigureUpconverters WithUpconvertersFrom(Assembly assembly);
         IBuildConfiguration AndNoMoreUpconverters();
+    }
+
+    public interface IConfigureBullOak
+    {
+        void AddInterceptor(IInterceptEvents interceptor);
     }
 
     public class ConfigurationOwner : IConfigureEventCollectionType, IConfigureStateFactory, IConfigureThreadSafety, IConfigureEventPublisher,
@@ -34,6 +40,9 @@ namespace BullOak.Repositories
         public ThreadSafetySelector ThreadSafetySelector { get; private set; }
         public ICreateStateInstances StateFactory { get; private set; }
         public IUpconvertStoredItems EventUpconverter { get; private set; }
+        public List<IInterceptEvents> InterceptorList { get; } = new List<IInterceptEvents>();
+        public IInterceptEvents[] Interceptors { get; private set; }
+        public bool HasInterceptors { get; private set; } = false;
 
         public ConfigurationOwner() { }
 
@@ -74,6 +83,11 @@ namespace BullOak.Repositories
             return this;
         }
 
+        void IConfigureBullOak.AddInterceptor(IInterceptEvents interceptor)
+        {
+            this.InterceptorList.Add(interceptor);
+        }
+
         IBuildConfiguration IConfigureUpconverter.WithUpconverter(IUpconvertStoredItems upconverter)
         {
             this.EventUpconverter = upconverter ?? throw new ArgumentNullException(nameof(upconverter)
@@ -81,6 +95,16 @@ namespace BullOak.Repositories
 
             return this;
         }
-        IHoldAllConfiguration IBuildConfiguration.Build() => this;
+
+        IHoldAllConfiguration IBuildConfiguration.Build()
+        {
+            if (InterceptorList.Count > 0)
+            {
+                Interceptors = InterceptorList.ToArray();
+                HasInterceptors = true;
+            }
+
+            return this;
+        }
     }
 }

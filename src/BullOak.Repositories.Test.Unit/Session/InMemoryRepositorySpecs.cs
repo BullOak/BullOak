@@ -39,11 +39,22 @@
             public int NewCount { get; set; }
         }
 
+        public interface ICountChangedInterfaceEvent
+        {
+            int NewCount { get; set; }
+        }
+
         internal class CountChangedApplier : IApplyEventsToStates
         {
             public IEnumerable<Type> SupportedStateTypes => new[] {typeof(TestState)};
 
             public TestState Apply(TestState state, CountChangedClassEvent @event)
+            {
+                state.Count = @event.NewCount;
+                return state;
+            }
+
+            public TestState Apply(TestState state, ICountChangedInterfaceEvent @event)
             {
                 state.Count = @event.NewCount;
                 return state;
@@ -57,9 +68,14 @@
 
             public object ApplyEvent(Type stateType, object state, ItemWithType @event)
             {
-                if (@event.instance is CountChangedClassEvent countEvent)
+                if (@event.instance is CountChangedClassEvent countClassEvent)
                 {
-                    return Apply(state as TestState, countEvent);
+                    return Apply(state as TestState, countClassEvent);
+                }
+
+                if (@event.instance is ICountChangedInterfaceEvent countInterfaceEvent)
+                {
+                    return Apply(state as TestState, countInterfaceEvent);
                 }
 
                 throw new NotSupportedException();
@@ -122,7 +138,34 @@
         }
 
         [Fact]
-        public async Task SaveEvents_WithOneNewInitializedEvent_ShouldAddEventInStore()
+        public async Task SaveEvents_WithOneNewInitializedInterfaceEvent_ShouldAddEventInStore()
+        {
+            //Arrangements
+            var sut = new ConfigurationStub<TestState>()
+                .WithDefaultSetup()
+                .WithDefaultStateFactory()
+                .WithEventApplier(new CountChangedApplier())
+                .GetNewSUT<int>();
+            var id = 5;
+            var newCount = 3;
+
+            using (var session = await sut.BeginSessionFor(id))
+            {
+                //Act
+                session.AddEvent<ICountChangedInterfaceEvent>(x => x.NewCount = newCount);
+
+                await session.SaveChanges();
+            }
+
+            //Assert
+            sut[id].Should().NotBeNull();
+            sut[id].Length.Should().Be(1);
+            sut[id][0].Should().BeAssignableTo<ICountChangedInterfaceEvent>();
+            sut[id][0].As<ICountChangedInterfaceEvent>().NewCount.Should().Be(newCount);
+        }
+
+        [Fact]
+        public async Task SaveEvents_WithOneNewInitializedClassEvent_ShouldAddEventInStore()
         {
             //Arrangements
             var sut = new ConfigurationStub<TestState>()

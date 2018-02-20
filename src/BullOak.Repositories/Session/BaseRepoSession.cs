@@ -9,6 +9,7 @@
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
     using BullOak.Repositories.Middleware;
+    using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.Upconverting;
 
     public abstract class BaseRepoSession<TState> : IManageSessionOf<TState>
@@ -80,10 +81,14 @@
         }
 
         public void AddEvent<TEvent>(Action<TEvent> initializeEventAction)
-            where TEvent : new()
         {
-            var @event = new TEvent();
+            var @event = (TEvent)configuration.StateFactory.GetState(typeof(TEvent));
+
+            var switchable = @event as ICanSwitchBackAndToReadOnly;
+
+            if (switchable != null) switchable.CanEdit = true;
             initializeEventAction(@event);
+            if (switchable != null) switchable.CanEdit = false;
             AddEventInternal(@event);
         }
 

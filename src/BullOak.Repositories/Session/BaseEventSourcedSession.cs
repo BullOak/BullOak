@@ -2,8 +2,6 @@
 {
     using System;
     using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Upconverting;
 

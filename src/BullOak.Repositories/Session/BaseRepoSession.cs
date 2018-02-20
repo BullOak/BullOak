@@ -9,6 +9,7 @@
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
     using BullOak.Repositories.Middleware;
+    using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.Upconverting;
 
     public abstract class BaseRepoSession<TState> : IManageSessionOf<TState>
@@ -76,10 +77,25 @@
             else if (@event is IEnumerable<object> events)
                 AddEvents(events);
             else
-            {
-                NewEventsCollection.Add(@event);
-                currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, new ItemWithType(@event));
-            }
+                AddEventInternal(@event);
+        }
+
+        public void AddEvent<TEvent>(Action<TEvent> initializeEventAction)
+        {
+            var @event = (TEvent)configuration.StateFactory.GetState(typeof(TEvent));
+
+            var switchable = @event as ICanSwitchBackAndToReadOnly;
+
+            if (switchable != null) switchable.CanEdit = true;
+            initializeEventAction(@event);
+            if (switchable != null) switchable.CanEdit = false;
+            AddEventInternal(@event);
+        }
+
+        private void AddEventInternal(object @event)
+        {
+            NewEventsCollection.Add(@event);
+            currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, new ItemWithType(@event));
         }
 
         protected void Initialize(TState storedState, bool isNew)
@@ -169,6 +185,5 @@
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
     }
 }

@@ -29,9 +29,17 @@
 
         public Func<Type, Func<ICollection<object>>> CollectionTypeSelector { get; private set; }
         public IPublishEvents EventPublisher { get; private set; }
-        public IApplyEventsToStates EventApplier => MockEventApplier.FakedObject;
+        private IApplyEventsToStates eventApplier = null;
+
+        public IApplyEventsToStates EventApplier
+        {
+            get => eventApplier ?? MockEventApplier.FakedObject;
+            set => eventApplier = value;
+        }
+
         public Func<Type, bool> ThreadSafetySelector { get; private set; }
-        public ICreateStateInstances StateFactory => MockStateFactory.FakedObject;
+        private ICreateStateInstances stateFactory = null;
+        public ICreateStateInstances StateFactory => stateFactory ?? MockStateFactory.FakedObject;
         public IUpconvertStoredItems EventUpconverter { get; private set; }
 
         private List<IInterceptEvents> InterceptorList = new List<IInterceptEvents>();
@@ -60,6 +68,12 @@
             WithStateFactory(Activator.CreateInstance);
             WithJustReturnEventApplier();
 
+            return this;
+        }
+
+        public ConfigurationStub<TState> WithEventApplier(IApplyEventsToStates applier)
+        {
+            this.EventApplier = applier;
             return this;
         }
 
@@ -106,8 +120,14 @@
         {
             MockStateFactory.CallsTo(i => i.GetState(null))
                 .WithAnyArguments()
-                .ReturnsLazily(t => factory((Type)t.Arguments[0]));
+                .ReturnsLazily(t => factory((Type) t.Arguments[0]));
 
+            return this;
+        }
+
+        public ConfigurationStub<TState> WithDefaultStateFactory()
+        {
+            this.stateFactory = new EmittedTypeFactory();
             return this;
         }
 

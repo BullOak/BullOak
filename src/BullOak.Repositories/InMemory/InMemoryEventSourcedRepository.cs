@@ -11,13 +11,13 @@
 
     public class InMemoryEventSourcedRepository<TId, TState> : IStartSessions<TId, TState>
     {
-        private Dictionary<TId, object[]> eventStore = new Dictionary<TId, object[]>();
+        private Dictionary<TId, ItemWithType[]> eventStore = new Dictionary<TId, ItemWithType[]>();
         private readonly IHoldAllConfiguration configuration;
         private static bool useThreadSafeOps;
 
-        public object[] this[TId id]
+        public ItemWithType[] this[TId id]
         {
-            get => eventStore.TryGetValue(id, out var value) ? value : new object[0];
+            get => eventStore.TryGetValue(id, out var value) ? value : new ItemWithType[0];
             set => eventStore[id] = value;
         }
 
@@ -35,7 +35,7 @@
 
         public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
-            object[] eventStream;
+            ItemWithType[] eventStream;
             bool lockTaken = false;
 
             try
@@ -45,7 +45,7 @@
 
                 if (!eventStore.TryGetValue(id, out eventStream) && !throwIfNotExists)
                 {
-                    eventStream = new object[0];
+                    eventStream = new ItemWithType[0];
                     eventStore[id] = eventStream;
                 }
                 else if (throwIfNotExists)
@@ -64,7 +64,7 @@
                 if (useThreadSafeOps) Monitor.TryEnter(eventStore, ref lockTaken);
                 if (useThreadSafeOps && !lockTaken) throw new Exception("Lock not taken");
 
-                session.LoadFromEvents(eventStore[id], eventStore[id].Length);
+                session.LoadFromEvents(eventStore[id].Select(x=>x.instance).ToArray(), eventStore[id].Length);
             }
             finally
             {

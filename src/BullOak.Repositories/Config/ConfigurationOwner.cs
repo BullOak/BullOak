@@ -12,7 +12,7 @@ namespace BullOak.Repositories
     using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.Upconverting;
 
-    using StateTypeToCollectionTypeSelector = Func<Type, Func<ICollection<object>>>;
+    using StateTypeToCollectionTypeSelector = Func<Type, Func<ICollection<ItemWithType>>>;
     using ThreadSafetySelector = Func<Type, bool>;
 
     public interface IConfigureUpconverter : IConfigureBullOak

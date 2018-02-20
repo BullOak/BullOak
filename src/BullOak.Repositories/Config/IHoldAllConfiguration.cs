@@ -10,7 +10,7 @@ namespace BullOak.Repositories
 
     public interface IHoldAllConfiguration
     {
-        Func<Type, Func<ICollection<object>>> CollectionTypeSelector { get; }
+        Func<Type, Func<ICollection<ItemWithType>>> CollectionTypeSelector { get; }
         IPublishEvents EventPublisher { get; }
         IApplyEventsToStates EventApplier { get; }
         Func<Type, bool> ThreadSafetySelector { get; }

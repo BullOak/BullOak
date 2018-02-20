@@ -29,7 +29,7 @@
             base.Dispose(disposing);
         }
 
-        protected override Task<int> SaveChanges(object[] newEvents,
+        protected override Task<int> SaveChanges(ItemWithType[] newEvents,
             TState currentState,
             CancellationToken? cancellationToken)
         {
@@ -37,7 +37,7 @@
             {
                 eventStream.Add(new EventMessage()
                 {
-                    Body = newEvents[index]
+                    Body = newEvents[index].instance
                 });
             }
 

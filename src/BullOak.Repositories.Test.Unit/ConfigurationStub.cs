@@ -27,7 +27,7 @@
         public Fake<IApplyEventsToStates> MockEventApplier => mockEventApplier;
         public Fake<ICreateStateInstances> MockStateFactory => mockStateFactory;
 
-        public Func<Type, Func<ICollection<object>>> CollectionTypeSelector { get; private set; }
+        public Func<Type, Func<ICollection<ItemWithType>>> CollectionTypeSelector { get; private set; }
         public IPublishEvents EventPublisher { get; private set; }
         private IApplyEventsToStates eventApplier = null;
 
@@ -61,7 +61,7 @@
         {
             EventPublisher = new MySyncEventPublisher(e =>
             {
-                eventsThatHaveBeenPublished.Add(e);
+                eventsThatHaveBeenPublished.Add(e.instance);
             });
             WithCollectionType<List<object>>();
             WithThreadSafety(false);
@@ -95,7 +95,7 @@
             CollectionTypeSelector = t =>
             {
                 typesForWhichEventCollectionHasBeenAskedFor.Add(t);
-                return () => new List<object>();
+                return () => new List<ItemWithType>();
             };
             return this;
         }

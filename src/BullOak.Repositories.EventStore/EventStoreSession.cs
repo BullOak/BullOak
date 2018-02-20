@@ -88,7 +88,7 @@
         /// <param name="snapshot"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        protected override async Task<int> SaveChanges(object[] eventsToAdd,
+        protected override async Task<int> SaveChanges(ItemWithType[] eventsToAdd,
             TState snapshot,
             CancellationToken? cancellationToken)
         {
@@ -100,7 +100,7 @@
                 writeResult = await eventStoreConnection.ConditionalAppendToStreamAsync(
                         streamName,
                         currentVersion,
-                        eventsToAdd.Select(eventObject => { return CreateEventData(eventObject); }))
+                        eventsToAdd.Select(eventObject => CreateEventData(eventObject.instance)))
                     .ConfigureAwait(false);
              
                 switch (writeResult.Status)

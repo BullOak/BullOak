@@ -12,7 +12,7 @@
         //    => self.WithEventCollectionSelector(_ => () => new TEventCollection());
 
         public static IConfigureStateFactory WithDefaultCollection(this IConfigureEventCollectionType self)
-            => self.WithEventCollectionSelector(_ => () => new LinkedList<object>());
+            => self.WithEventCollectionSelector(_ => () => new LinkedList<ItemWithType>());
 
     }
 }

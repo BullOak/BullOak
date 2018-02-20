@@ -8,9 +8,9 @@
         private static readonly Task Done = Task.FromResult(0);
         public static readonly MyNullEventPublisher Instance = new MyNullEventPublisher();
 
-        public Task Publish(object @event, CancellationToken cancellationToken = default(CancellationToken)) => Done;
+        public Task Publish(ItemWithType @event, CancellationToken cancellationToken = default(CancellationToken)) => Done;
 
-        public void PublishSync(object @event)
+        public void PublishSync(ItemWithType @event)
         { }
 
 

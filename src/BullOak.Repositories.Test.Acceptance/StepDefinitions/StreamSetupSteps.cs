@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using BullOak.Repositories.Test.Acceptance.Contexts;
     using TechTalk.SpecFlow;
     using TechTalk.SpecFlow.Assist;
@@ -24,7 +25,7 @@
         [Given(@"a new stream")]
         public void GivenANewStream()
         {
-            sessionContainer.SaveStream(streamInfo.Id, new object[0]);
+            sessionContainer.SaveStream(streamInfo.Id, new ItemWithType[0]);
         }
 
         [Given(@"a stream with (.*) events?")]
@@ -34,8 +35,8 @@
             var events = eventGenerator.GenerateEvents(eventCount);
             var originalEvents = sessionContainer.GetStream(streamInfo.Id);
 
-            var combined = new List<object>(originalEvents);
-            combined.AddRange(events);
+            var combined = new List<ItemWithType>(originalEvents);
+            combined.AddRange(events.Select(x=> new ItemWithType(x)));
 
             sessionContainer.SaveStream(streamInfo.Id, combined.ToArray());
         }
@@ -45,7 +46,7 @@
         {
             var @event = table.CreateInstance<BuyerNameSetEvent>();
 
-            sessionContainer.SaveStream(streamInfo.Id, new object[] {@event});
+            sessionContainer.SaveStream(streamInfo.Id, new [] {new ItemWithType(@event) });
         }
 
         [Given(@"a balance set event with balance (.*) and date (.*)")]
@@ -57,7 +58,7 @@
                 UpdatedDate = timestamp,
             };
 
-            sessionContainer.SaveStream(streamInfo.Id, new object[] {@event});
+            sessionContainer.SaveStream(streamInfo.Id, new [] {new ItemWithType(@event) });
         }
     }
 }

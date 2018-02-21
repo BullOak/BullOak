@@ -14,8 +14,10 @@
     using System.Linq;
     using System.Text;
     using BullOak.Repositories.StateEmit;
+    using global::NEventStore.Persistence.Sql;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using System.Data;
 
     internal class StreamInfoContainer
     {
@@ -62,22 +64,12 @@
     {
         private static readonly string storeId = Guid.NewGuid().ToString();
 
-        private ScenarioContext scenarioContext;
-        public IStoreEvents EventStore
-        {
-            get => (IStoreEvents) scenarioContext[storeId];
-            private set => scenarioContext[storeId] = value;
-        }
-
-        public NEventStoreContainer(ScenarioContext scenarioContext)
-            => this.scenarioContext = scenarioContext;
+        public IStoreEvents EventStore { get; private set; }
 
         public void Setup(IHoldAllConfiguration configuration)
         {
-            var connectionString = Environment.GetEnvironmentVariable("BullOak_NEventStore_Sql", EnvironmentVariableTarget.User);
-
             EventStore = Wireup.Init()
-                .UsingSqlPersistence("bo_db", "System.Data.SqlClient", connectionString)
+                .UsingSqlPersistence(new ConnectionFactory())
                 .WithDialect(new MsSqlDialect())
                 .InitializeStorageEngine()
                 .WithSerializationForInterfaceMessages(configuration)
@@ -87,6 +79,20 @@
             EventStore.Advanced.Purge();
         }
 
+        private class ConnectionFactory : IConnectionFactory
+        {
+            private readonly Lazy<string> connectionString = new Lazy<string>(() =>
+
+                Environment.GetEnvironmentVariable("BullOak_NEventStore_Sql", EnvironmentVariableTarget.User));
+            public Type GetDbProviderFactoryType() => Type.GetType("System.Data.SqlClient");
+
+            public IDbConnection Open()
+            {
+                var con = new SqlConnection(connectionString.Value);
+                con.Open();
+                return con;
+            }
+        }
 
         public IEventStream OpenStream(string id, int minRevision)
             => EventStore.OpenStream(id, minRevision);

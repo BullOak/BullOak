@@ -23,8 +23,7 @@ namespace BullOak.Repositories.Session
         void AddEvent(object @event);
         void AddEvent<TEvent>(Action<TEvent> initializeEventAction);
 
-
-Task<int> SaveChanges(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce,
+        Task<int> SaveChanges(DeliveryTargetGuarntee targetGuarantee = DeliveryTargetGuarntee.AtLeastOnce,
             CancellationToken cancellationToken = default(CancellationToken));
     }
 }

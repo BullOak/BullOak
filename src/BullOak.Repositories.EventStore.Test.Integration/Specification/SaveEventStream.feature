@@ -15,6 +15,12 @@ Examples:
 	| 30          |
 	| 10000       |
 
+Scenario: Save one event using interface
+	Given a new stream
+	And 1 new event
+	When I try to save the new events in the stream through their interface
+	Then the save process should succeed
+
 Scenario: Save additional events in an existing stream
 	Given an existing stream with 10 events
 	And 10 new events

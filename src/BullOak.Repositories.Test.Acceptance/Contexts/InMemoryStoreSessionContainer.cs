@@ -30,10 +30,10 @@
             return LastSession;
         }
 
-        public object[] GetStream(string id)
+        public ItemWithType[] GetStream(string id)
             => repository[id];
 
-        public void SaveStream(string id, object[] events)
+        public void SaveStream(string id, ItemWithType[] events)
             => repository[id] = events;
 
         public void Dispose()

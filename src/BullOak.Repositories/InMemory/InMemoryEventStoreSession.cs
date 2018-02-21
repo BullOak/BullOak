@@ -11,10 +11,10 @@
     internal class InMemoryEventStoreSession<TState, TId> : BaseEventSourcedSession<TState, int>
     {
         private readonly int initialVersion;
-        private readonly Dictionary<TId, object[]> data;
+        private readonly Dictionary<TId, ItemWithType[]> data;
         private readonly TId id;
 
-        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, Dictionary<TId, object[]> data, TId id)
+        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, Dictionary<TId, ItemWithType[]> data, TId id)
             : base(configuration)
         {
             this.data = data ?? throw new ArgumentNullException(nameof(data));
@@ -23,7 +23,7 @@
         }
 
         /// <inheritdoc />
-        protected override Task<int> SaveChanges(object[] newEvents, TState currentState, CancellationToken? cancellationToken)
+        protected override Task<int> SaveChanges(ItemWithType[] newEvents, TState currentState, CancellationToken? cancellationToken)
         {
             lock (data)
             {

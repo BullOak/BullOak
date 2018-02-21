@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.NEventStore
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -20,7 +21,14 @@
 
         public void Initialize()
         {
-            LoadFromEvents(eventStream.CommittedEvents.Select(x=> x.Body).ToArray(), eventStream.StreamRevision);
+            LoadFromEvents(eventStream.CommittedEvents.Select(x=>
+            {
+                Type eventType = x.Headers.TryGetValue("EventType", out object t)
+                    ? (Type) t
+                    : x.Body.GetType();
+
+                return new ItemWithType(x.Body, eventType);
+            }).ToArray(), eventStream.StreamRevision);
         }
 
         protected override void Dispose(bool disposing)
@@ -29,7 +37,7 @@
             base.Dispose(disposing);
         }
 
-        protected override Task<int> SaveChanges(object[] newEvents,
+        protected override Task<int> SaveChanges(ItemWithType[] newEvents,
             TState currentState,
             CancellationToken? cancellationToken)
         {
@@ -37,7 +45,11 @@
             {
                 eventStream.Add(new EventMessage()
                 {
-                    Body = newEvents[index]
+                    Body = newEvents[index].instance,
+                    Headers = new Dictionary<string, object>
+                    {
+                        { "EventType", newEvents[index].type }
+                    }
                 });
             }
 
@@ -45,6 +57,7 @@
             {
                 eventStream.CommitChanges(Guid.NewGuid());
             }
+
             catch (ConcurrencyException nce)
             {
                 throw new Exceptions.ConcurrencyException(eventStream.StreamId, nce);

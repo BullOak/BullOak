@@ -6,14 +6,14 @@
 
     internal class MyAsyncEventPublisher : IPublishEvents
     {
-        public readonly Func<object, CancellationToken, Task> publish;
+        public readonly Func<ItemWithType, CancellationToken, Task> publish;
 
-        public MyAsyncEventPublisher(Func<object, CancellationToken, Task> publish)
+        public MyAsyncEventPublisher(Func<ItemWithType, CancellationToken, Task> publish)
             => this.publish = publish ?? throw new ArgumentNullException(nameof(publish));
 
-        public Task Publish(object @event, CancellationToken cancellationToken = default(CancellationToken)) => publish(@event, cancellationToken);
+        public Task Publish(ItemWithType @event, CancellationToken cancellationToken = default(CancellationToken)) => publish(@event, cancellationToken);
 
-        public void PublishSync(object @event)
+        public void PublishSync(ItemWithType @event)
             => Task.Run(async () => await publish(@event, default(CancellationToken)).ConfigureAwait(false)).Wait();
     }
 }

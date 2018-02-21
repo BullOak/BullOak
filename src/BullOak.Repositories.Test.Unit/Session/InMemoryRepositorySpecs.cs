@@ -8,7 +8,6 @@
     using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.InMemory;
     using BullOak.Repositories.Session;
-    using BullOak.Repositories.Upconverting;
     using FluentAssertions;
     using Xunit;
 
@@ -19,8 +18,8 @@
             object @event,
             TId streamId)
         {
-            var currentEvents = sut[streamId]?.ToList() ?? new List<object>();
-            currentEvents.Add(@event);
+            var currentEvents = sut[streamId]?.ToList() ?? new List<ItemWithType>();
+            currentEvents.Add(new ItemWithType(@event));
             sut[streamId] = currentEvents.ToArray();
             return sut;
         }
@@ -134,7 +133,7 @@
             //Assert
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
-            sut[id][0].Should().Be(@event);
+            sut[id][0].instance.Should().Be(@event);
         }
 
         [Fact]
@@ -160,8 +159,8 @@
             //Assert
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
-            sut[id][0].Should().BeAssignableTo<ICountChangedInterfaceEvent>();
-            sut[id][0].As<ICountChangedInterfaceEvent>().NewCount.Should().Be(newCount);
+            sut[id][0].instance.Should().BeAssignableTo<ICountChangedInterfaceEvent>();
+            sut[id][0].instance.As<ICountChangedInterfaceEvent>().NewCount.Should().Be(newCount);
         }
 
         [Fact]
@@ -186,8 +185,8 @@
             //Assert
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
-            sut[id][0].Should().BeOfType<CountChangedClassEvent>();
-            sut[id][0].As<CountChangedClassEvent>().NewCount.Should().Be(newCount);
+            sut[id][0].instance.Should().BeOfType<CountChangedClassEvent>();
+            sut[id][0].instance.As<CountChangedClassEvent>().NewCount.Should().Be(newCount);
         }
 
         [Fact]
@@ -291,7 +290,7 @@
 
             //Assert
             sut[id].Length.Should().Be(2);
-            sut[id][1].Should().Be(newEvent);
+            sut[id][1].instance.Should().Be(newEvent);
         }
 
         [Fact]

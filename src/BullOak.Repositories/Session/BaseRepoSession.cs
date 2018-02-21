@@ -17,7 +17,7 @@
         private readonly IDisposable disposableHandle;
 
         protected readonly IHoldAllConfiguration configuration;
-        protected ICollection<object> NewEventsCollection { get; private set; }
+        protected ICollection<ItemWithType> NewEventsCollection { get; private set; }
 
         private TState currentState;
         public TState GetCurrentState() => currentState;
@@ -48,7 +48,7 @@
         {
             if (events == null) throw new ArgumentNullException(nameof(events));
 
-            foreach (var @event in events)
+            foreach (var @event in events.Select(x=> new ItemWithType(x)))
                 NewEventsCollection.Add(@event);
 
             currentState =
@@ -60,7 +60,7 @@
             if (events == null) throw new ArgumentNullException(nameof(events));
 
             for (int i = 0; i < events.Length; i++)
-                NewEventsCollection.Add(events[i]);
+                NewEventsCollection.Add(new ItemWithType(events[i]));
 
             currentState =
                 (TState) EventApplier.Apply(stateType, currentState, events.Select(x => new ItemWithType(x)));
@@ -77,7 +77,7 @@
             else if (@event is IEnumerable<object> events)
                 AddEvents(events);
             else
-                AddEventInternal(@event);
+                AddEventInternal(new ItemWithType(@event));
         }
 
         public void AddEvent<TEvent>(Action<TEvent> initializeEventAction)
@@ -89,13 +89,13 @@
             if (switchable != null) switchable.CanEdit = true;
             initializeEventAction(@event);
             if (switchable != null) switchable.CanEdit = false;
-            AddEventInternal(@event);
+            AddEventInternal(new ItemWithType(@event, typeof(TEvent)));
         }
 
-        private void AddEventInternal(object @event)
+        private void AddEventInternal(ItemWithType @event)
         {
             NewEventsCollection.Add(@event);
-            currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, new ItemWithType(@event));
+            currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, @event);
         }
 
         protected void Initialize(TState storedState, bool isNew)
@@ -135,14 +135,14 @@
             return retVal;
         }
 
-        protected abstract Task<int> SaveChanges(object[] newEvents,
+        protected abstract Task<int> SaveChanges(ItemWithType[] newEvents,
             TState currentState,
             CancellationToken? cancellationToken);
 
-        private async Task PublishEvents(IHoldAllConfiguration configuration, object[] events, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task PublishEvents(IHoldAllConfiguration configuration, ItemWithType[] events, CancellationToken cancellationToken = default(CancellationToken))
         {
             bool hasInterceptors = configuration.HasInterceptors;
-            object @event;
+            ItemWithType @event;
             for (var i = 0; i < events.Length; i++)
             {
                 @event = events[i];
@@ -160,7 +160,7 @@
         }
 
         private void TryCallInterceptor(bool hasInterceptors, IInterceptEvents[] interceptors,
-            object @event, Action<IInterceptEvents, object, Type, object, Type> interceptorMethod)
+            ItemWithType @event, Action<IInterceptEvents, object, Type, object, Type> interceptorMethod)
         {
             if (hasInterceptors)
             {
@@ -169,7 +169,7 @@
                 for (int j = 0; j < interceptorCount; j++)
                 {
                     interceptor = interceptors[j];
-                    interceptorMethod(interceptor, @event, @event.GetType(), currentState, stateType);
+                    interceptorMethod(interceptor, @event.instance, @event.type, currentState, stateType);
                 }
             }
         }

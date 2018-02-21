@@ -85,7 +85,7 @@
                 :base(config, new MemoryStream())
                 => OnSave = onSave;
 
-            protected override Task<int> SaveChanges(object[] newEvents,
+            protected override Task<int> SaveChanges(ItemWithType[] newEvents,
                 IState currentState,
                 CancellationToken? cancellationToken)
             {

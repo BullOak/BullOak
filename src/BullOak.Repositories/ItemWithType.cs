@@ -1,4 +1,4 @@
-﻿namespace BullOak.Repositories.Upconverting
+﻿namespace BullOak.Repositories
 {
     using System;
 

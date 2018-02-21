@@ -7,17 +7,17 @@
     internal class MySyncEventPublisher : IPublishEvents
     {
         private static readonly Task Done = Task.FromResult(0);
-        public readonly Action<object> publish;
+        public readonly Action<ItemWithType> publish;
 
-        public MySyncEventPublisher(Action<object> publish)
+        public MySyncEventPublisher(Action<ItemWithType> publish)
             => this.publish = publish ?? throw new ArgumentNullException(nameof(publish));
 
-        public Task Publish(object @event, CancellationToken cancellationToken = default(CancellationToken))
+        public Task Publish(ItemWithType @event, CancellationToken cancellationToken = default(CancellationToken))
         {
             PublishSync(@event);
             return Done;
         }
 
-        public void PublishSync(object @event) => publish(@event);
+        public void PublishSync(ItemWithType @event) => publish(@event);
     }
 }

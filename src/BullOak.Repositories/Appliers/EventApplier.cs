@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using BullOak.Repositories.StateEmit;
-    using BullOak.Repositories.Upconverting;
 
     internal class EventApplier : IApplyEventsToStates
     {

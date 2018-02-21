@@ -52,7 +52,7 @@
             this.Initialize(state, isNewEntity);
         }
 
-        protected override async Task<int> SaveChanges(object[] newEvents,
+        protected override async Task<int> SaveChanges(ItemWithType[] newEvents,
             TState currentState,
             CancellationToken? cancellationToken)
         {

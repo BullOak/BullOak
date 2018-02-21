@@ -14,3 +14,11 @@ Examples:
 	| 1           | 0             |
 	| 5           | 4             |
 	| 10000       | 9999          |
+
+Scenario: Reconstitute state from one event stored using interface
+	Given a new stream
+	And 3 new events
+	And I try to save the new events in the stream through their interface
+	When I load my entity
+	Then the load process should succeed
+	And HighOrder property should be 2

@@ -6,7 +6,7 @@
     using BullOak.Repositories.Upconverting;
     using FluentAssertions;
     using Xunit;
-    using UpconvertFunc = System.Func<BullOak.Repositories.Upconverting.ItemWithType, BullOak.Repositories.Upconverting.UpconvertResult>;
+    using UpconvertFunc = System.Func<BullOak.Repositories.ItemWithType, BullOak.Repositories.Upconverting.UpconvertResult>;
 
     public class EventA
     {

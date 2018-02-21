@@ -5,7 +5,7 @@
 
     public interface IPublishEvents
     {
-        Task Publish(object @event, CancellationToken cancellationToken);
-        void PublishSync(object @event);
+        Task Publish(ItemWithType @event, CancellationToken cancellationToken);
+        void PublishSync(ItemWithType @event);
     }
 }

@@ -3,6 +3,12 @@
 	As a developer usint this new library
 	I want to be able to save events in a stream
 
+Scenario: Save one event using interface
+	Given a new stream
+	And 1 new event
+	When I try to save the new events in the stream through their interface
+	Then the save process should succeed
+
 Scenario: Save one event in a new stream
 	Given a new stream
 	And 1 new event

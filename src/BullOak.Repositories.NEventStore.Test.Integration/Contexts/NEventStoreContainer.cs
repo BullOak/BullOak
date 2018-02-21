@@ -86,9 +86,13 @@
             {
                 string value = Environment.GetEnvironmentVariable("BullOak_NEventStore_Sql", EnvironmentVariableTarget.User);
 
-                if(string.IsNullOrWhiteSpace(value))
+                if (string.IsNullOrWhiteSpace(value))
                     value = Environment.GetEnvironmentVariable("BullOak_NEventStore_Sql",
                         EnvironmentVariableTarget.Machine);
+
+                if (string.IsNullOrWhiteSpace(value))
+                    value = Environment.GetEnvironmentVariable("BullOak_NEventStore_Sql",
+                        EnvironmentVariableTarget.Process);
 
                 return value;
             });
@@ -97,8 +101,21 @@
 
             public IDbConnection Open()
             {
-                var con = new SqlConnection(connectionString.Value);
-                con.Open();
+                var connection = connectionString.Value;
+
+                if (string.IsNullOrWhiteSpace(connection))
+                    throw new Exception("Connection string cannot be null!");
+
+                var con = new SqlConnection(connection);
+                try
+                {
+                    con.Open();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Error opening connection for connectionstring {connection}", ex);
+                }
+
                 return con;
             }
         }

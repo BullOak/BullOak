@@ -64,7 +64,7 @@
                 if (useThreadSafeOps) Monitor.TryEnter(eventStore, ref lockTaken);
                 if (useThreadSafeOps && !lockTaken) throw new Exception("Lock not taken");
 
-                session.LoadFromEvents(eventStore[id].Select(x=>x.instance).ToArray(), eventStore[id].Length);
+                session.LoadFromEvents(eventStore[id], eventStore[id].Length);
             }
             finally
             {

@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\EventGenerator.cs" />
+    <Compile Include="Components\IMyEvent.cs" />
     <Compile Include="Components\StateApplier.cs" />
     <Compile Include="Components\IHoldHigherOrder.cs" />
     <Compile Include="Components\MyEvent.cs" />

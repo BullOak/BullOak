@@ -5,16 +5,16 @@
     using BullOak.Repositories.Appliers;
     using TechTalk.SpecFlow;
 
-    public class MyEvent
+    public interface IMyEvent
     {
-        public Guid Id { get; private set; }
-        public int Order { get; private set; }
+        Guid Id { get; set; }
+        int Order { get; set; }
+    }
 
-        public MyEvent(int order)
-        {
-            Id = Guid.NewGuid();
-            Order = order;
-        }
+    public class MyEvent : IMyEvent
+    {
+        public Guid Id { get; set; }
+        public int Order { get; set; }
     }
 
     public interface IHoldHigherOrder
@@ -22,9 +22,13 @@
         int HigherOrder { get; set; }
     }
 
-    public class StateApplier : IApplyEvent<IHoldHigherOrder, MyEvent>
+    public class StateApplier : IApplyEvent<IHoldHigherOrder, MyEvent>,
+        IApplyEvent<IHoldHigherOrder, IMyEvent>
     {
-        public IHoldHigherOrder Apply(IHoldHigherOrder state, MyEvent @event)
+        IHoldHigherOrder IApplyEvent<IHoldHigherOrder, MyEvent>.Apply(IHoldHigherOrder state, MyEvent @event)
+            => (this as IApplyEvent<IHoldHigherOrder, IMyEvent>).Apply(state, @event);
+
+        public IHoldHigherOrder Apply(IHoldHigherOrder state, IMyEvent @event)
         {
             state.HigherOrder = Math.Max(@event.Order, state.HigherOrder);
 
@@ -35,7 +39,11 @@
     internal class EventGenerator
     {
         public MyEvent[] GenerateEvents(int count)
-            => Enumerable.Range(0, count).Select(x => new MyEvent(x)).ToArray();
+            => Enumerable.Range(0, count).Select(x => new MyEvent
+            {
+                Order = x,
+                Id = Guid.NewGuid()
+            }).ToArray();
     }
 
     internal class NewEventsContainer

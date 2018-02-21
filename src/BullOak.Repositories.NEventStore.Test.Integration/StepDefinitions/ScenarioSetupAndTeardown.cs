@@ -23,9 +23,6 @@
         [BeforeScenario]
         public void Setup()
         {
-            streamInfoContainer.ResetToNew();
-            neventStoreContainer.Setup();
-
             var configuration = Configuration.Begin()
                 .WithDefaultCollection()
                 .WithDefaultStateFactory()
@@ -35,6 +32,9 @@
                 .AndNoMoreAppliers()
                 .WithNoUpconverters()
                 .Build();
+
+            streamInfoContainer.ResetToNew();
+            neventStoreContainer.Setup(configuration);
 
             sessionContainer.Setup(configuration);
         }

@@ -9,6 +9,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using BullOak.Repositories.Exceptions;
+    using BullOak.Repositories.StateEmit;
+    using Newtonsoft.Json.Linq;
 
     public class EventStoreSession<TState> : BaseEventSourcedSession<TState, int>
     {
@@ -100,7 +102,7 @@
                 writeResult = await eventStoreConnection.ConditionalAppendToStreamAsync(
                         streamName,
                         currentVersion,
-                        eventsToAdd.Select(eventObject => CreateEventData(eventObject.instance)))
+                        eventsToAdd.Select(eventObject => CreateEventData(eventObject)))
                     .ConfigureAwait(false);
              
                 switch (writeResult.Status)
@@ -126,24 +128,41 @@
             }
         }
 
-        private EventData CreateEventData(object eventObject)
+        private EventData CreateEventData(ItemWithType @event)
         {
             var eventData = new EventData(
                 Guid.NewGuid(),
-                eventObject.GetType().AssemblyQualifiedName,
+                @event.type.AssemblyQualifiedName,
                 true,
-                System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(eventObject)),
+                System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event.instance)),
                 null);
             return eventData;
         }
 
-        private object GetEventFromEventData(ResolvedEvent resolvedEvent)
+        private ItemWithType GetEventFromEventData(ResolvedEvent resolvedEvent)
         {
-            var result = JsonConvert.DeserializeObject(
-                System.Text.Encoding.UTF8.GetString(resolvedEvent.Event.Data),
-                Type.GetType(resolvedEvent.Event.EventType));
+            var jobject = JObject.Parse(System.Text.Encoding.UTF8.GetString(resolvedEvent.Event.Data));
+            var type = Type.GetType(resolvedEvent.Event.EventType);
 
-            return result;
+            object @event;
+            if (type.IsInterface)
+            {
+                @event = configuration.StateFactory.GetState(type);
+                var switchable = @event as ICanSwitchBackAndToReadOnly;
+
+                var canEdit = jobject.Property("canEdit");
+                canEdit.Remove();
+
+                switchable.CanEdit = true;
+                var reader = jobject.CreateReader();
+                var serializer = new JsonSerializer();
+                serializer.Populate(reader, @event);
+                switchable.CanEdit = false;
+            }
+            else
+                @event = jobject.ToObject(type);
+
+            return new ItemWithType(@event, type);
         }
     }
 }

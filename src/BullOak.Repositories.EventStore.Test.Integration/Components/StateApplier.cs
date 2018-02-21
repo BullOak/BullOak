@@ -4,8 +4,12 @@
     using System;
 
     public class StateApplier : IApplyEvent<IHoldHigherOrder, MyEvent>
+        , IApplyEvent<IHoldHigherOrder, IMyEvent>
     {
-        public IHoldHigherOrder Apply(IHoldHigherOrder state, MyEvent @event)
+        IHoldHigherOrder IApplyEvent<IHoldHigherOrder, MyEvent>.Apply(IHoldHigherOrder state, MyEvent @event)
+            => Apply(state, @event);
+
+        public IHoldHigherOrder Apply(IHoldHigherOrder state, IMyEvent @event)
         {
             state.HigherOrder = Math.Max(@event.Value, state.HigherOrder);
 

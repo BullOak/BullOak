@@ -42,11 +42,33 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
                 eventGenerator.GenerateEvents(count));
         }
 
-        [Given(@"(.*) new events")]
+        [Given(@"(.*) new events?")]
         public void GivenNewEvents(int eventsNumber)
         {
             var events = eventGenerator.GenerateEvents(eventsNumber);
             testDataContext.LastGeneratedEvents = events;
+        }
+
+        [Given(@"I try to save the new events in the stream through their interface")]
+        [When(@"I try to save the new events in the stream through their interface")]
+        public void GivenITryToSaveTheNewEventsInTheStreamThroughTheirInterface()
+        {
+            testDataContext.RecordedException = Record.Exception(() =>
+            {
+                using (var session = eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result)
+                {
+                    foreach (var @event in testDataContext.LastGeneratedEvents)
+                    {
+                        session.AddEvent<IMyEvent>(m =>
+                        {
+                            m.Id = @event.Id;
+                            m.Value = @event.Value;
+                        });
+                    }
+
+                    session.SaveChanges();
+                }
+            });
         }
 
         [When(@"I try to save the new events in the stream")]
@@ -56,6 +78,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
                 eventStoreContainer.AppendEventsToCurrentStream(testDataContext.CurrentStreamId, testDataContext.LastGeneratedEvents).Wait());
         }
 
+        [Then(@"the load process should succeed")]
         [Then(@"the save process should succeed")]
         public void ThenTheSaveProcessShouldSucceed()
         {
@@ -72,10 +95,13 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         [When(@"I load my entity")]
         public void WhenILoadMyEntity()
         {
-            using (var session = eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result)
+            testDataContext.RecordedException = Record.Exception(() =>
             {
-                testDataContext.LatestLoadedState = session.GetCurrentState();
-            }
+                using (var session = eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result)
+                {
+                    testDataContext.LatestLoadedState = session.GetCurrentState();
+                }
+            });
         }
 
         [Then(@"HighOrder property should be (.*)")]

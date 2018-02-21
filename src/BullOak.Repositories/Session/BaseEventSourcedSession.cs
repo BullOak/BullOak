@@ -18,15 +18,11 @@
             : base(configuration, disposableHandle)
             => eventApplier = configuration.EventApplier;
 
-        public void LoadFromEvents(object[] storedEvents, TConcurrencyId concurrencyId)
+        public void LoadFromEvents(ItemWithType[] storedEvents, TConcurrencyId concurrencyId)
         {
-            var eventsWithTypes = storedEvents
-                .Select(x => new ItemWithType(x))
-                .ToArray();
-
             var upconvertedEvents = configuration
                 .EventUpconverter
-                .Upconvert(eventsWithTypes);
+                .Upconvert(storedEvents);
 
             var initialState = configuration.StateFactory.GetState(typeOfState);
 

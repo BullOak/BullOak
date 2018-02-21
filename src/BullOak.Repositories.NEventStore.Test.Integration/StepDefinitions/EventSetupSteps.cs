@@ -24,6 +24,10 @@
         [Given(@"(.*) new events? starting with Order of (.*)")]
         public void GivenNewEvent(int count, int order)
             => eventsContainer.LastEventsCreated = generator.GenerateEvents(count).Select(x =>
-                new MyEvent(x.Order + order)).ToArray();
+                new MyEvent
+                {
+                    Order = x.Order + order,
+                    Id = x.Id,
+                }).ToArray();
     }
 }

@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class MyEvent
+    public class MyEvent : IMyEvent
     {
         public Guid Id { get; set; }
         public int Value { get; set; }

@@ -77,7 +77,7 @@
             else if (@event is IEnumerable<object> events)
                 AddEvents(events);
             else
-                AddEventInternal(@event);
+                AddEventInternal(new ItemWithType(@event));
         }
 
         public void AddEvent<TEvent>(Action<TEvent> initializeEventAction)
@@ -89,13 +89,13 @@
             if (switchable != null) switchable.CanEdit = true;
             initializeEventAction(@event);
             if (switchable != null) switchable.CanEdit = false;
-            AddEventInternal(@event);
+            AddEventInternal(new ItemWithType(@event, typeof(TEvent)));
         }
 
-        private void AddEventInternal(object @event)
+        private void AddEventInternal(ItemWithType @event)
         {
-            NewEventsCollection.Add(new ItemWithType(@event));
-            currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, new ItemWithType(@event));
+            NewEventsCollection.Add(@event);
+            currentState = (TState) EventApplier.ApplyEvent(stateType, currentState, @event);
         }
 
         protected void Initialize(TState storedState, bool isNew)

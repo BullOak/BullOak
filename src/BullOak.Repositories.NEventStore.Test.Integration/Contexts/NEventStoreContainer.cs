@@ -1,10 +1,21 @@
 ﻿namespace BullOak.Repositories.NEventStore.Test.Integration.Contexts
 {
     using System;
+    using System.Collections.Generic;
+    using System.Data.SqlClient;
     using System.Threading.Tasks;
     using BullOak.Repositories.Session;
     using TechTalk.SpecFlow;
     using global::NEventStore;
+    using System.Configuration;
+    using global::NEventStore.Persistence.Sql.SqlDialects;
+    using global::NEventStore.Serialization;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using BullOak.Repositories.StateEmit;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     internal class StreamInfoContainer
     {
@@ -61,12 +72,19 @@
         public NEventStoreContainer(ScenarioContext scenarioContext)
             => this.scenarioContext = scenarioContext;
 
-        public void Setup()
-            => EventStore = Wireup.Init()
-                .UsingInMemoryPersistence()
+        public void Setup(IHoldAllConfiguration configuration)
+        {
+            EventStore = Wireup.Init()
+                .UsingSqlPersistence("bo_db")
+                .WithDialect(new MsSqlDialect())
                 .InitializeStorageEngine()
-                .UsingJsonSerialization()
+                .WithSerializationForInterfaceMessages(configuration)
                 .Build();
+
+            EventStore.Advanced.Initialize();
+            EventStore.Advanced.Purge();
+        }
+
 
         public IEventStream OpenStream(string id, int minRevision)
             => EventStore.OpenStream(id, minRevision);

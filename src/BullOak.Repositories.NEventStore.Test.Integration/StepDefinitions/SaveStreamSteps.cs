@@ -43,6 +43,27 @@
             }
         }
 
+        [Given(@"I try to save the new events in the stream through their interface")]
+        [When(@"I try to save the new events in the stream through their interface")]
+        public async Task WhenITryToSaveTheNewEventsInTheStreamThroughTheirInterface()
+        {
+            using (var session = await sessionContainer.StartSession(streamInfo.Id))
+            {
+                foreach (var e in eventsContainer.LastEventsCreated)
+                {
+                    session.AddEvent<IMyEvent>(x =>
+                    {
+                        x.Id = e.Id;
+                        x.Order = e.Order;
+                    });
+                }
+
+                //The implementation is sync-based. Async it stubbed.
+                recordedException = await Record.ExceptionAsync(() => session.SaveChanges());
+            }
+        }
+
+
         [When(@"I add (.*) events? in the session without saving it")]
         public async Task WhenIAddEventsInTheSession(int eventCount)
         {

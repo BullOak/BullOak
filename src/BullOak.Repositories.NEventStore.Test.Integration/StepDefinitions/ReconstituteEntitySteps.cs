@@ -6,6 +6,7 @@
     using BullOak.Repositories.NEventStore.Test.Integration.Contexts;
     using FluentAssertions;
     using TechTalk.SpecFlow;
+    using Xunit;
 
     [Binding]
     internal class ReconstituteEntitySteps
@@ -13,6 +14,8 @@
         private StreamInfoContainer streamInfo;
         private NEventStoreSessionContainer sessionContainer;
         private LastAccessedStateContainer lastStateContainer;
+
+        private Exception recordedException;
 
         public ReconstituteEntitySteps(StreamInfoContainer streamInfoContainer,
             LastAccessedStateContainer lastStateContainer,
@@ -28,8 +31,15 @@
         {
             using (var session = await sessionContainer.StartSession(streamInfo.Id))
             {
-                lastStateContainer.LatestLoadedState = session.GetCurrentState();
+                recordedException = Record.Exception(() =>
+                    lastStateContainer.LatestLoadedState = session.GetCurrentState());
             }
+        }
+
+        [Then(@"the load process should succeed")]
+        public void ThenTheLoadProcessShouldSucceed()
+        {
+            recordedException.Should().BeNull();
         }
 
         [Then(@"HighOrder property should be (.*)")]

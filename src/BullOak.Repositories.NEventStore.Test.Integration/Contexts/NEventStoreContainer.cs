@@ -18,6 +18,7 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System.Data;
+    using Newtonsoft.Json.Schema;
 
     internal class StreamInfoContainer
     {
@@ -82,8 +83,16 @@
         private class ConnectionFactory : IConnectionFactory
         {
             private readonly Lazy<string> connectionString = new Lazy<string>(() =>
+            {
+                string value = Environment.GetEnvironmentVariable("BullOak_NEventStore_Sql", EnvironmentVariableTarget.User);
 
-                Environment.GetEnvironmentVariable("BullOak_NEventStore_Sql", EnvironmentVariableTarget.User));
+                if(string.IsNullOrWhiteSpace(value))
+                    value = Environment.GetEnvironmentVariable("BullOak_NEventStore_Sql",
+                        EnvironmentVariableTarget.Machine);
+
+                return value;
+            });
+
             public Type GetDbProviderFactoryType() => Type.GetType("System.Data.SqlClient");
 
             public IDbConnection Open()

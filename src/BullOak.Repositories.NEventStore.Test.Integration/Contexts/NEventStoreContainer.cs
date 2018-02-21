@@ -74,8 +74,10 @@
 
         public void Setup(IHoldAllConfiguration configuration)
         {
+            var connectionString = Environment.GetEnvironmentVariable("BullOak_NEventStore_Sql", EnvironmentVariableTarget.User);
+
             EventStore = Wireup.Init()
-                .UsingSqlPersistence("bo_db")
+                .UsingSqlPersistence("bo_db", "System.Data.SqlClient", connectionString)
                 .WithDialect(new MsSqlDialect())
                 .InitializeStorageEngine()
                 .WithSerializationForInterfaceMessages(configuration)

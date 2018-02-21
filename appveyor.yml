@@ -87,7 +87,7 @@ hosts:
 # environment variables
 
 environment:
-  BullOak_NEventStore_Sql: "Persist Security Info=True;User ID=bo;Password=bo1;Initial Catalog=BullOak;Data Source=localhost\\sqlexpress2016"
+  BullOak_NEventStore_Sql: "Persist Security Info=True;User ID=sa;Password=Password12!;Initial Catalog=BullOakTest;Data Source=localhost\\SQL2017"
 #  my_var2: value2
   # this is how to set encrypted variable. Go to "Encrypt data" page in account menu to encrypt data.
 #  my_secure_var1:

@@ -405,15 +405,15 @@ notifications:
 #    on_build_status_changed: true
 #
 #  # Slack
-#  - provider: Slack
-#    incoming_webhook: http://incoming-webhook-url
+  - provider: Slack
+    incoming_webhook: https://hooks.slack.com/services/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
 #
 #  # ...or using auth token
 #
-  - provider: Slack
-    auth_token:
-    secure: kBl9BlxvRMr9liHmnBs14A==
-    channel: development
+#  - provider: Slack
+#    auth_token:
+#    secure: kBl9BlxvRMr9liHmnBs14A==
+#    channel: development
 #    template: "{message}, {commitId}, ..."
 #
 #    # Webhook

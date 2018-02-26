@@ -42,7 +42,7 @@
                 EmitProperty(prop, canEditField, typeBuilder);
             }
 
-            return typeBuilder.CreateType();
+            return typeBuilder.CreateTypeInfo();
         }
 
         private FieldBuilder AddCanEditFieldAndProp(TypeBuilder typeBuilder)

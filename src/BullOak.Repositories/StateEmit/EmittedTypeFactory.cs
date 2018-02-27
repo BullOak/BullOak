@@ -42,18 +42,6 @@
             return TypeFactories[type]();
         }
 
-        internal static Func<object> CreateTypeFactoryMethod_Old(Type type)
-        {
-            var typeToCreate = type.IsInterface ? StateTypeEmitter.EmitType(type, new OwnedStateClassEmitter()) : type;
-
-            var ctor = typeToCreate.GetConstructor(Type.EmptyTypes);
-
-            if (ctor == null || !ctor.IsPublic)
-                throw new ArgumentException("Requested type has to have a default ctor", nameof(type));
-
-            return Expression.Lambda<Func<object>>(Expression.New(ctor)).Compile();
-        }
-
         private static Func<object> CreateTypeFactoryMethod(Type type)
         {
             var typeToCreate = type.IsInterface ? StateTypeEmitter.EmitType(type, new OwnedStateClassEmitter()) : type;

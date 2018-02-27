@@ -24,6 +24,12 @@
             public MyOtherInterfaceImplementation(int i) => MyValue = i;
         }
 
+        public struct MyStruct
+        {
+            public int value;
+            public string name;
+        }
+
         private EmittedTypeFactory sut => new EmittedTypeFactory();
 
         [Fact]
@@ -40,6 +46,20 @@
         }
 
         [Fact]
+        public void GetState_OfInterfaceCalledTwice_ShouldReturnDifferntInstances()
+        {
+            //Arrange
+            var typeOfInterface = typeof(MyInterface);
+
+            //Act
+            var instance1 = sut.GetState(typeOfInterface);
+            var instance2 = sut.GetState(typeOfInterface);
+
+            //Assert
+            Object.ReferenceEquals(instance1, instance2).Should().BeFalse();
+        }
+
+        [Fact]
         public void GetWrapper_OfInterface_ShouldSucceed()
         {
             //Arrange
@@ -52,6 +72,7 @@
             exception.Should().BeNull();
             factory().Should().NotBeNull();
         }
+
         [Fact]
         public void GetState_OfClassWithDefaultCtor_ShouldReturnInstanceOfClassType()
         {
@@ -242,6 +263,36 @@
             exception.Should().BeNull();
             wrapper.MyValue.Should().Be(5);
             instance.MyValue.Should().Be(5);
+        }
+
+        [Fact]
+        public void GetState_OfStruct_ShouldSucceed()
+        {
+            //Arrange
+            var structType = typeof(MyStruct);
+            MyStruct myStruct = default(MyStruct);
+
+            //Act
+            var exception = Record.Exception(() => myStruct = (MyStruct)sut.GetState(structType));
+
+            //Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
+        public void GetState_OfStruct_ShouldReturnDifferentInstances()
+        {
+            var structType = typeof(MyStruct);
+            MyStruct myStruct1, myStruct2;
+
+            //Act
+            myStruct1 = (MyStruct) sut.GetState(structType);
+            myStruct2 = (MyStruct) sut.GetState(structType);
+            myStruct1.value = 1;
+            myStruct2.value = -1;
+
+            //Assert
+            myStruct1.value.Should().NotBe(myStruct2.value);
         }
     }
 }

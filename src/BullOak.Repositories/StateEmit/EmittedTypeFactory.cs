@@ -4,6 +4,8 @@
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Reflection.Emit;
     using BullOak.Repositories.StateEmit.Emitters;
 
     internal class EmittedTypeFactory : BaseTypeFactory
@@ -44,12 +46,35 @@
         {
             var typeToCreate = type.IsInterface ? StateTypeEmitter.EmitType(type, new OwnedStateClassEmitter()) : type;
 
-            var ctor = typeToCreate.GetConstructor(Type.EmptyTypes);
+            if (!typeToCreate.IsValueType)
+            {
+                var ctor = typeToCreate.GetConstructor(Type.EmptyTypes);
 
-            if (ctor == null || !ctor.IsPublic)
-                throw new ArgumentException("Requested type has to have a default ctor", nameof(type));
+                if (ctor == null || !ctor.IsPublic)
+                    throw new ArgumentException("Requested type has to have a default ctor", nameof(type));
 
-            return Expression.Lambda<Func<object>>(Expression.New(ctor)).Compile();
+                DynamicMethod ctorCall = new DynamicMethod("GetInstanceOf",
+                    MethodAttributes.Public | MethodAttributes.Static,
+                    CallingConventions.Standard,
+                    typeToCreate,
+                    null,
+                    typeof(EmittedTypeFactory),
+                    true);
+
+                var il = ctorCall.GetILGenerator(8);
+                il.Emit(OpCodes.Newobj, ctor);
+                il.Emit(OpCodes.Ret);
+
+                return (Func<object>) ctorCall.CreateDelegate(typeof(Func<object>));
+            }
+            else
+            {
+                var value = Activator.CreateInstance(typeToCreate);
+
+                //Value types will be copied
+                return () => value;
+            }
         }
+
     }
 }

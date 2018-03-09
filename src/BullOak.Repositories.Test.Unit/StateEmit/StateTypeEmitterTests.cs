@@ -1,5 +1,6 @@
 ﻿namespace BullOak.Repositories.Test.Unit.StateEmit
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using BullOak.Repositories.StateEmit;
@@ -9,17 +10,6 @@
 
     public class StateTypeEmitterTests
     {
-        public interface MyInterface
-        {
-            int MyValue { get; set; }
-        }
-
-        public interface IHavePropertiesAndMethods
-        {
-            int MyValue { get; set; }
-            bool MyMethod();
-        }
-
         public static IEnumerable<object[]> GetEmitters()
         {
             yield return new[] {new StateWrapperEmitter()};
@@ -61,10 +51,65 @@
             var myType = StateTypeEmitter.EmitType(typeof(MyInterface), emitter as BaseClassEmitter);
 
             //Act
-            bool implementsMyInterface = myType.GetInterfaces().Any(x => x.Name == typeof(ICanSwitchBackAndToReadOnly).Name);
+            bool implementsMyInterface =
+                myType.GetInterfaces().Any(x => x.Name == typeof(ICanSwitchBackAndToReadOnly).Name);
 
             //Assert
             implementsMyInterface.Should().BeTrue();
+        }
+
+        [Fact]
+        public void EmitType_OfDerivedInterface_ShouldSucceed()
+        {
+            //Arrange
+            var emitter = new OwnedStateClassEmitter();
+            Type myType = null;
+
+            //Act
+            var exception = Record.Exception((Action) (() => myType = StateTypeEmitter.EmitType(typeof(MyDerivedOfNameAndSalary), emitter)));
+
+            //Assert
+            exception.Should().BeNull();
+            myType.Should().NotBeNull();
+            myType.Should().Implement(typeof(MyDerivedOfNameAndSalary));
+            myType.Should().Implement(typeof(MyBaseWithNameAndSalary));
+        }
+
+        [Fact]
+        public void EmitType_OfInterfaceDerivingFromTwoInterfaceWithSameNamedProperty_ShouldSucceed()
+        {
+            //Arrange
+            var emitter = new OwnedStateClassEmitter();
+            Type myType = null;
+
+            //Act
+            var exception = Record.Exception((Action) (() =>
+                myType = StateTypeEmitter.EmitType(typeof(MyDerivedOfIntAndStringValues), emitter)));
+
+            //Assert
+            exception.Should().BeNull();
+            myType.Should().NotBeNull();
+            myType.Should().Implement(typeof(MyDerivedOfIntAndStringValues));
+            myType.Should().Implement(typeof(MyBaseWithStringValue));
+            myType.Should().Implement(typeof(MyBaseWithIntValue));
+        }
+
+        [Fact]
+        public void EmitType_OfInterfaceDerivingFromTwoInterfaceWithSameNamedButDifferntTypeProperty_ShouldImplementPropertiesExplicitly()
+        {
+            //Arrange
+            var emitter = new OwnedStateClassEmitter();
+            Type myType = null;
+
+            //Act
+            var exception = Record.Exception((Action) (() => myType = StateTypeEmitter.EmitType(typeof(MyDerivedOfIntAndStringValues), emitter)));
+
+            //Assert
+            exception.Should().BeNull();
+            myType.Should().NotBeNull();
+            myType.Should().Implement(typeof(MyDerivedOfIntAndStringValues));
+            myType.Should().Implement(typeof(MyBaseWithStringValue));
+            myType.Should().Implement(typeof(MyBaseWithIntValue));
         }
     }
 }

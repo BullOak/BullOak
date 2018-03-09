@@ -71,6 +71,7 @@
     <Compile Include="Session\NewEventCollectionSpecs.cs" />
     <Compile Include="StateEmit\EmittedTypeFactoryTests.cs" />
     <Compile Include="StateEmit\StateTypeEmitterTests.cs" />
+    <Compile Include="StateEmit\TestInterfaces.cs" />
     <Compile Include="Upconverter\EventUpconverterTests.cs" />
     <Compile Include="Upconverter\UpconverterCompilerTests.cs" />
     <Compile Include="Upconverter\UpconverterConfigTests.cs" />

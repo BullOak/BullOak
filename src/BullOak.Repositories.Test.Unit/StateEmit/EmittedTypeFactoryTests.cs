@@ -7,11 +7,6 @@
 
     public class EmittedTypeFactoryTests
     {
-        public interface MyInterface
-        {
-            int MyValue { get; set; }
-        }
-
         public class MyInterfaceImplementation : MyInterface
         {
             public int MyValue { get; set; }
@@ -293,6 +288,71 @@
 
             //Assert
             myStruct1.value.Should().NotBe(myStruct2.value);
+        }
+
+        [Fact]
+        public void GetState_OfInterfaceDerivingFromAnotherInterface_ShouldAllowForEditOfProperties()
+        {
+            //Arrange
+            Type @interface = typeof(MyDerivedOfNameAndSalary);
+            var instance = sut.GetState(@interface);
+            decimal salary = 3.5m;
+            string name = "Hey";
+            (instance as ICanSwitchBackAndToReadOnly).CanEdit = true;
+
+            //Act
+            var exception1 = Record.Exception(() => (instance as MyDerivedOfNameAndSalary).Name = name);
+            var exception2 = Record.Exception(() => (instance as MyDerivedOfNameAndSalary).Salary = salary);
+
+            //Assert
+            exception1.Should().BeNull();
+            exception2.Should().BeNull();
+
+            (instance as MyDerivedOfNameAndSalary).Name.Should().Be(name);
+            (instance as MyDerivedOfNameAndSalary).Salary.Should().Be(salary);
+        }
+
+        [Fact]
+        public void GetState_OfInterfaceDerivingFromTwoInterfaceWithSameNamedButDifferntTypeProperty_ShouldAllowForEditOfBothProperties()
+        {
+            //Arrange
+            Type @interface = typeof(MyDerivedOfIntAndStringValues);
+            var instance = sut.GetState(@interface);
+            int intValue = 3;
+            string stringValue = "Hey";
+            (instance as ICanSwitchBackAndToReadOnly).CanEdit = true;
+
+            //Act
+            var exception1 = Record.Exception(() => (instance as MyBaseWithIntValue).Value = intValue);
+            var exception2 = Record.Exception(() => (instance as MyBaseWithStringValue).Value = stringValue);
+
+            //Assert
+            exception1.Should().BeNull();
+            exception2.Should().BeNull();
+
+            (instance as MyBaseWithIntValue).Value.Should().Be(intValue);
+            (instance as MyBaseWithStringValue).Value.Should().Be(stringValue);
+        }
+
+        [Fact]
+        public void GetState_OfInterfaceDerivingFromTwoInterfaceWithSameNamedProperty_ShouldUpdateSinglePropertyRegardlessOfRefType()
+        {
+            //Arrange
+            Type @interface = typeof(MyDerivedOfTwoIntValues);
+            var instance = sut.GetState(@interface);
+            int value1 = 3;
+            int value2 = -255;
+            (instance as ICanSwitchBackAndToReadOnly).CanEdit = true;
+
+            //Act
+            (instance as MyBaseWithIntValue).Value = value1;
+            (instance as MyAnotherBaseWithIntValue).Value = value2;
+
+
+            //Assert
+            instance.GetType().GetProperties().Length.Should().Be(1);
+            (instance as MyBaseWithIntValue).Value.Should().Be(value2);
+            (instance as MyAnotherBaseWithIntValue).Value.Should().Be(value2);
         }
     }
 }

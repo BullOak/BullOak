@@ -37,9 +37,9 @@
 
             var canEditField = AddCanEditFieldAndProp(typeBuilder);
 
-            foreach (var prop in typeToMake.GetProperties())
+            foreach (var prop in InterfaceFlattener.Dedup(InterfaceFlattener.GetAllProperties(typeToMake)))
             {
-                EmitProperty(prop, canEditField, typeBuilder);
+                    EmitProperty(prop.Item2, canEditField, typeBuilder);
             }
 
             return typeBuilder.CreateTypeInfo();

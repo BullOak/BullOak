@@ -2,7 +2,6 @@
 {
     using System.Linq;
 
-
     internal class EventGenerator
     {
         public MyEvent[] GenerateEvents(int count)

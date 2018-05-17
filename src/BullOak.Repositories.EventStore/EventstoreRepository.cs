@@ -1,10 +1,10 @@
 ﻿namespace BullOak.Repositories.EventStore
 {
+    using BullOak.Repositories.Repository;
     using BullOak.Repositories.Session;
     using global::EventStore.ClientAPI;
     using System;
     using System.Threading.Tasks;
-    using BullOak.Repositories.Repository;
 
     public class EventStoreRepository<TId, TState> : IStartSessions<TId, TState>
     {

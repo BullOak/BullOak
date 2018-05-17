@@ -1,4 +1,4 @@
-#r @"./packages/FAKE.4.64.10/tools/FakeLib.dll"
+#r @"./packages/FAKE.4.64.13/tools/FakeLib.dll"
 
 open Fake
 open System

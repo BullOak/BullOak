@@ -1,5 +1,6 @@
 ﻿namespace BullOak.Repositories.EventStore
 {
+    using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.Repository;
     using BullOak.Repositories.Session;
     using global::EventStore.ClientAPI;
@@ -20,8 +21,12 @@
 
         public async Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
+            if (throwIfNotExists && !(await Contains(id)))
+                throw new StreamNotFoundException(id.ToString());
+
             var session = new EventStoreSession<TState>(configs, connection, id.ToString());
             await session.Initialize();
+
             return session;
         }
 

@@ -203,7 +203,8 @@ after_build:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - ps: .\build.ps1
+  - nuget install FAKE -OutputDirectory .\packages -Version 4.63.13 -Verbosity quiet
+  - cmd: .\packages\FAKE.4.64.13\tools\FAKE.exe build.fsx Default Configuration=Release
 
 # to disable automatic builds
 #build: off

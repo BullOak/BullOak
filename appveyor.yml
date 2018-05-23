@@ -202,7 +202,7 @@ before_package:
 after_build:
 
 # to run your custom scripts instead of automatic MSBuild
-build_script:
+build_script: build.ps1
 
 # to disable automatic builds
 #build: off

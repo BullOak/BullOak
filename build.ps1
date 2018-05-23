@@ -7,8 +7,8 @@ Param(
     [string]$Configuration="Release"
 )
 
-$nugetVersion="4.5.1"
-$fakeVersion="4.64.10"
+$nugetVersion="4.6.2"
+$fakeVersion="4.64.13"
 
 $buildDir=$PSScriptRoot
 $buildScript=[System.IO.Path]::Combine($buildDir, "build.fsx")

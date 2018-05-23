@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace BullOak.Repositories.EventStore.Test.Integration.Components
+﻿namespace BullOak.Repositories.EventStore.Test.Integration.Components
 {
+    using System;
+
     public interface IMyEvent
     {
         Guid Id { get; set; }

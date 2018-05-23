@@ -1,16 +1,16 @@
 ﻿namespace BullOak.Repositories.EventStore
 {
+    using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.Session;
+    using BullOak.Repositories.StateEmit;
     using global::EventStore.ClientAPI;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using BullOak.Repositories.Exceptions;
-    using BullOak.Repositories.StateEmit;
-    using Newtonsoft.Json.Linq;
 
     public class EventStoreSession<TState> : BaseEventSourcedSession<TState, int>
     {
@@ -104,7 +104,7 @@
                         currentVersion,
                         eventsToAdd.Select(eventObject => CreateEventData(eventObject)))
                     .ConfigureAwait(false);
-             
+
                 switch (writeResult.Status)
                 {
                     case ConditionalWriteStatus.Succeeded:

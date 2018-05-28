@@ -11,7 +11,7 @@ Scenario Outline: Load stored entity with from existing events
 	Then HighOrder property should be <expectedState>
 Examples:
 	| eventsCount | expectedState |
-	| 1           | 0             |
+	| 2           | 1             |
 	| 5           | 4             |
 	| 10000       | 9999          |
 

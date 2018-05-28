@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildsScripts", "BuildsScri
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
 		..\build.fsx = ..\build.fsx
+		..\build.ps1 = ..\build.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EndToEndTests", "EndToEndTests", "{C0C8E3D4-5A5D-45C4-BC9B-6B5093F6E964}"
@@ -37,7 +38,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BullOak.Repositories.Entity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.EntityFramework.Test.Integration", "BullOak.Repositories.EntityFramework.Test.Integration\BullOak.Repositories.EntityFramework.Test.Integration.csproj", "{4900A46A-D1B2-400B-9596-D78A543461C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.EventStore", "BullOak.Repositories.EventStore\BullOak.Repositories.EventStore.csproj", "{CA03AFAD-0BC6-4483-A839-B3F45BFF7364}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BullOak.Repositories.EventStore", "BullOak.Repositories.EventStore\BullOak.Repositories.EventStore.csproj", "{CA03AFAD-0BC6-4483-A839-B3F45BFF7364}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.EventStore.Test.Integration", "BullOak.Repositories.EventStore.Test.Integration\BullOak.Repositories.EventStore.Test.Integration.csproj", "{C19C6049-955E-48AE-B352-4865B5B8C0DE}"
 EndProject

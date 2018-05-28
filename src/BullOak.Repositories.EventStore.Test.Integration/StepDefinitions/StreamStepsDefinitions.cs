@@ -3,10 +3,10 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
 {
     using BullOak.Repositories.EventStore.Test.Integration.Components;
     using BullOak.Repositories.EventStore.Test.Integration.Contexts;
+    using BullOak.Repositories.Exceptions;
     using FluentAssertions;
     using System;
     using System.Collections.Generic;
-    using BullOak.Repositories.Exceptions;
     using TechTalk.SpecFlow;
     using Xunit;
 
@@ -17,8 +17,8 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         private readonly EventGenerator eventGenerator;
         private readonly TestDataContext testDataContext;
 
-
-        public SaveEventsStreamSteps(InProcEventStoreIntegrationContext eventStoreContainer,
+        public SaveEventsStreamSteps(
+            InProcEventStoreIntegrationContext eventStoreContainer,
             EventGenerator eventGenerator,
             TestDataContext testDataContext)
         {
@@ -66,7 +66,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
                         });
                     }
 
-                    session.SaveChanges();
+                    session.SaveChanges().Wait();
                 }
             });
         }
@@ -75,7 +75,10 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         public void WhenITryToSaveTheNewEventsInTheStream()
         {
             testDataContext.RecordedException = Record.Exception(() =>
-                eventStoreContainer.AppendEventsToCurrentStream(testDataContext.CurrentStreamId, testDataContext.LastGeneratedEvents).Wait());
+                eventStoreContainer.AppendEventsToCurrentStream(
+                    testDataContext.CurrentStreamId,
+                    testDataContext.LastGeneratedEvents)
+                .Wait());
         }
 
         [Then(@"the load process should succeed")]

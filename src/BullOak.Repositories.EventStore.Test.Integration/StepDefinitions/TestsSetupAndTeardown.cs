@@ -1,4 +1,5 @@
-﻿
+﻿[assembly: Xunit.CollectionBehavior(DisableTestParallelization = true)]
+
 namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
 {
     using BoDi;

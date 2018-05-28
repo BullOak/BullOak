@@ -203,6 +203,8 @@ after_build:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
+#  - nuget install FAKE -OutputDirectory .\packages -Version 4.63.13 -Verbosity quiet
+#  - cmd: .\packages\FAKE.4.64.13\tools\FAKE.exe build.fsx Default Configuration=Release
 
 # to disable automatic builds
 #build: off
@@ -216,6 +218,8 @@ test:
     - '**\*.Test.Unit.dll'
     - '**\*.Test.Acceptance.dll'
     - '**\*.Repositories.NEventStore.Test.Integration.dll'
+    - '**\*.Repositories.EventStore.Test.Integration.dll'
+#    - '**\*.Test.Integration.dll'
 
 #  categories:
 

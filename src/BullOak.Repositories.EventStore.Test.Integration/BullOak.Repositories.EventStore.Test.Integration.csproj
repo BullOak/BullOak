@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <IsPackable>false</IsPackable>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -51,9 +52,5 @@
     <ProjectReference Include="..\BullOak.Repositories.EventStore\BullOak.Repositories.EventStore.csproj" />
     <ProjectReference Include="..\BullOak.Repositories\BullOak.Repositories.csproj" />
   </ItemGroup>
-
-  <Target Name="PrecompileSpecFlow" BeforeTargets="BeforeBuild">
-    <Exec Command="dotnet SpecFlow.NetCore" />
-  </Target>
 
 </Project>

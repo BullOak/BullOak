@@ -66,7 +66,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
                         });
                     }
 
-                    session.SaveChanges();
+                    session.SaveChanges().Wait();
                 }
             });
         }

@@ -1,39 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net47</TargetFramework>
     <IsPackable>false</IsPackable>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="Components\EventGenerator.cs" />
-    <Compile Include="Components\IHoldHigherOrder.cs" />
-    <Compile Include="Components\IMyEvent.cs" />
-    <Compile Include="Components\MyEvent.cs" />
-    <Compile Include="Components\StateApplier.cs" />
-    <Compile Include="Contexts\InProcEventStoreIntegrationContext.cs" />
-    <Compile Include="Contexts\TestDataContext.cs" />
-    <Compile Include="Specification\ReconstituteState.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ReconstituteState.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Specification\SaveEventStream.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SaveEventStream.feature</DependentUpon>
-    </Compile>
-    <Compile Include="Specification\StateRetreivalSpecs.feature.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>StateRetreivalSpecs.feature</DependentUpon>
-    </Compile>
-    <Compile Include="StepDefinitions\StreamStepsDefinitions.cs" />
-    <Compile Include="StepDefinitions\TestsSetupAndTeardown.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EventStore.Client.Embedded" Version="4.1.1" />
@@ -51,6 +24,36 @@
   <ItemGroup>
     <ProjectReference Include="..\BullOak.Repositories.EventStore\BullOak.Repositories.EventStore.csproj" />
     <ProjectReference Include="..\BullOak.Repositories\BullOak.Repositories.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Specification\ReconstituteState.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ReconstituteState.feature.cs</LastGenOutput>
+    </None>
+    <None Update="Specification\ReconstituteState.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Specification\ReconstituteState.feature</DependentUpon>
+    </None>
+    <None Update="Specification\SaveEventStream.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>SaveEventStream.feature.cs</LastGenOutput>
+    </None>
+    <None Update="Specification\SaveEventStream.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SaveEventStream.feature</DependentUpon>
+    </None>
+    <None Update="Specification\StateRetreivalSpecs.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>StateRetreivalSpecs.feature.cs</LastGenOutput>
+    </None>
+    <None Update="Specification\StateRetreivalSpecs.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StateRetreivalSpecs.feature</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -12,6 +12,7 @@
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using TechTalk.SpecFlow;
 
     internal class InProcEventStoreIntegrationContext
     {
@@ -45,6 +46,7 @@
             repository = new EventStoreRepository<string, IHoldHigherOrder>(configuration, GetConnection());
         }
 
+        [BeforeTestRun]
         public static void SetupNode()
         {
             node = CreateInMemoryEventStoreNode();
@@ -55,6 +57,7 @@
             }
         }
 
+        [AfterTestRun]
         public static void TeardownNode()
         {
             node.Stop();

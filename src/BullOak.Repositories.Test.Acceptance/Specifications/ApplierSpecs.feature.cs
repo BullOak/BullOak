@@ -17,17 +17,17 @@ namespace BullOak.Repositories.Test.Acceptance.Specifications
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "2.4.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    public partial class EventsCanBeInterceptedFeature : Xunit.IClassFixture<EventsCanBeInterceptedFeature.FixtureData>, System.IDisposable
+    public partial class ApplierSpecsFeature : Xunit.IClassFixture<ApplierSpecsFeature.FixtureData>, System.IDisposable
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "EventsCanBeIntercepted.feature"
+#line 1 "ApplierSpecs.feature"
 #line hidden
         
-        public EventsCanBeInterceptedFeature(EventsCanBeInterceptedFeature.FixtureData fixtureData, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public ApplierSpecsFeature(ApplierSpecsFeature.FixtureData fixtureData, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
             this.TestInitialize();
@@ -36,8 +36,8 @@ namespace BullOak.Repositories.Test.Acceptance.Specifications
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "EventsCanBeIntercepted", "\tIn order to implement cross cutting concerns\r\n\tAs a developer\r\n\tI want to be abl" +
-                    "e to intercept events going to the store or published", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "ApplierSpecs", "\tIn order to avoid silly mistakes\r\n\tAs a math idiot\r\n\tI want to be told the sum o" +
+                    "f two numbers", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -77,23 +77,45 @@ namespace BullOak.Repositories.Test.Acceptance.Specifications
             this.ScenarioTearDown();
         }
         
-        [Xunit.FactAttribute(DisplayName="Interceptor is called")]
-        [Xunit.TraitAttribute("FeatureTitle", "EventsCanBeIntercepted")]
-        [Xunit.TraitAttribute("Description", "Interceptor is called")]
-        public virtual void InterceptorIsCalled()
+        [Xunit.FactAttribute(DisplayName="Same applier processing multiple events of different type")]
+        [Xunit.TraitAttribute("FeatureTitle", "ApplierSpecs")]
+        [Xunit.TraitAttribute("Description", "Same applier processing multiple events of different type")]
+        public virtual void SameApplierProcessingMultipleEventsOfDifferentType()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Interceptor is called", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Same applier processing multiple events of different type", null, ((string[])(null)));
 #line 6
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
 #line 7
- testRunner.Given("a new stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("an existing stream with 2 events", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+            TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Title",
+                        "Name",
+                        "Surname"});
+            table1.AddRow(new string[] {
+                        "Mr.",
+                        "Funny",
+                        "Surname"});
 #line 8
- testRunner.And("1 new event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 9
- testRunner.When("I try to save the new events in the stream", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 10
- testRunner.Then("the interceptor should be called", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And("a buyer name set event which can be upconverted as below in the stream", ((string)(null)), table1, "And ");
+#line hidden
+            TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Title",
+                        "Name",
+                        "Surname"});
+            table2.AddRow(new string[] {
+                        "Mr.",
+                        "Funny2",
+                        "Surname2"});
+#line 11
+ testRunner.And("a buyer name set event which can be upconverted as below in the stream", ((string)(null)), table2, "And ");
+#line 14
+ testRunner.When("I load my entity", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 15
+ testRunner.Then("HighOrder property should be 1", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 16
+ testRunner.And("FullName property of the entity should be \"Mr. Funny2 Surname2\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -105,12 +127,12 @@ this.ScenarioInitialize(scenarioInfo);
             
             public FixtureData()
             {
-                EventsCanBeInterceptedFeature.FeatureSetup();
+                ApplierSpecsFeature.FeatureSetup();
             }
             
             void System.IDisposable.Dispose()
             {
-                EventsCanBeInterceptedFeature.FeatureTearDown();
+                ApplierSpecsFeature.FeatureTearDown();
             }
         }
     }

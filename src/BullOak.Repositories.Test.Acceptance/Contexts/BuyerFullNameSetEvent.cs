@@ -4,6 +4,8 @@
     {
         public string FullName { get; set; }
 
+        public BuyerFullNameSetEvent() { }
+
         public BuyerFullNameSetEvent(string fullname)
             => FullName = fullname;
     }

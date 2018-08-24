@@ -44,9 +44,26 @@
         [Given(@"a buyer name set event which can be upconverted as below in the stream")]
         public void GivenABuyerNameSetEventWhichCanBeUpconvertedAsBelowInTheStream(Table table)
         {
+            var nameInfo = table.CreateInstance<BuyerNameSetEvent>();
+
+            var @event = new BuyerFullNameSetEvent()
+            {
+                FullName = $"{nameInfo.Title} {nameInfo.Name} {nameInfo.Surname}"
+            };
+            var originalEvents = sessionContainer.GetStream(streamInfo.Id);
+            var combined = new List<ItemWithType>(originalEvents);
+            combined.Add(new ItemWithType(@event));
+
+
+            sessionContainer.SaveStream(streamInfo.Id, combined.ToArray());
+        }
+
+        [Given(@"a full buyer name set event")]
+        public void GivenAFullBuyerNameSetEvent(Table table)
+        {
             var @event = table.CreateInstance<BuyerNameSetEvent>();
 
-            sessionContainer.SaveStream(streamInfo.Id, new [] {new ItemWithType(@event) });
+            sessionContainer.SaveStream(streamInfo.Id, new[] {new ItemWithType(@event)});
         }
 
         [Given(@"a balance set event with balance (.*) and date (.*)")]

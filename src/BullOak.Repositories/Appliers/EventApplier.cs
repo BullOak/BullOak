@@ -69,11 +69,16 @@
         {
             var key = new EventAndStateTypes(stateType, eventType);
 
-            if (!indexedStateAppliers.TryGetValue(key, out var indexedApplier))
-            {
-                indexedApplier = GetApplierFromUnindexed(key);
+            ApplierRetriever indexedApplier;
 
-                indexedStateAppliers.Add(key, indexedApplier);
+            lock (indexedStateAppliers)
+            {
+                if (!indexedStateAppliers.TryGetValue(key, out indexedApplier))
+                {
+                    indexedApplier = GetApplierFromUnindexed(key);
+
+                    indexedStateAppliers.Add(key, indexedApplier);
+                }
             }
 
             return indexedApplier.GetApplier()

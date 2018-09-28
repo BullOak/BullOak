@@ -77,12 +77,12 @@ namespace BullOak.Repositories.Test.Acceptance.Specifications
             this.ScenarioTearDown();
         }
         
-        [Xunit.FactAttribute(DisplayName="Same applier processing multiple events of different type")]
+        [Xunit.FactAttribute(DisplayName="Apply two events on cold-start works ok")]
         [Xunit.TraitAttribute("FeatureTitle", "ApplierSpecs")]
-        [Xunit.TraitAttribute("Description", "Same applier processing multiple events of different type")]
-        public virtual void SameApplierProcessingMultipleEventsOfDifferentType()
+        [Xunit.TraitAttribute("Description", "Apply two events on cold-start works ok")]
+        public virtual void ApplyTwoEventsOnCold_StartWorksOk()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Same applier processing multiple events of different type", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Apply two events on cold-start works ok", null, ((string[])(null)));
 #line 6
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
@@ -98,7 +98,7 @@ this.ScenarioInitialize(scenarioInfo);
                         "Funny",
                         "Surname"});
 #line 8
- testRunner.And("a buyer name set event which can be upconverted as below in the stream", ((string)(null)), table1, "And ");
+ testRunner.And("a buyer name set event", ((string)(null)), table1, "And ");
 #line hidden
             TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
                         "Title",
@@ -109,7 +109,7 @@ this.ScenarioInitialize(scenarioInfo);
                         "Funny2",
                         "Surname2"});
 #line 11
- testRunner.And("a buyer name set event which can be upconverted as below in the stream", ((string)(null)), table2, "And ");
+ testRunner.And("a buyer name set event", ((string)(null)), table2, "And ");
 #line 14
  testRunner.When("I load my entity", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 15

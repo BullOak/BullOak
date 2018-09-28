@@ -41,6 +41,7 @@
             sessionContainer.SaveStream(streamInfo.Id, combined.ToArray());
         }
 
+        [Given(@"a buyer name set event")]
         [Given(@"a buyer name set event which can be upconverted as below in the stream")]
         public void GivenABuyerNameSetEventWhichCanBeUpconvertedAsBelowInTheStream(Table table)
         {
@@ -53,7 +54,6 @@
             var originalEvents = sessionContainer.GetStream(streamInfo.Id);
             var combined = new List<ItemWithType>(originalEvents);
             combined.Add(new ItemWithType(@event));
-
 
             sessionContainer.SaveStream(streamInfo.Id, combined.ToArray());
         }

@@ -71,13 +71,16 @@
 
             ApplierRetriever indexedApplier;
 
-            lock (indexedStateAppliers)
+            if (!indexedStateAppliers.TryGetValue(key, out indexedApplier))
             {
-                if (!indexedStateAppliers.TryGetValue(key, out indexedApplier))
+                lock (indexedStateAppliers)
                 {
-                    indexedApplier = GetApplierFromUnindexed(key);
+                    if (!indexedStateAppliers.TryGetValue(key, out indexedApplier))
+                    {
+                        indexedApplier = GetApplierFromUnindexed(key);
 
-                    indexedStateAppliers.Add(key, indexedApplier);
+                        indexedStateAppliers.Add(key, indexedApplier);
+                    }
                 }
             }
 

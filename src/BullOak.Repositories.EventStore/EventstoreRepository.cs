@@ -35,18 +35,15 @@
                 throw new RepositoryUnavailableException("Couldn't connect to the EvenStore repository. Connection object is null.");
             }
 
-            using (connection)
+            if (throwIfNotExists && !(await Contains(id, connection)))
             {
-                if (throwIfNotExists && !(await Contains(id, connection)))
-                {
-                    throw new StreamNotFoundException(id.ToString());
-                }
-
-                var session = new EventStoreSession<TState>(configs, connection, id.ToString());
-                await session.Initialize();
-
-                return session;
+                throw new StreamNotFoundException(id.ToString());
             }
+
+            var session = new EventStoreSession<TState>(configs, connection, id.ToString());
+            await session.Initialize();
+
+            return session;
         }
 
         private async Task<bool> Contains(TId selector, IEventStoreConnection connection)

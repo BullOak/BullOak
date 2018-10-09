@@ -9,7 +9,6 @@
 
     public class EventStoreRepository<TId, TState> : IStartSessions<TId, TState>
     {
-        private static readonly Task<bool> falseResult = Task.FromResult(false);
         private readonly IHoldAllConfiguration configs;
         private readonly Func<IEventStoreConnection> connectionFactory;
 
@@ -36,15 +35,18 @@
                 throw new RepositoryUnavailableException("Couldn't connect to the EvenStore repository. Connection object is null.");
             }
 
-            if (throwIfNotExists && !(await Contains(id, connection)))
+            using (connection)
             {
-                throw new StreamNotFoundException(id.ToString());
+                if (throwIfNotExists && !(await Contains(id, connection)))
+                {
+                    throw new StreamNotFoundException(id.ToString());
+                }
+
+                var session = new EventStoreSession<TState>(configs, connectionFactory(), id.ToString());
+                await session.Initialize();
+
+                return session;
             }
-
-            var session = new EventStoreSession<TState>(configs, connectionFactory(), id.ToString());
-            await session.Initialize();
-
-            return session;
         }
 
         private async Task<bool> Contains(TId selector, IEventStoreConnection connection)
@@ -63,16 +65,22 @@
 
         public Task<bool> Contains(TId selector)
         {
-            return Contains(selector, connectionFactory());
+            using (var connection = connectionFactory())
+            {
+                return Contains(selector, connection);
+            }
         }
 
 
         public async Task Delete(TId selector)
         {
-            var id = selector.ToString();
-            var eventsTail = await connectionFactory().ReadStreamEventsBackwardAsync(id, 0, 1, false);
-            var expectedVersion = eventsTail.LastEventNumber;
-            await connectionFactory().DeleteStreamAsync(id, expectedVersion);
+            using (var connection = connectionFactory())
+            {
+                var id = selector.ToString();
+                var eventsTail = await connection.ReadStreamEventsBackwardAsync(id, 0, 1, false);
+                var expectedVersion = eventsTail.LastEventNumber;
+                await connection.DeleteStreamAsync(id, expectedVersion);
+            }
         }
     }
 }

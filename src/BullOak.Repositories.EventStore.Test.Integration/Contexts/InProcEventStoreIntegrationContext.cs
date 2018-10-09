@@ -43,7 +43,7 @@
 
         public void SetupRepository(IHoldAllConfiguration configuration)
         {
-            repository = new EventStoreRepository<string, IHoldHigherOrder>(configuration, GetConnection());
+            repository = new EventStoreRepository<string, IHoldHigherOrder>(configuration, GetConnection);
         }
 
         [BeforeTestRun]

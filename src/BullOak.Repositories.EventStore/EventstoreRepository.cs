@@ -11,26 +11,43 @@
     {
         private static readonly Task<bool> falseResult = Task.FromResult(false);
         private readonly IHoldAllConfiguration configs;
-        private readonly IEventStoreConnection connection;
+        private readonly Func<IEventStoreConnection> connectionFactory;
 
-        public EventStoreRepository(IHoldAllConfiguration configs, IEventStoreConnection connection)
+        public EventStoreRepository(IHoldAllConfiguration configs, Func<IEventStoreConnection> connectionFactory)
         {
-            this.configs = configs ?? throw new ArgumentNullException(nameof(connection));
-            this.connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            this.configs = configs ?? throw new ArgumentNullException(nameof(configs));
+            this.connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
         public async Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
-            if (throwIfNotExists && !(await Contains(id)))
-                throw new StreamNotFoundException(id.ToString());
+            IEventStoreConnection connection;
+            try
+            {
+                connection = connectionFactory();
+            }
+            catch (Exception ex)
+            {
+                throw new RepositoryUnavailableException("Couldn't connect to the EvenStore repository. See InnerException for details", ex);
+            }
 
-            var session = new EventStoreSession<TState>(configs, connection, id.ToString());
+            if (connection == null)
+            {
+                throw new RepositoryUnavailableException("Couldn't connect to the EvenStore repository. See InnerException for details", new ArgumentNullException(nameof(connection)));
+            }
+
+            if (throwIfNotExists && !(await Contains(id, connection)))
+            {
+                throw new StreamNotFoundException(id.ToString());
+            }
+
+            var session = new EventStoreSession<TState>(configs, connectionFactory(), id.ToString());
             await session.Initialize();
 
             return session;
         }
 
-        public async Task<bool> Contains(TId selector)
+        private async Task<bool> Contains(TId selector, IEventStoreConnection connection)
         {
             try
             {
@@ -44,12 +61,18 @@
             }
         }
 
+        public Task<bool> Contains(TId selector)
+        {
+            return Contains(selector, connectionFactory());
+        }
+
+
         public async Task Delete(TId selector)
         {
             var id = selector.ToString();
-            var eventsTail = await connection.ReadStreamEventsBackwardAsync(id, 0, 1, false);
+            var eventsTail = await connectionFactory().ReadStreamEventsBackwardAsync(id, 0, 1, false);
             var expectedVersion = eventsTail.LastEventNumber;
-            await connection.DeleteStreamAsync(id, expectedVersion);
+            await connectionFactory().DeleteStreamAsync(id, expectedVersion);
         }
     }
 }

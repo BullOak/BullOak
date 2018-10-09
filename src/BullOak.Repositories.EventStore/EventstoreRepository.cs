@@ -33,7 +33,7 @@
 
             if (connection == null)
             {
-                throw new RepositoryUnavailableException("Couldn't connect to the EvenStore repository. See InnerException for details", new ArgumentNullException(nameof(connection)));
+                throw new RepositoryUnavailableException("Couldn't connect to the EvenStore repository. Connection object is null.");
             }
 
             if (throwIfNotExists && !(await Contains(id, connection)))

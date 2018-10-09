@@ -42,7 +42,7 @@
                     throw new StreamNotFoundException(id.ToString());
                 }
 
-                var session = new EventStoreSession<TState>(configs, connectionFactory(), id.ToString());
+                var session = new EventStoreSession<TState>(configs, connection, id.ToString());
                 await session.Initialize();
 
                 return session;

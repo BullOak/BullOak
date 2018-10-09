@@ -73,7 +73,19 @@
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) { ConsiderSessionDisposed(); }
+            if (disposing)
+            {
+                ConsiderSessionDisposed();
+                try
+                {
+                    eventStoreConnection.Close();
+                    eventStoreConnection.Dispose();
+                }
+                catch
+                {
+                    // ignored as connection may already be in disposed state and throw
+                }
+            }
             base.Dispose(disposing);
         }
 
@@ -160,7 +172,9 @@
                 switchable.CanEdit = false;
             }
             else
+            {
                 @event = jobject.ToObject(type);
+            }
 
             return new ItemWithType(@event, type);
         }

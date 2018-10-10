@@ -20,30 +20,60 @@
 
         public async Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
-            IEventStoreConnection connection;
+            IEventStoreConnection connection = null;
+            EventStoreSession<TState> session;
             try
             {
-                connection = connectionFactory();
-            }
-            catch (Exception ex)
-            {
-                throw new RepositoryUnavailableException("Couldn't connect to the EvenStore repository. See InnerException for details", ex);
-            }
+                try
+                {
+                    connection = connectionFactory();
+                }
+                catch (Exception ex)
+                {
+                    throw new RepositoryUnavailableException(
+                        "Couldn't connect to the EvenStore repository. See InnerException for details", ex);
+                }
 
-            if (connection == null)
-            {
-                throw new RepositoryUnavailableException("Couldn't connect to the EvenStore repository. Connection object is null.");
-            }
+                if (connection == null)
+                {
+                    throw new RepositoryUnavailableException(
+                        "Couldn't connect to the EvenStore repository. Connection object is null.");
+                }
 
-            if (throwIfNotExists && !(await Contains(id, connection)))
-            {
-                throw new StreamNotFoundException(id.ToString());
-            }
+                if (throwIfNotExists && !await Contains(id, connection))
+                {
+                    throw new StreamNotFoundException(id.ToString());
+                }
 
-            var session = new EventStoreSession<TState>(configs, connection, id.ToString());
-            await session.Initialize();
+                session = new EventStoreSession<TState>(configs, connection, id.ToString());
+                await session.Initialize();
+
+            }
+            catch
+            {
+                CleanupConnection(connection);
+                throw;
+            }
 
             return session;
+        }
+
+        private void CleanupConnection(IEventStoreConnection connection)
+        {
+            try
+            {
+                if (connection == null)
+                {
+                    return;
+                }
+
+                connection.Close();
+                connection.Dispose();
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private async Task<bool> Contains(TId selector, IEventStoreConnection connection)

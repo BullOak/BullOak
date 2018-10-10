@@ -51,29 +51,11 @@
             }
             catch
             {
-                CleanupConnection(connection);
+                connection.SafeClose();
                 throw;
             }
 
             return session;
-        }
-
-        private void CleanupConnection(IEventStoreConnection connection)
-        {
-            try
-            {
-                if (connection == null)
-                {
-                    return;
-                }
-
-                connection.Close();
-                connection.Dispose();
-            }
-            catch
-            {
-                // ignored
-            }
         }
 
         private async Task<bool> Contains(TId selector, IEventStoreConnection connection)

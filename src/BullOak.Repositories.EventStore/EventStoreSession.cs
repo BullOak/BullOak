@@ -76,15 +76,8 @@
             if (disposing)
             {
                 ConsiderSessionDisposed();
-                try
-                {
-                    eventStoreConnection.Close();
-                    eventStoreConnection.Dispose();
-                }
-                catch
-                {
-                    // ignored as connection may already be in disposed state and throw
-                }
+                eventStoreConnection.SafeClose();
+
             }
             base.Dispose(disposing);
         }

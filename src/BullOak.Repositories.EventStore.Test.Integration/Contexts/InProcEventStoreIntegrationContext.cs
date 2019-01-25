@@ -4,21 +4,22 @@
     using BullOak.Repositories.EventStore.Test.Integration.Components;
     using BullOak.Repositories.Session;
     using global::EventStore.ClientAPI;
-    using global::EventStore.ClientAPI.Embedded;
-    using global::EventStore.Core;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using BullOak.Repositories.EventStore.Test.Integration.EventStoreServer;
     using TechTalk.SpecFlow;
 
     internal class InProcEventStoreIntegrationContext
     {
-        private static ClusterVNode node;
+        //private static ClusterVNode node;
         private EventStoreRepository<string, IHoldHigherOrder> repository;
         private static IEventStoreConnection connection;
+        private static Process eventStoreProcess;
 
         public InProcEventStoreIntegrationContext()
         {
@@ -49,18 +50,33 @@
         [BeforeTestRun]
         public static void SetupNode()
         {
-            node = CreateInMemoryEventStoreNode();
             if (connection == null)
             {
-                connection = EmbeddedEventStoreConnection.Create(node);
-                connection.ConnectAsync().Wait();
+                RunEventStoreServerProcess();
+
+                var settings = ConnectionSettings
+                    .Create()
+                    .KeepReconnecting()
+                    .FailOnNoServerResponse()
+                    .KeepRetrying()
+                    .UseConsoleLogger();
+
+                var localhostConnectionString = "ConnectTo=tcp://localhost:1113; HeartBeatTimeout=500";
+
+                connection = EventStoreConnection.Create(localhostConnectionString, settings);
+                connection.ConnectAsync().ConfigureAwait(false);
             }
+        }
+
+        private static void RunEventStoreServerProcess()
+        {
+            eventStoreProcess = EventStoreServerStarterHelper.StartServer();
         }
 
         [AfterTestRun]
         public static void TeardownNode()
         {
-            node.Stop();
+            EventStoreServerStarterHelper.StopProcess(eventStoreProcess);
         }
 
         public async Task<IManageSessionOf<IHoldHigherOrder>> StartSession(Guid currentStreamId)
@@ -81,13 +97,13 @@
 
         public ResolvedEvent[] ReadEventsFromStreamRaw(Guid id)
         {
-            var connection = GetConnection();
+            var conn = GetConnection();
             var result = new List<ResolvedEvent>();
             StreamEventsSlice currentSlice;
             long nextSliceStart = StreamPosition.Start;
             do
             {
-                currentSlice = connection.ReadStreamEventsForwardAsync(id.ToString(), nextSliceStart, 100, false).Result;
+                currentSlice = conn.ReadStreamEventsForwardAsync(id.ToString(), nextSliceStart, 100, false).Result;
                 nextSliceStart = currentSlice.NextEventNumber;
                 result.AddRange(currentSlice.Events);
             } while (!currentSlice.IsEndOfStream);
@@ -97,8 +113,8 @@
 
         internal void WriteEventsToStreamRaw(Guid currentStreamInUse, IEnumerable<MyEvent> myEvents)
         {
-            var connection = GetConnection();
-            connection.AppendToStreamAsync(currentStreamInUse.ToString(), ExpectedVersion.Any,
+            var conn = GetConnection();
+            conn.AppendToStreamAsync(currentStreamInUse.ToString(), ExpectedVersion.Any,
                 myEvents.Select(e =>
                 {
                     var serialized = JsonConvert.SerializeObject(e);
@@ -110,16 +126,6 @@
                         null);
                 }))
                 .Wait();
-        }
-
-        private static ClusterVNode CreateInMemoryEventStoreNode()
-        {
-            var nodeBuilder = EmbeddedVNodeBuilder.AsSingleNode()
-                                      .OnDefaultEndpoints()
-                                      .RunInMemory();
-            var node = nodeBuilder.Build();
-            node.StartAndWaitUntilReady().Wait();
-            return node;
         }
     }
 }

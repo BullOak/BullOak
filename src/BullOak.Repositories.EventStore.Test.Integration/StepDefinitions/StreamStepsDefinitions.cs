@@ -1,5 +1,4 @@
-﻿
-namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
+﻿namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
 {
     using BullOak.Repositories.EventStore.Test.Integration.Components;
     using BullOak.Repositories.EventStore.Test.Integration.Contexts;
@@ -7,6 +6,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
     using FluentAssertions;
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using TechTalk.SpecFlow;
     using Xunit;
 
@@ -34,10 +34,10 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         }
 
         [Given(@"an existing stream with (.*) events")]
-        public void GivenAnExistingStreamWithEvents(int count)
+        public async Task GivenAnExistingStreamWithEvents(int count)
         {
             testDataContext.ResetStream();
-            eventStoreContainer.WriteEventsToStreamRaw(
+            await eventStoreContainer.WriteEventsToStreamRaw(
                 testDataContext.CurrentStreamId,
                 eventGenerator.GenerateEvents(count));
         }
@@ -51,11 +51,11 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
 
         [Given(@"I try to save the new events in the stream through their interface")]
         [When(@"I try to save the new events in the stream through their interface")]
-        public void GivenITryToSaveTheNewEventsInTheStreamThroughTheirInterface()
+        public async Task GivenITryToSaveTheNewEventsInTheStreamThroughTheirInterface()
         {
-            testDataContext.RecordedException = Record.Exception(() =>
+            testDataContext.RecordedException = await Record.ExceptionAsync(async () => 
             {
-                using (var session = eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result)
+                using (var session = await eventStoreContainer.StartSession(testDataContext.CurrentStreamId))
                 {
                     foreach (var @event in testDataContext.LastGeneratedEvents)
                     {
@@ -66,19 +66,18 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
                         });
                     }
 
-                    session.SaveChanges().Wait();
+                    await session.SaveChanges();
                 }
             });
         }
 
         [When(@"I try to save the new events in the stream")]
-        public void WhenITryToSaveTheNewEventsInTheStream()
+        public async Task WhenITryToSaveTheNewEventsInTheStream()
         {
-            testDataContext.RecordedException = Record.Exception(() =>
+            testDataContext.RecordedException = await Record.ExceptionAsync(() =>
                 eventStoreContainer.AppendEventsToCurrentStream(
                     testDataContext.CurrentStreamId,
-                    testDataContext.LastGeneratedEvents)
-                .Wait());
+                    testDataContext.LastGeneratedEvents));
         }
 
         [Then(@"the load process should succeed")]
@@ -89,18 +88,18 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         }
 
         [Then(@"there should be (.*) events in the stream")]
-        public void ThenThereShouldBeEventsInTheStream(int count)
+        public async Task ThenThereShouldBeEventsInTheStream(int count)
         {
-            var recordedEvents = eventStoreContainer.ReadEventsFromStreamRaw(testDataContext.CurrentStreamId);
+            var recordedEvents = await eventStoreContainer.ReadEventsFromStreamRaw(testDataContext.CurrentStreamId);
             recordedEvents.Length.Should().Be(count);
         }
 
         [When(@"I load my entity")]
-        public void WhenILoadMyEntity()
+        public async Task WhenILoadMyEntity()
         {
-            testDataContext.RecordedException = Record.Exception(() =>
+            testDataContext.RecordedException = await Record.ExceptionAsync(async () =>
             {
-                using (var session = eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result)
+                using (var session = await eventStoreContainer.StartSession(testDataContext.CurrentStreamId))
                 {
                     testDataContext.LatestLoadedState = session.GetCurrentState();
                 }
@@ -114,9 +113,9 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         }
 
         [When(@"I add (.*) events in the session without saving it")]
-        public void WhenIAddEventsInTheSessionWithoutSavingIt(int eventCount)
+        public async Task WhenIAddEventsInTheSessionWithoutSavingIt(int eventCount)
         {
-            using (var session = eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result)
+            using (var session = await eventStoreContainer.StartSession(testDataContext.CurrentStreamId))
             {
                 session.AddEvents(eventGenerator.GenerateEvents(eventCount));
 
@@ -125,9 +124,11 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         }
 
         [Given(@"session '(.*)' is open")]
-        public void GivenSessionIsOpen(string sessionName)
+        public async Task GivenSessionIsOpen(string sessionName)
         {
-            testDataContext.NamedSessions.Add(sessionName, eventStoreContainer.StartSession(testDataContext.CurrentStreamId).Result);
+            testDataContext.NamedSessions.Add(
+                sessionName,
+                await eventStoreContainer.StartSession(testDataContext.CurrentStreamId));
         }
 
         [When(@"I try to add (.*) new events to '(.*)'")]
@@ -138,13 +139,13 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         }
 
         [When(@"I try to save '(.*)'")]
-        public void WhenITryToSave(string sessionName)
+        public async Task WhenITryToSave(string sessionName)
         {
             if (!testDataContext.NamedSessionsExceptions.ContainsKey(sessionName))
             {
                 testDataContext.NamedSessionsExceptions.Add(sessionName, new List<Exception>());
             }
-            var recordedException = Record.ExceptionAsync(() => testDataContext.NamedSessions[sessionName].SaveChanges()).Result;
+            var recordedException = await Record.ExceptionAsync(() => testDataContext.NamedSessions[sessionName].SaveChanges());
             if (recordedException != null)
             {
                 testDataContext.NamedSessionsExceptions[sessionName].Add(recordedException);

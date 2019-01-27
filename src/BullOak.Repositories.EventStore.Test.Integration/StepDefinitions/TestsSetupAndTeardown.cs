@@ -19,9 +19,9 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         }
 
         [BeforeTestRun]
-        public static async Task SetupEventStoreNode()
+        public static Task SetupEventStoreNode()
         {
-            await InProcEventStoreIntegrationContext.SetupNode();
+            return InProcEventStoreIntegrationContext.SetupNode();
         }
 
         [AfterTestRun]

@@ -34,10 +34,10 @@
         }
 
         [Given(@"an existing stream with (.*) events")]
-        public async Task GivenAnExistingStreamWithEvents(int count)
+        public Task GivenAnExistingStreamWithEvents(int count)
         {
             testDataContext.ResetStream();
-            await eventStoreContainer.WriteEventsToStreamRaw(
+            return eventStoreContainer.WriteEventsToStreamRaw(
                 testDataContext.CurrentStreamId,
                 eventGenerator.GenerateEvents(count));
         }

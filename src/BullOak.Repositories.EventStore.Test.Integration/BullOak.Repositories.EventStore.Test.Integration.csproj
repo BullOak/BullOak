@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EventStore.Client.Embedded" Version="4.1.1" />
     <PackageReference Include="FluentAssertions" Version="5.3.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
@@ -27,6 +26,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Specification\ReconstituteState.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ReconstituteState.feature</DependentUpon>
+    </Compile>
+    <Compile Update="Specification\SaveEventStream.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SaveEventStream.feature</DependentUpon>
+    </Compile>
+    <Compile Update="Specification\StateRetreivalSpecs.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StateRetreivalSpecs.feature</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="EventStoreServer\EventStore.ClusterNode.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Specification\ReconstituteState.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ReconstituteState.feature.cs</LastGenOutput>

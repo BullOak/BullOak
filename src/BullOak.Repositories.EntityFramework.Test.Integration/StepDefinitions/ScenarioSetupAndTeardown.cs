@@ -1,8 +1,5 @@
 ﻿namespace BullOak.Repositories.NEventStore.Test.Integration.StepDefinitions
 {
-    using System.Linq;
-    using System.Reflection;
-    using BullOak.Repositories.EntityFramework;
     using BullOak.Repositories.EntityFramework.Test.Integration.Contexts;
     using BullOak.Repositories.EntityFramework.Test.Integration.DbModel;
     using TechTalk.SpecFlow;

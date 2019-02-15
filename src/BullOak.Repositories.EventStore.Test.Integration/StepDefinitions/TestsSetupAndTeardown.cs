@@ -5,6 +5,7 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
     using BoDi;
     using BullOak.Repositories.EventStore.Test.Integration.Contexts;
     using System;
+    using System.Threading.Tasks;
     using TechTalk.SpecFlow;
 
     [Binding]
@@ -18,9 +19,9 @@ namespace BullOak.Repositories.EventStore.Test.Integration.StepDefinitions
         }
 
         [BeforeTestRun]
-        public static void SetupEventStoreNode()
+        public static Task SetupEventStoreNode()
         {
-            InProcEventStoreIntegrationContext.SetupNode();
+            return InProcEventStoreIntegrationContext.SetupNode();
         }
 
         [AfterTestRun]

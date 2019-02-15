@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.Test.Acceptance.StepDefinitions
 {
     using System;
+    using System.Threading.Tasks;
     using BullOak.Repositories.Test.Acceptance.Contexts;
     using FluentAssertions;
     using TechTalk.SpecFlow;
@@ -31,13 +32,13 @@
         }
 
         [When(@"I try to save the new events in the stream")]
-        public void WhenITryToSaveTheNewEventsInTheStream()
+        public async Task WhenITryToSaveTheNewEventsInTheStream()
         {
             using (var session = sessionContainer.StartSession(streamInfo.Id))
             {
                 session.AddEvents(eventsContainer.LastEventsCreated);
 
-                recordedException = Record.ExceptionAsync(() => session.SaveChanges()).Result;
+                recordedException = await Record.ExceptionAsync(() => session.SaveChanges());
             }
         }
 

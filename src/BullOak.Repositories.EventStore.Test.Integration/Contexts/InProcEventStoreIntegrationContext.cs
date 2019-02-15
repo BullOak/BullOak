@@ -48,7 +48,7 @@
         }
 
         [BeforeTestRun]
-        public static void SetupNode()
+        public static async Task SetupNode()
         {
             if (connection == null)
             {
@@ -64,7 +64,7 @@
                 var localhostConnectionString = "ConnectTo=tcp://localhost:1113; HeartBeatTimeout=500";
 
                 connection = EventStoreConnection.Create(localhostConnectionString, settings);
-                connection.ConnectAsync().ConfigureAwait(false);
+                await connection.ConnectAsync();
             }
         }
 
@@ -91,11 +91,11 @@
             using (var session = await StartSession(id))
             {
                 session.AddEvents(events);
-                await session.SaveChanges().ConfigureAwait(false);
+                await session.SaveChanges();
             }
         }
 
-        public ResolvedEvent[] ReadEventsFromStreamRaw(Guid id)
+        public async Task<ResolvedEvent[]> ReadEventsFromStreamRaw(Guid id)
         {
             var conn = GetConnection();
             var result = new List<ResolvedEvent>();
@@ -103,7 +103,7 @@
             long nextSliceStart = StreamPosition.Start;
             do
             {
-                currentSlice = conn.ReadStreamEventsForwardAsync(id.ToString(), nextSliceStart, 100, false).Result;
+                currentSlice = await conn.ReadStreamEventsForwardAsync(id.ToString(), nextSliceStart, 100, false);
                 nextSliceStart = currentSlice.NextEventNumber;
                 result.AddRange(currentSlice.Events);
             } while (!currentSlice.IsEndOfStream);
@@ -111,10 +111,10 @@
             return result.ToArray();
         }
 
-        internal void WriteEventsToStreamRaw(Guid currentStreamInUse, IEnumerable<MyEvent> myEvents)
+        internal Task WriteEventsToStreamRaw(Guid currentStreamInUse, IEnumerable<MyEvent> myEvents)
         {
             var conn = GetConnection();
-            conn.AppendToStreamAsync(currentStreamInUse.ToString(), ExpectedVersion.Any,
+            return conn.AppendToStreamAsync(currentStreamInUse.ToString(), ExpectedVersion.Any,
                 myEvents.Select(e =>
                 {
                     var serialized = JsonConvert.SerializeObject(e);
@@ -124,8 +124,7 @@
                         true,
                         bytes,
                         null);
-                }))
-                .Wait();
+                }));
         }
     }
 }

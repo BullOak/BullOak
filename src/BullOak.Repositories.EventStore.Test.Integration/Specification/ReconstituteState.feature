@@ -22,3 +22,25 @@ Scenario: Reconstitute state from one event stored using interface
 	When I load my entity
 	Then the load process should succeed
 	And HighOrder property should be 2
+
+Scenario: Reconstitute state from empty stream should succeed and return default state
+	Given a new stream
+	When I load my entity
+	Then the load process should succeed
+	And HighOrder property should be 0
+
+Scenario: Reconstitute state after a soft delete should succeed and return default state
+	Given a new stream
+	And 3 new events
+	And  I soft-delete the stream
+	When I load my entity
+	Then the load process should succeed
+	And HighOrder property should be 0
+
+Scenario: Reconstitute state after a hard delete should succeed and return default state
+	Given a new stream
+	And 3 new events
+	And  I hard-delete the stream
+	When I load my entity
+	Then the load process should succeed
+	And HighOrder property should be 0

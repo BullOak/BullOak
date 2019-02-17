@@ -48,3 +48,21 @@ Scenario: Saving already saved session should throw meaningful usage advice exce
 	And I try to save 'Session1'
 	Then the save process should fail for 'Session1'
 	And there should be 20 events in the stream
+
+Scenario: Write after a hard deleted stream should fail
+	Given a new stream
+	And 3 new events
+	And  I hard-delete the stream
+	And 10 new events
+	When I try to save the new events in the stream
+	Then the save process should fail
+
+Scenario: Write after a soft deleted stream should succeed
+	Given a new stream
+	And 3 new events
+	And  I soft-delete the stream
+	And 10 new events
+	When I try to save the new events in the stream
+	And I load my entity
+	Then the load process should succeed
+	And HighOrder property should be 9

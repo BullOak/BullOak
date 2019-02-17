@@ -12,10 +12,11 @@
     <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
     <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
-    <Version>2.0.1</Version>
-    <AssemblyVersion>2.0.1.0</AssemblyVersion>
-    <FileVersion>2.0.1.0</FileVersion>
+    <Version>2.1.0</Version>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <NoWarn>NU5125</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <LangVersion>latest</LangVersion>
@@ -26,7 +27,7 @@
     <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EventStore.ClientAPI.NetCore" Version="4.1.0.23" />
+    <PackageReference Include="EventStore.Client" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
   <ItemGroup>

@@ -95,6 +95,12 @@
             }
         }
 
+        public async Task SoftDeleteStream(Guid id)
+            => await repository.Delete(id.ToString());
+
+        public async Task HardDeleteStream(Guid id)
+            => await GetConnection().DeleteStreamAsync(id.ToString(), -1, true);
+
         public async Task<ResolvedEvent[]> ReadEventsFromStreamRaw(Guid id)
         {
             var conn = GetConnection();

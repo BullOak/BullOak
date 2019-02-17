@@ -63,6 +63,12 @@
                 do
                 {
                     currentSlice = await eventStoreConnection.ReadStreamEventsForwardAsync(streamName, nextSliceStart, SliceSize, false);
+                    if (currentSlice.Status == SliceReadStatus.StreamDeleted ||
+                        currentSlice.Status == SliceReadStatus.StreamNotFound)
+                    {
+                        currentVersion = -1;
+                        return result;
+                    }
                     nextSliceStart = currentSlice.NextEventNumber;
                     result.AddRange(currentSlice.Events);
                 } while (!currentSlice.IsEndOfStream);

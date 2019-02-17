@@ -80,11 +80,25 @@
                     testDataContext.LastGeneratedEvents));
         }
 
+        [Given(@"I soft-delete the stream")]
+        public async Task GivenISoft_DeleteTheStream()
+            => await eventStoreContainer.SoftDeleteStream(testDataContext.CurrentStreamId);
+
+        [Given(@"I hard-delete the stream")]
+        public async Task GivenIHard_DeleteTheStream()
+            => await eventStoreContainer.HardDeleteStream(testDataContext.CurrentStreamId);
+
         [Then(@"the load process should succeed")]
         [Then(@"the save process should succeed")]
         public void ThenTheSaveProcessShouldSucceed()
         {
             testDataContext.RecordedException.Should().BeNull();
+        }
+
+        [Then(@"the save process should fail")]
+        public void ThenTheSaveProcessShouldFail()
+        {
+            testDataContext.RecordedException.Should().NotBeNull();
         }
 
         [Then(@"there should be (.*) events in the stream")]
@@ -97,6 +111,8 @@
         [When(@"I load my entity")]
         public async Task WhenILoadMyEntity()
         {
+            if (testDataContext.RecordedException != null) return;
+
             testDataContext.RecordedException = await Record.ExceptionAsync(async () =>
             {
                 using (var session = await eventStoreContainer.StartSession(testDataContext.CurrentStreamId))

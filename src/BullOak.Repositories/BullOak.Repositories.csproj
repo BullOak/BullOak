@@ -11,9 +11,9 @@
     <PackageProjectUrl>https://github.com/BullOak/BullOak</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
     <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
-    <Version>2.1.3</Version>
-    <AssemblyVersion>2.1.3.0</AssemblyVersion>
-    <FileVersion>2.1.3.0</FileVersion>
+    <Version>2.2.0</Version>
+    <AssemblyVersion>2.2.0</AssemblyVersion>
+    <FileVersion>2.2.0</FileVersion>
     <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
     <NoWarn>NU5125</NoWarn>
   </PropertyGroup>

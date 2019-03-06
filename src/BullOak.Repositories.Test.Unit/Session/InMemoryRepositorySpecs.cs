@@ -267,7 +267,7 @@
         }
 
         [Fact]
-        public async Task StreamWithOneEvent_BeginSessionWithThrowIfNotExists_ShouldShouldNotThrow()
+        public async Task StreamWithOneEvent_BeginSessionWithThrowIfNotExists_ShouldNotThrow()
         {
             //Arrange
             int id = 42;

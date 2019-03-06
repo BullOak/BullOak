@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.InMemory
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
@@ -11,19 +12,19 @@
 
     public class InMemoryEventSourcedRepository<TId, TState> : IStartSessions<TId, TState>
     {
-        private Dictionary<TId, ItemWithType[]> eventStore = new Dictionary<TId, ItemWithType[]>();
+        private ConcurrentDictionary<TId, List<ItemWithType>> eventStore = new ConcurrentDictionary<TId, List<ItemWithType>>();
         private readonly IHoldAllConfiguration configuration;
         private static bool useThreadSafeOps;
 
         public ItemWithType[] this[TId id]
         {
-            get => eventStore.TryGetValue(id, out var value) ? value : new ItemWithType[0];
-            set => eventStore[id] = value;
+            get => eventStore.TryGetValue(id, out var value) ? value.ToArray() : new ItemWithType[0];
+            set => eventStore[id] = new List<ItemWithType>(value ?? new ItemWithType[0]);
         }
 
         public TId[] IdsOfStreamsWithEvents =>
             eventStore
-                .Where(x => x.Value != null && x.Value.Length > 0)
+                .Where(x => x.Value != null && x.Value.Count > 0)
                 .Select(x => x.Key)
                 .ToArray();
 
@@ -35,60 +36,34 @@
 
         public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
-            ItemWithType[] eventStream;
-            bool lockTaken = false;
+            List<ItemWithType> eventStream;
 
-            try
+            bool streamAlreadyExisted = eventStore.TryGetValue(id, out eventStream);
+
+            if (!streamAlreadyExisted && !throwIfNotExists)
+                eventStream = eventStore.GetOrAdd(id, new List<ItemWithType>());
+            else if (!streamAlreadyExisted && throwIfNotExists)
+                throw new StreamNotFoundException(id.ToString());
+
+            lock (eventStream)
             {
-                if (useThreadSafeOps) Monitor.TryEnter(eventStore, ref lockTaken);
-                if (useThreadSafeOps && !lockTaken) throw new Exception("Lock not taken");
+                var session = new InMemoryEventStoreSession<TState, TId>(configuration, eventStream, id);
+                session.LoadFromEvents(eventStream.ToArray(), eventStream.Count);
 
-                if (!eventStore.TryGetValue(id, out eventStream) && !throwIfNotExists)
-                {
-                    eventStream = new ItemWithType[0];
-                    eventStore[id] = eventStream;
-                }
-                else if (throwIfNotExists)
-                    throw new StreamNotFoundException(id.ToString());
+                return Task.FromResult((IManageSessionOf<TState>)session);
             }
-            finally
-            {
-                if(lockTaken) Monitor.Exit(eventStore);
-            }
-
-            var session = new InMemoryEventStoreSession<TState, TId>(configuration, eventStore, id);
-
-            try
-            {
-                lockTaken = false;
-                if (useThreadSafeOps) Monitor.TryEnter(eventStore, ref lockTaken);
-                if (useThreadSafeOps && !lockTaken) throw new Exception("Lock not taken");
-
-                session.LoadFromEvents(eventStore[id], eventStore[id].Length);
-            }
-            finally
-            {
-                if(lockTaken) Monitor.Exit(eventStore);
-            }
-
-            return Task.FromResult((IManageSessionOf<TState>)session);
         }
 
         public Task Delete(TId id)
         {
-            lock (eventStore)
-            {
-                if (eventStore.ContainsKey(id)) eventStore.Remove(id);
-                return Task.FromResult(0);
-            }
+            if (eventStore.ContainsKey(id)) eventStore.TryRemove(id, out _);
+
+            return Task.FromResult(0);
         }
 
         public Task<bool> Contains(TId id)
         {
-            lock (eventStore)
-            {
-                return Task.FromResult(eventStore.ContainsKey(id) && eventStore[id] != null && eventStore[id].Length > 0);
-            }
+            return Task.FromResult(eventStore.ContainsKey(id) && eventStore[id] != null && eventStore[id].Count > 0);
         }
     }
 }

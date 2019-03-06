@@ -98,6 +98,21 @@
         }
 
         [Fact]
+        public async Task BeginSession_WithNewIdAndNotThrow_ShouldNotThrow()
+        {
+            //Arrangements
+            var sut = new ConfigurationStub<TestState>()
+                .WithDefaultSetup()
+                .GetNewSUT<int>();
+
+            //Act
+            var exception = await Record.ExceptionAsync(() => sut.BeginSessionFor(123, throwIfNotExists: false));
+
+            //Assert
+            exception.Should().BeNull();
+        }
+
+        [Fact]
         public async Task BeginSession_WithNewId_ShouldReturnSession()
         {
             //Arrangements
@@ -249,6 +264,24 @@
 
             //Assert
             config.EventsThatHaveBeenPublished.Count.Should().Be(0);
+        }
+
+        [Fact]
+        public async Task StreamWithOneEvent_BeginSessionWithThrowIfNotExists_ShouldNotThrow()
+        {
+            //Arrange
+            int id = 42;
+            object @event = new object();
+            var sut = new ConfigurationStub<TestState>()
+                .WithDefaultSetup()
+                .GetNewSUT<int>()
+                .WithEventInStream(@event, id);
+
+            //Act
+            var exception = await Record.ExceptionAsync(() => sut.BeginSessionFor(id, true));
+
+            //Assert
+            exception.Should().BeNull();
         }
 
         [Fact]

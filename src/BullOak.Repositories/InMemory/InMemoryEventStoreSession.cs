@@ -10,37 +10,31 @@
 
     internal class InMemoryEventStoreSession<TState, TId> : BaseEventSourcedSession<TState, int>
     {
+        private readonly TId Id;
         private readonly int initialVersion;
-        private readonly Dictionary<TId, ItemWithType[]> data;
-        private readonly TId id;
+        private readonly List<ItemWithType> stream;
 
-        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, Dictionary<TId, ItemWithType[]> data, TId id)
+        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, List<ItemWithType> stream, TId id)
             : base(configuration)
         {
-            this.data = data ?? throw new ArgumentNullException(nameof(data));
-            initialVersion = data[id].Length;
-            this.id = id;
+            this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            initialVersion = stream.Count;
+            Id = id;
         }
 
         /// <inheritdoc />
-        protected override Task<int> SaveChanges(ItemWithType[] newEvents, TState currentState, CancellationToken? cancellationToken)
+        protected override Task<int> SaveChanges(ItemWithType[] newEvents,
+            TState currentState,
+            CancellationToken? cancellationToken)
         {
-            lock (data)
+            lock (stream)
             {
-                if (data.ContainsKey(id))
-                {
-                    var events = data[id].ToList();
+                if (stream.Count != initialVersion)
+                    throw new ConcurrencyException(Id.ToString(), null);
 
-                    if (events.Count != initialVersion)
-                        throw new ConcurrencyException(id.ToString(), null);
+                stream.AddRange(newEvents ?? new ItemWithType[0]);
 
-                    events.AddRange(newEvents);
-
-                    data[id] = events.ToArray();
-                }
-                else data[id] = newEvents;
-
-                return Task.FromResult(data[id].Length);
+                return Task.FromResult(stream.Count);
             }
         }
     }

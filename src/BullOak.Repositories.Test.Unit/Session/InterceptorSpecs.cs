@@ -94,7 +94,7 @@
             }
         }
 
-        public async Task<Indexes> DoWithGuarantee(DeliveryTargetGuarantee guarantee)
+        public async Task<Indexes> DoWithGuarantee(DeliveryTargetGuarntee guarantee)
         {
             ConcurrentQueue<string> calls = new ConcurrentQueue<string>();
             var sut = GetSUT(calls);
@@ -124,7 +124,7 @@
             //Arrange
 
             //Act
-            var indexes = await DoWithGuarantee(DeliveryTargetGuarantee.AtLeastOnce);
+            var indexes = await DoWithGuarantee(DeliveryTargetGuarntee.AtLeastOnce);
 
             //Assert
             indexes.beforePublish.Should().BeLessThan(indexes.publish);
@@ -136,7 +136,7 @@
             //Arrange
 
             //Act
-            var indexes = await DoWithGuarantee(DeliveryTargetGuarantee.AtLeastOnce);
+            var indexes = await DoWithGuarantee(DeliveryTargetGuarntee.AtLeastOnce);
 
             //Assert
             indexes.afterPublish.Should().BeGreaterThan(indexes.publish);
@@ -148,7 +148,7 @@
             //Arrange
 
             //Act
-            var indexes = await DoWithGuarantee(DeliveryTargetGuarantee.AtLeastOnce);
+            var indexes = await DoWithGuarantee(DeliveryTargetGuarntee.AtLeastOnce);
 
             //Assert
             indexes.beforeSave.Should().BeGreaterThan(indexes.afterPublish);
@@ -160,7 +160,7 @@
             //Arrange
 
             //Act
-            var indexes = await DoWithGuarantee(DeliveryTargetGuarantee.AtLeastOnce);
+            var indexes = await DoWithGuarantee(DeliveryTargetGuarntee.AtLeastOnce);
 
             //Assert
             indexes.beforeSave.Should().BeLessThan(indexes.save);
@@ -172,7 +172,7 @@
             //Arrange
 
             //Act
-            var indexes = await DoWithGuarantee(DeliveryTargetGuarantee.AtLeastOnce);
+            var indexes = await DoWithGuarantee(DeliveryTargetGuarntee.AtLeastOnce);
 
             //Assert
             indexes.afterSave.Should().BeGreaterThan(indexes.save);
@@ -184,7 +184,7 @@
             //Arrange
 
             //Act
-            var indexes = await DoWithGuarantee(DeliveryTargetGuarantee.AtMostOnce);
+            var indexes = await DoWithGuarantee(DeliveryTargetGuarntee.AtMostOnce);
 
             //Assert
             indexes.beforePublish.Should().BeGreaterThan(indexes.afterSave);

@@ -16,5 +16,5 @@
     /// flipside chosing AtMostOnce may mean that there is a really low percentage of possibility
     /// that an event may be missed and not published.
     /// </summary>
-    public enum DeliveryTargetGuarantee { AtMostOnce, AtLeastOnce }
+    public enum DeliveryTargetGuarntee { AtMostOnce, AtLeastOnce }
 }

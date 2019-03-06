@@ -104,12 +104,12 @@
             IsNewState = isNew;
         }
 
-        public async Task<int> SaveChanges(DeliveryTargetGuarantee targetGuarantee =
-                DeliveryTargetGuarantee.AtLeastOnce,
+        public async Task<int> SaveChanges(DeliveryTargetGuarntee targetGuarantee =
+                DeliveryTargetGuarntee.AtLeastOnce,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var newEvents = NewEventsCollection.ToArray();
-            var sendEventsBeforeSaving = targetGuarantee == DeliveryTargetGuarantee.AtLeastOnce;
+            var sendEventsBeforeSaving = targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce;
 
             if (sendEventsBeforeSaving) await PublishEvents(configuration, newEvents, cancellationToken);
 

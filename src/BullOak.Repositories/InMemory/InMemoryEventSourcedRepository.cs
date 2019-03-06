@@ -47,7 +47,7 @@
 
             lock (eventStream)
             {
-                var session = new InMemoryEventStoreSession<TState, TId>(configuration, ref eventStream, id);
+                var session = new InMemoryEventStoreSession<TState, TId>(configuration, eventStream, id);
                 session.LoadFromEvents(eventStream.ToArray(), eventStream.Count);
 
                 return Task.FromResult((IManageSessionOf<TState>)session);

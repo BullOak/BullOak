@@ -14,7 +14,7 @@
         private readonly int initialVersion;
         private readonly List<ItemWithType> stream;
 
-        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, ref List<ItemWithType> stream, TId id)
+        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, List<ItemWithType> stream, TId id)
             : base(configuration)
         {
             this.stream = stream ?? throw new ArgumentNullException(nameof(stream));

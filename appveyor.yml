@@ -401,7 +401,6 @@ on_finish:
 notifications:
   - provider: Slack
     incoming_webhook: https://hooks.slack.com/services/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
-
   - provider: Webhook
     url: https://maker.ifttt.com/trigger/bo_release_{APPVEYOR_PULL_REQUEST_NUMBER}/with/key/kSg0JPLZLcht1NDoihgjW
     headers:

@@ -373,6 +373,7 @@ before_deploy:
 
 # scripts to run after deployment
 after_deploy:
+  - ps: Invoke-WebRequest -Uri https://maker.ifttt.com/trigger/bo_release/with/key/kSg0JPLZLcht1NDoihgjW -Method POST
 
 # to run your custom scripts instead of provider deployments
 deploy_script:
@@ -401,10 +402,3 @@ on_finish:
 notifications:
   - provider: Slack
     incoming_webhook: https://hooks.slack.com/services/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
-  - provider: Webhook
-    url: https://maker.ifttt.com/trigger/bo_release_{APPVEYOR_PULL_REQUEST_NUMBER}/with/key/kSg0JPLZLcht1NDoihgjW
-    headers:
-      User-Agent: myapp 1.0
-    on_build_success: true
-    on_build_failure: false
-    on_build_status_changed: false

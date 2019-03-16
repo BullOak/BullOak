@@ -399,35 +399,13 @@ on_finish:
 #---------------------------------#
 
 notifications:
-#
-#  # Email
-#  - provider: Email
-#    to:
-#      - user1@email.com
-#      - user2@email.com
-#    subject: 'Build {{status}}'                  # optional
-#    message: "{{message}}, {{commitId}}, ..."    # optional
-#    on_build_status_changed: true
-#
-#  # Slack
   - provider: Slack
     incoming_webhook: https://hooks.slack.com/services/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
-#
-#  # ...or using auth token
-#
-#  - provider: Slack
-#    auth_token:
-#    secure: kBl9BlxvRMr9liHmnBs14A==
-#    channel: development
-#    template: "{message}, {commitId}, ..."
-#
-#    # Webhook
-#  - provider: Webhook
-#    url: http://www.myhook2.com
-#    headers:
-#      User-Agent: myapp 1.0
-#      Authorization:
-#        secure: GhD+5xhLz/tkYY6AO3fcfQ==
-#    on_build_success: false
-#    on_build_failure: true
-#    on_build_status_changed: true
+
+  - provider: Webhook
+    url: https://maker.ifttt.com/trigger/bo_release_{APPVEYOR_PULL_REQUEST_NUMBER}/with/key/kSg0JPLZLcht1NDoihgjW
+    headers:
+      User-Agent: myapp 1.0
+    on_build_success: true
+    on_build_failure: false
+    on_build_status_changed: false

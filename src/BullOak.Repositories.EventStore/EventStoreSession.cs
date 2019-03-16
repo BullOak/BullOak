@@ -9,6 +9,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -136,19 +137,34 @@
 
         private EventData CreateEventData(ItemWithType @event)
         {
+            var metadata = EventMetadata_V1.From(@event);
+
             var eventData = new EventData(
                 Guid.NewGuid(),
-                @event.type.AssemblyQualifiedName,
+                @event.type.Name,
                 true,
                 System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event.instance)),
-                null);
+                MetadataSerializer.Serialize(metadata));
             return eventData;
         }
 
         private ItemWithType GetEventFromEventData(ResolvedEvent resolvedEvent)
         {
             var jobject = JObject.Parse(System.Text.Encoding.UTF8.GetString(resolvedEvent.Event.Data));
-            var type = Type.GetType(resolvedEvent.Event.EventType);
+            Type type;
+            (IHoldMetadata metadata,int version) metadata;
+
+            if (resolvedEvent.Event.Metadata == null || resolvedEvent.Event.Metadata.Length == 0)
+            {
+                type = Type.GetType(resolvedEvent.Event.EventType);
+            }
+            else
+            {
+                metadata = MetadataSerializer.DeserializeMetadata(resolvedEvent.Event.Metadata);
+                type = AppDomain.CurrentDomain.GetAssemblies()
+                    .Select(x => x.GetType(metadata.metadata.EventTypeFQN))
+                    .FirstOrDefault(x => x != null);
+            }
 
             object @event;
             if (type.IsInterface)

@@ -7,14 +7,14 @@
     <Summary>This is the EventStore implementation of a repository for BullOak.Repositories. See BullOak.Repositories nuget for more info.</Summary>
     <Authors>Savvas Kleanthous</Authors>
     <Company>BullOak</Company>
-    <PackageLicenseUrl>https://github.com/BullOak/BullOak/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/BullOak/BullOak</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
     <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
-    <Version>2.1.1</Version>
-    <AssemblyVersion>2.1.1.0</AssemblyVersion>
-    <FileVersion>2.1.1.0</FileVersion>
+    <Version>2.1.2</Version>
+    <AssemblyVersion>2.1.2.0</AssemblyVersion>
+    <FileVersion>2.1.2.0</FileVersion>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <NoWarn>NU5125</NoWarn>
   </PropertyGroup>

@@ -1,21 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net462</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>BullOak.Repositories.EntityFramework</AssemblyName>
     <PackageId>BullOak.Repositories.EntityFramework</PackageId>
     <Description>The BullOak.Repositories implementation for EntityFramework</Description>
-	<Summary>This is the EntityFramework implementation of a repository for BullOak.Repositories. See BullOak.Repositories nuget for more info.</Summary>
+  	<Summary>This is the EntityFramework implementation of a repository for BullOak.Repositories. See BullOak.Repositories nuget for more info.</Summary>
     <Authors>Savvas Kleanthous</Authors>
     <Company>BullOak</Company>
-    <PackageLicenseUrl>https://github.com/BullOak/BullOak/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/BullOak/BullOak</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
     <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
-    <Version>1.3.0</Version>
-    <AssemblyVersion>1.3.0.0</AssemblyVersion>
-    <FileVersion>1.3.0.0</FileVersion>
+    <Version>1.3.1</Version>
+    <AssemblyVersion>1.3.1.0</AssemblyVersion>
+    <FileVersion>1.3.1.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <LangVersion>latest</LangVersion>

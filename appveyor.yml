@@ -373,7 +373,16 @@ before_deploy:
 
 # scripts to run after deployment
 after_deploy:
-  - ps: Invoke-WebRequest -Uri https://maker.ifttt.com/trigger/bo_release/with/key/kSg0JPLZLcht1NDoihgjW -Method POST
+  - ps: |
+        Write-Output "APPVEYOR_BUILD_VERSION = $APPVEYOR_BUILD_VERSION"
+        Write-Output "env.APPVEYOR_BUILD_VERSION = $env:APPVEYOR_BUILD_VERSION"
+        Write-Output "APPVEYOR_BUILD_NUMBER = $APPVEYOR_BUILD_NUMBER"
+        Write-Output "env.APPVEYOR_BUILD_NUMBER = $env:APPVEYOR_BUILD_NUMBER"
+        Write-Output "APPVEYOR_PULL_REQUEST_NUMBER = $APPVEYOR_PULL_REQUEST_NUMBER"
+        Write-Output "env.APPVEYOR_PULL_REQUEST_NUMBER = $env:APPVEYOR_PULL_REQUEST_NUMBER"
+        
+        $postParams = @{ value1 = "$env:APPVEYOR_BUILD_NUMBER" }
+        Invoke-WebRequest -Uri https://maker.ifttt.com/trigger/bo_release/with/key/kSg0JPLZLcht1NDoihgjW -Method POST -Body $postParams
 
 # to run your custom scripts instead of provider deployments
 deploy_script:

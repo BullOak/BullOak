@@ -5,17 +5,17 @@
     <AssemblyName>BullOak.Repositories.NEventStore</AssemblyName>
     <PackageId>BullOak.Repositories.NEventStore</PackageId>
     <Description>The BullOak.Repositories implementation for NEventStore</Description>
-	<Summary>This is the NEventStore implementation of a repository for BullOak.Repositories. See BullOak.Repositories nuget for more info.</Summary>
+  	<Summary>This is the NEventStore implementation of a repository for BullOak.Repositories. See BullOak.Repositories nuget for more info.</Summary>
     <Authors>Savvas Kleanthous</Authors>
     <Company>BullOak</Company>
-    <PackageLicenseUrl>https://github.com/BullOak/BullOak/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/BullOak/BullOak</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
     <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
-    <Version>2.0.0</Version>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
+    <Version>2.0.1</Version>
+    <AssemblyVersion>2.0.1.0</AssemblyVersion>
+    <FileVersion>2.0.1.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <LangVersion>latest</LangVersion>

@@ -1,0 +1,7 @@
+extraction:
+  csharp:
+    index:
+      buildless: true
+      nuget_restore: false    
+#      dotnet:
+#        version: 2.1.300

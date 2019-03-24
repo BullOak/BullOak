@@ -20,13 +20,7 @@
 
         public void LoadFromEvents(ItemWithType[] storedEvents, TConcurrencyId concurrencyId)
         {
-            var upconvertedEvents = configuration
-                .EventUpconverter
-                .Upconvert(storedEvents);
-
-            var initialState = configuration.StateFactory.GetState(typeOfState);
-
-            initialState = eventApplier.Apply(typeOfState, initialState, upconvertedEvents);
+            var initialState = configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
 
             Initialize((TState) initialState, storedEvents.Length == 0);
             this.concurrencyId = concurrencyId;

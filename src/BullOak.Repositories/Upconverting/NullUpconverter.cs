@@ -6,5 +6,8 @@
     {
         public IEnumerable<ItemWithType> Upconvert(ItemWithType[] eventsToUpconvert)
             => eventsToUpconvert;
+
+        public IEnumerable<ItemWithType> Upconvert(IEnumerable<ItemWithType> eventsToUpconvert)
+            => eventsToUpconvert;
     }
 }

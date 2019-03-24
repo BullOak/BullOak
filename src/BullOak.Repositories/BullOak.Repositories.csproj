@@ -16,9 +16,10 @@
     <FileVersion>2.2.1</FileVersion>
     <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
     <NoWarn>NU5125</NoWarn>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <LangVersion>latest</LangVersion>
+    <LangVersion>7.1</LangVersion>
     <OutputPath>bin\Any CPU\release</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />

@@ -9,6 +9,7 @@ namespace BullOak.Repositories
     using BullOak.Repositories.Config;
     using BullOak.Repositories.EventPublisher;
     using BullOak.Repositories.Middleware;
+    using BullOak.Repositories.Rehydration;
     using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.Upconverting;
 
@@ -37,6 +38,7 @@ namespace BullOak.Repositories
         public StateTypeToCollectionTypeSelector CollectionTypeSelector { get; private set; }
         public IPublishEvents EventPublisher { get; private set; }
         public IApplyEventsToStates EventApplier { get; private set; }
+        public IRehydrateState StateRehydrator { get; private set; }
         public ThreadSafetySelector ThreadSafetySelector { get; private set; }
         public ICreateStateInstances StateFactory { get; private set; }
         public IUpconvertStoredItems EventUpconverter { get; private set; }
@@ -103,6 +105,8 @@ namespace BullOak.Repositories
                 Interceptors = InterceptorList.ToArray();
                 HasInterceptors = true;
             }
+
+            this.StateRehydrator = new Rehydrator(this);
 
             return this;
         }

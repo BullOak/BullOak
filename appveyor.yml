@@ -149,6 +149,13 @@ assembly_info:
   assembly_file_version: "{version}"
   assembly_informational_version: "{version}"
 
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '$(standard_version)'
+  assembly_version: '$(standard_version).$(appveyor_build_number)'
+  file_version: '$(standard_version).$(appveyor_build_number)'
+
 
 # Automatically register private account and/or project AppVeyor NuGet feeds.
 nuget:

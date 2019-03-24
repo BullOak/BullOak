@@ -11,15 +11,17 @@
             => this.upconverters = upconverters ?? throw new ArgumentNullException(nameof(upconverters));
 
         public IEnumerable<ItemWithType> Upconvert(ItemWithType[] eventsToUpconvert)
+            => Upconvert((IEnumerable<ItemWithType>) eventsToUpconvert);
+
+        public IEnumerable<ItemWithType> Upconvert(IEnumerable<ItemWithType> eventsToUpconvert)
         {
             if (eventsToUpconvert == null) throw new ArgumentNullException(nameof(eventsToUpconvert));
 
             var upconverted = new List<ItemWithType>();
 
-            var size = eventsToUpconvert.Length;
-            for (int i = 0; i < size; i++)
+            foreach(var @event in eventsToUpconvert)
             {
-                UpconvertWithRecursion(eventsToUpconvert[i], upconverted);
+                UpconvertWithRecursion(@event, upconverted);
             }
 
             return upconverted;

@@ -7,6 +7,7 @@
     using BullOak.Repositories.EventPublisher;
     using BullOak.Repositories.InMemory;
     using BullOak.Repositories.Middleware;
+    using BullOak.Repositories.Rehydration;
     using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.Upconverting;
     using FakeItEasy;
@@ -46,6 +47,8 @@
         public bool HasInterceptors => Interceptors.Length > 0;
         public IInterceptEvents[] Interceptors => InterceptorList.ToArray();
 
+        public IRehydrateState StateRehydrator { get; private set; }
+
         public ConfigurationStub()
         {
             mockStateFactory = new Fake<ICreateStateInstances>();
@@ -55,6 +58,8 @@
             typesForWhichEventCollectionHasBeenAskedFor = new List<Type>();
             eventsThatHaveBeenPublished = new List<object>();
             typesThatHaveAskedForSafetyType = new List<Type>();
+
+            StateRehydrator = new Rehydrator(this);
         }
 
         public ConfigurationStub<TState> WithDefaultSetup()

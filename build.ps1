@@ -146,7 +146,7 @@ Function Step_DotnetPublish {
 
 Function Step_DotnetTest {
     Param([ValidateNotNullOrEmpty()] [string]$ProjectFile)
-    LogStep "dotnet test $ProjectFile --no-build --configuration $Configuration --runtime $Runtime --test-adapter-path:. --logger:xunit"
+    LogStep "dotnet test $ProjectFile --no-build --configuration $Configuration --runtime $Runtime"
     & dotnet test "$ProjectFile" --no-build --configuration $Configuration --runtime $Runtime
 }
 

@@ -1,9 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>BullOak.Repositories</AssemblyName>
-	  <PackageId>BullOak.Repositories</PackageId>
+    <LangVersion>7.1</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>NU5125</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <OutputPath>$(MSBuildProjectDirectory)\bin\Any CPU\release</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>BullOak.Repositories</PackageId>
     <Description>A base repostitory implementation to be used in message-drive, CQRS-based architectures</Description>
     <Authors>Savvas Kleanthous</Authors>
     <Company>BullOak</Company>
@@ -14,19 +25,16 @@
     <Version>2.2.1</Version>
     <AssemblyVersion>2.2.1</AssemblyVersion>
     <FileVersion>2.2.1</FileVersion>
-    <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
-    <NoWarn>NU5125</NoWarn>
-    <LangVersion>7.1</LangVersion>
+    <PackageIcon>icon256.png</PackageIcon>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <LangVersion>7.1</LangVersion>
-    <OutputPath>bin\Any CPU\release</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-  </PropertyGroup>
+  <ItemGroup>
+      <None Include="..\..\icons\icon256.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
   </ItemGroup>
+
 </Project>

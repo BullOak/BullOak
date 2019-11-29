@@ -2,7 +2,6 @@
 {
     using System;
     using BenchmarkDotNet.Attributes;
-    using BenchmarkDotNet.Attributes.Jobs;
     using BullOak.Test.EndToEnd.Stub.Shared.Ids;
 
     using RepoBasedViewing = BullOak.Test.EndToEnd.Stub.RepositoryBased.ViewingAggregate.ViewingAggregateRoot;

@@ -3,9 +3,7 @@
     using System;
     using System.Collections.Generic;
     using BenchmarkDotNet.Attributes;
-    using BenchmarkDotNet.Attributes.Jobs;
     using BullOak.Repositories.Appliers;
-    using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.StateEmit.Emitters;
     using BullOak.Test.EndToEnd.Stub.RepositoryBased.CinemaAggregate;
 

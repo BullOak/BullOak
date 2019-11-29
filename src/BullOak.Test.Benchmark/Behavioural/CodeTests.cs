@@ -1,8 +1,6 @@
 ﻿namespace BullOak.Test.Benchmark.Behavioural
 {
-    using System;
     using BenchmarkDotNet.Attributes;
-    using BenchmarkDotNet.Attributes.Jobs;
 
     public class CodeTests
     {

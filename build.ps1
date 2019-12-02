@@ -140,22 +140,26 @@ Function Step_PruneBuild {
 Function Step_DotnetClean {
     LogStep "dotnet clean $dotnetSolutionFile --verbosity $DotnetVerbosity"
     & dotnet clean "$dotnetSolutionFile" --verbosity $DotnetVerbosity
+    if (! $?) { Exit 1 }
 }
 
 Function Step_DotnetRestore {
     LogStep "dotnet restore $dotnetSolutionFile --verbosity $DotnetVerbosity"
     & dotnet restore "$dotnetSolutionFile" --verbosity $DotnetVerbosity
+    if (! $?) { Exit 1 }
 }
 
 Function Step_DotnetBuild {
     LogStep "dotnet build $dotnetSolutionFile --no-restore --configuration $Configuration --verbosity $DotnetVerbosity /p:Version=$Version"
     & dotnet build "$dotnetSolutionFile" --no-restore --configuration $Configuration --verbosity $DotnetVerbosity /p:Version="$Version"
+    if (! $?) { Exit 1 }
 }
 
 Function Step_DotnetTest {
     Param([ValidateNotNullOrEmpty()] [string]$ProjectFile)
     LogStep "dotnet test $ProjectFile --no-build --configuration $Configuration"
     & dotnet test "$ProjectFile" --no-build --configuration $Configuration
+    if (! $?) { Exit 1 }
 }
 
 #######################################################################

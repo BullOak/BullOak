@@ -119,8 +119,6 @@ matrix:
 
 # build cache to preserve files/folders between builds
 cache:
-  - packages -> **\packages.config  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
-  - libs
   - '%LocalAppData%\NuGet\Cache'
 
 # enable service required for build/tests
@@ -141,14 +139,7 @@ install:
   # - cmd: echo This is batch again
   # - cmd: set MY_VAR=12345
 
-# enable patching of AssemblyInfo.* files
-assembly_info:
-  patch: true
-  file: AssemblyInfo.*
-  assembly_version: "1.0.{build}"
-  assembly_file_version: "{version}"
-  assembly_informational_version: "{version}"
-
+# enable patching of version numbers
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
@@ -162,7 +153,7 @@ nuget:
   account_feed: true
   project_feed: true
   disable_publish_on_pr: true
-                                  # account/project feeds for pull request builds
+# account/project feeds for pull request builds
 
 #---------------------------------#
 #       build configuration       #
@@ -209,9 +200,8 @@ before_package:
 after_build:
 
 # to run your custom scripts instead of automatic MSBuild
-build_script:
-#  - nuget install FAKE -OutputDirectory .\packages -Version 4.63.13 -Verbosity quiet
-#  - cmd: .\packages\FAKE.4.64.13\tools\FAKE.exe build.fsx Default Configuration=Release
+# build_script:
+#     - ps: ./build.ps1 -Configuration Release -Version '$(standard_version)'
 
 # to disable automatic builds
 #build: off

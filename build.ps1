@@ -8,9 +8,7 @@ Param(
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Release",
 
-    [ValidateNotNullOrEmpty()]
-    [ValidateSet("any", "linux-arm", "linux-x64", "osx-x64", "win-x64")]
-    [string]$Runtime = "linux-x64",
+    [string]$Version = "0.0.1",
 
     [string]$DotnetVerbosity = "minimal"
 )
@@ -145,19 +143,19 @@ Function Step_DotnetClean {
 }
 
 Function Step_DotnetRestore {
-    LogStep "dotnet restore $dotnetSolutionFile --runtime $Runtime --verbosity $DotnetVerbosity"
-    & dotnet restore "$dotnetSolutionFile" --runtime $Runtime --verbosity $DotnetVerbosity
+    LogStep "dotnet restore $dotnetSolutionFile --verbosity $DotnetVerbosity"
+    & dotnet restore "$dotnetSolutionFile" --verbosity $DotnetVerbosity
 }
 
 Function Step_DotnetBuild {
-    LogStep "dotnet build $dotnetSolutionFile --no-restore --configuration $Configuration --runtime $Runtime --verbosity $DotnetVerbosity"
-    & dotnet build "$dotnetSolutionFile" --no-restore --configuration $Configuration --runtime $Runtime --verbosity $DotnetVerbosity
+    LogStep "dotnet build $dotnetSolutionFile --no-restore --configuration $Configuration --verbosity $DotnetVerbosity /p:Version=$Version"
+    & dotnet build "$dotnetSolutionFile" --no-restore --configuration $Configuration --verbosity $DotnetVerbosity /p:Version="$Version"
 }
 
 Function Step_DotnetTest {
     Param([ValidateNotNullOrEmpty()] [string]$ProjectFile)
-    LogStep "dotnet test $ProjectFile --no-build --configuration $Configuration --runtime $Runtime"
-    & dotnet test "$ProjectFile" --no-build --configuration $Configuration --runtime $Runtime
+    LogStep "dotnet test $ProjectFile --no-build --configuration $Configuration"
+    & dotnet test "$ProjectFile" --no-build --configuration $Configuration
 }
 
 #######################################################################

@@ -8,7 +8,7 @@
 
     internal abstract class BaseTypeFactory : ICreateStateInstances
     {
-        private ConcurrentDictionary<Type, WrapperCreationResult> WrapperFactories 
+        private ConcurrentDictionary<Type, WrapperCreationResult> WrapperFactories
             = new ConcurrentDictionary<Type, WrapperCreationResult>();
 
         public virtual void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)

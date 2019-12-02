@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildsScripts", "BuildsScripts", "{D0580D5A-D752-4027-B2A0-14383CA9FC1D}"
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
-		..\build.fsx = ..\build.fsx
 		..\build.ps1 = ..\build.ps1
 	EndProjectSection
 EndProject

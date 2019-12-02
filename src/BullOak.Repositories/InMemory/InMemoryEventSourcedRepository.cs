@@ -38,12 +38,11 @@
         {
             List<ItemWithType> eventStream;
 
-            bool streamAlreadyExisted = eventStore.TryGetValue(id, out eventStream);
-
-            if (!streamAlreadyExisted && !throwIfNotExists)
+            if (!eventStore.TryGetValue(id, out eventStream))
+            {
+                if (throwIfNotExists) throw new StreamNotFoundException(id.ToString());
                 eventStream = eventStore.GetOrAdd(id, new List<ItemWithType>());
-            else if (!streamAlreadyExisted && throwIfNotExists)
-                throw new StreamNotFoundException(id.ToString());
+            }
 
             lock (eventStream)
             {

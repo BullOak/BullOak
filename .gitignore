@@ -251,8 +251,16 @@ paket-files/
 .idea/
 *.sln.iml
 
-# Specflow 3 features.cs files
+# Specflow 3 feature.cs files
 *.feature.cs
 
 # BenchmarkDotNet
 BenchmarkDotNet.Artifacts/
+
+# VisualStudio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.ionide/

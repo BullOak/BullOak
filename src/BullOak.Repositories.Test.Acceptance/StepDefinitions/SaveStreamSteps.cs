@@ -48,7 +48,7 @@
             using (var session = sessionContainer.StartSession(streamInfo.Id))
             {
                 session.AddEvents(eventGenerator.GenerateEvents(eventCount));
-                
+
                 lastStateContainer.LatestLoadedState = session.GetCurrentState();
             }
         }

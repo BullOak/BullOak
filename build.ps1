@@ -12,9 +12,7 @@ Param(
     [ValidateSet("any", "linux-arm", "linux-x64", "osx-x64", "win-x64")]
     [string]$Runtime = "linux-x64",
 
-    [string]$DotnetVerbosity = "minimal",
-
-    [string]$Version = "1.0.0"
+    [string]$DotnetVerbosity = "minimal"
 )
 
 #######################################################################
@@ -78,6 +76,24 @@ Function LogCmd {
 }
 
 #######################################################################
+# TARGETS MANAGEMENT
+
+Function DependsOn {
+    Param([ValidateNotNullOrEmpty()] [string]$Target)
+    Invoke-Expression $Target
+}
+
+Function IsTargetCompleted {
+    Param([ValidateNotNullOrEmpty()] [string]$Target)
+    $completedTargets[$Target]
+}
+
+Function MarkTargetAsCompleted {
+    Param([ValidateNotNullOrEmpty()] [string]$Target)
+    $completedTargets[$Target] = $True
+}
+
+#######################################################################
 # STEPS
 
 Function PreludeStep_ValidateDotNetCli {
@@ -134,14 +150,8 @@ Function Step_DotnetRestore {
 }
 
 Function Step_DotnetBuild {
-    LogStep "dotnet build $dotnetSolutionFile --no-restore --configuration $Configuration --runtime $Runtime --verbosity $DotnetVerbosity /p:Version=$Version"
-    & dotnet build "$dotnetSolutionFile" --no-restore --configuration $Configuration --runtime $Runtime --verbosity $DotnetVerbosity /p:Version=$Version
-}
-
-Function Step_DotnetPublish {
-    Param([ValidateNotNullOrEmpty()] [string]$ProjectFile, [ValidateNotNullOrEmpty()] [string]$PublishOutput)
-    LogStep "dotnet publish $ProjectFile --output $PublishOutput --configuration $Configuration --runtime $Runtime --verbosity $DotnetVerbosity /p:Version=$Version"
-    & dotnet publish "$ProjectFile" --output "$PublishOutput" --configuration $Configuration --runtime $Runtime --verbosity $DotnetVerbosity /p:Version=$Version
+    LogStep "dotnet build $dotnetSolutionFile --no-restore --configuration $Configuration --runtime $Runtime --verbosity $DotnetVerbosity"
+    & dotnet build "$dotnetSolutionFile" --no-restore --configuration $Configuration --runtime $Runtime --verbosity $DotnetVerbosity
 }
 
 Function Step_DotnetTest {
@@ -154,62 +164,70 @@ Function Step_DotnetTest {
 # TARGETS
 
 Function Target_Clean {
-    if ($completedTargets["DotNet.Clean"] -eq $True) {return}
-    LogTarget "DotNet.Clean"
+    $targetDotnetClean = "Dotnet.Clean"
+    if (IsTargetCompleted $targetDotnetClean) { return }
+    LogTarget $targetDotnetClean
     Step_DotnetClean
-    $completedTargets["DotNet.Clean"] = $True
+    MarkTargetAsCompleted $targetDotnetClean
 }
 
 Function Target_Restore {
-    if ($completedTargets["DotNet.Restore"] -eq $True) {return}
-    LogTarget "DotNet.Restore"
+    $targetDotnetRestore = "Dotnet.Restore"
+    if (IsTargetCompleted $targetDotnetRestore) { return }
+    LogTarget $targetDotnetRestore
     Step_DotnetRestore
-    $completedTargets["DotNet.Restore"]  = $True
+    MarkTargetAsCompleted $targetDotnetRestore
 }
 
 Function Target_Build {
-    if ($completedTargets["DotNet.Build"] -eq $True) {return}
-    Target_Restore
+    $targetDotnetBuild = "Dotnet.Build"
+    if (IsTargetCompleted $targetDotnetBuild) { return }
+    DependsOn Target_Restore
 
-    LogTarget "DotNet.Build"
+    LogTarget $targetDotnetBuild
     Step_DotnetBuild
-    $completedTargets["DotNet.Build"] = $True
+    MarkTargetAsCompleted $targetDotnetBuild
 }
 
 Function Target_TestUnit {
-    if ($completedTargets["DotNet.TestUnit"] -eq $True) {return}
-    Target_Build
+    $targetDotnetTestUnit = "DotNet.TestUnit"
+    if (IsTargetCompleted $targetDotnetTestUnit) { return }
+    DependsOn Target_Build
 
-    LogTarget "DotNet.TestUnit"
+    LogTarget $targetDotnetTestUnit
     $projects = Get-ChildItem -Path $srcDir -Filter "*Test.Unit.csproj" -Recurse -File
     Foreach ($projectFile in $projects) {
         Step_DotnetTest $projectFile
     }
-    $completedTargets["DotNet.TestUnit"] = $True
+    MarkTargetAsCompleted $targetDotnetTestUnit
 }
 
 Function Target_TestAcceptance {
-    if ($completedTargets["DotNet.TestAcceptance"] -eq $True) {return}
-    Target_Build
+    $targetDotnetTestAcceptance = "DotNet.TestAcceptance"
+    if (IsTargetCompleted $targetDotnetTestAcceptance) { return }
+    DependsOn Target_Build
 
-    LogTarget "DotNet.TestAcceptance"
+    LogTarget $targetDotnetTestAcceptance
     $projects = Get-ChildItem -Path $srcDir -Filter "*Test.Acceptance.csproj" -Recurse -File
     Foreach ($projectFile in $projects) {
         Step_DotnetTest $projectFile
     }
-    $completedTargets["DotNet.TestAcceptance"] = $True
+    MarkTargetAsCompleted $targetDotnetTestAcceptance
 }
 
 Function Target_FullBuild {
-    Target_Build
-    Target_TestUnit
-    Target_TestAcceptance
+    $targetFullBuild = "FullBuild"
+    if (IsTargetCompleted $targetFullBuild) { return }
+    DependsOn Target_Build
+    DependsOn Target_TestUnit
+    DependsOn Target_TestAcceptance
 
-    LogTarget "FullBuild"
+    LogTarget $targetFullBuild
+    MarkTargetAsCompleted $targetFullBuild
 }
 
 Function Target_Default {
-    Target_FullBuild
+    DependsOn Target_FullBuild
     LogInfo "DONE"
 }
 

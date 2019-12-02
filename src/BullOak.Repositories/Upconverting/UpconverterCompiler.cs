@@ -59,7 +59,7 @@
                     SourceEventType = x.type.GetGenericArguments()[0],
                     DestinationEventType = x.type.GetGenericArguments()[1]
                 })
-                .Select(x => 
+                .Select(x =>
                     (KeyValuePair<Type, UpconvertFunc>) ToFuncSingle(x.SourceEventType, x.DestinationEventType)
                     .Invoke(null, new[] {x.Instance}));
 

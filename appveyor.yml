@@ -22,8 +22,8 @@ branches:
     - develop
 
 environment:
-  standard_version: '2.3.1'
-  
+  standard_version: '2.3.2'
+
 # blacklist
 #  except:
 #    - gh-pages
@@ -265,10 +265,10 @@ artifacts:
 
   # pushing all *.nupkg files in build directory recursively
   # - path: '**\*.nupkg'
-  
+
   - path: '*.nupkg'
     name: bullOakNugets
-  
+
 
 #---------------------------------#
 #     deployment configuration    #
@@ -352,8 +352,8 @@ deploy:
   - provider: NuGet
     api_key:
       secure: +tceHEN4n1HCeAOyBGT3/7PJMmGGv9LPcLN38Q0hNJpJS6C+h3PyCt8wxSwe/LwZ
-    skip_symbols: false 
-    artifact: /.*\.nupkg/ 
+    skip_symbols: false
+    artifact: /.*\.nupkg/
 
 #    # Deploy to GitHub Releases
 #  - provider: GitHub
@@ -384,7 +384,7 @@ after_deploy:
         Write-Output "env.APPVEYOR_BUILD_NUMBER = $env:APPVEYOR_BUILD_NUMBER"
         Write-Output "APPVEYOR_PULL_REQUEST_NUMBER = $APPVEYOR_PULL_REQUEST_NUMBER"
         Write-Output "env.APPVEYOR_PULL_REQUEST_NUMBER = $env:APPVEYOR_PULL_REQUEST_NUMBER"
-        
+
         $postParams = @{ value1 = "BullOak.Repositories"; value2 = "$env:standard_version"; value3="https://www.nuget.org/packages/BullOak.Repositories/"  }
         Invoke-WebRequest -Uri https://maker.ifttt.com/trigger/bo_release/with/key/kSg0JPLZLcht1NDoihgjW -Method POST -Body $postParams
 
@@ -400,13 +400,13 @@ deploy_script:
 
 # on successful build
 on_success:
- 
+
 # on build failure
 on_failure:
- 
+
 # after build failure or success
 on_finish:
- 
+
 
 #---------------------------------#
 #         notifications           #

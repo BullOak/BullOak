@@ -7,7 +7,7 @@ Scenario Outline: When I load a stream I want to know if it represents a new or 
 	Given a stream with <eventCount> events
 	When I load the session
 	Then the IsNewState should be <isNewState>
-Examples: 
+Examples:
 	| eventCount | isNewState |
-	| 0          | true   |
-	| 2          | false  |
+	| 0          | true       |
+	| 2          | false      |

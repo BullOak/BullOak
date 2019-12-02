@@ -6,7 +6,7 @@
 
     internal class OwnedStateClassEmitter : BaseClassEmitter
     {
-        public override Type EmitType(ModuleBuilder modelBuilder, Type typeToMake, string nameToUseForType = null) 
+        public override Type EmitType(ModuleBuilder modelBuilder, Type typeToMake, string nameToUseForType = null)
             => base.EmitType(modelBuilder, typeToMake, "OwneddStateEmitter_" + (string.IsNullOrWhiteSpace(
                                                                                        nameToUseForType)
                                                                                        ? typeToMake.Name

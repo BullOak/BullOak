@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -18,4 +19,5 @@
     <ProjectReference Include="..\BullOak.Repositories\BullOak.Repositories.csproj" />
     <ProjectReference Include="..\BullOak.Test.EndToEnd\BullOak.Test.EndToEnd.csproj" />
   </ItemGroup>
+
 </Project>

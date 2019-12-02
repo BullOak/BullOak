@@ -45,7 +45,7 @@
         }
 
         [BeforeScenario(Order=10)]
-        public void Setup() 
+        public void Setup()
             => Set(c => c.WithNoUpconverters());
 
         [BeforeScenario("WithBuyerNameUpconverter", Order = 1)]

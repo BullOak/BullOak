@@ -16,7 +16,7 @@
         {
             private IUpconvertStoredItems upconverter;
 
-            public KeyValuePair<Type, Func<ItemWithType, UpconvertResult>>[] GetUpconvertFunctions() 
+            public KeyValuePair<Type, Func<ItemWithType, UpconvertResult>>[] GetUpconvertFunctions()
                 => GetUpconvertersFrom(upconverter);
 
             public IHoldAllConfiguration Build()

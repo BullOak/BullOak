@@ -74,7 +74,7 @@
 
             var objectStateParam = ParameterExpression.Parameter(typeof(object), "state");
             var objectEventParam = ParameterExpression.Parameter(typeof(object), "@event");
-            
+
             var instanceExp = Expression.Constant(applier);
             var applyExp = Expression.Call(instanceExp, applyMethodInfo, Expression.Convert(objectStateParam, stateType), Expression.Convert(objectEventParam, eventType));
             var applyLambdaExp = Expression.Lambda<Func<object, object, object>>(applyExp, objectStateParam, objectEventParam);

@@ -20,7 +20,7 @@
         }
 
         /// <inheritdoc />
-        public bool Equals(EventAndStateTypes other) 
+        public bool Equals(EventAndStateTypes other)
             => ReferenceEquals(stateType, other.stateType) && ReferenceEquals(eventType, other.eventType);
 
         /// <inheritdoc />

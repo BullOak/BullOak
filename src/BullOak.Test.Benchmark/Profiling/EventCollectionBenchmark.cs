@@ -1,12 +1,6 @@
 ﻿namespace BullOak.Test.Benchmark.Profiling
 {
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
     using BenchmarkDotNet.Attributes;
-    using BenchmarkDotNet.Attributes.Jobs;
-    using BullOak.Repositories.Session;
-    using BullOak.Repositories.Session.CustomLinkedList;
 
     [ShortRunJob]
     //The results show that for thread safe operations, the custom collection is between 2-5 times faster

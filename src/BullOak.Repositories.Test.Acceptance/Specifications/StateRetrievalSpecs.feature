@@ -12,7 +12,7 @@ Scenario Outline: When I add new events in the stream I want the state to be upd
 	Given a stream with <eventCount> events
 	When I add 5 events in the session without saving it
 	Then HighOrder property should be 4
-Examples: 
+Examples:
 	| eventCount |
 	| 0          |
 	| 2          |
@@ -21,4 +21,3 @@ Scenario: When I add new events in the stream I want the state to be updated con
 	Given an existing stream with 7 events
 	When I add 3 events in the session without saving it
 	Then HighOrder property should be 6
-

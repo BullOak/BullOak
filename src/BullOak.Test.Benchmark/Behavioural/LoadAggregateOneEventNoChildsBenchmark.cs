@@ -1,7 +1,6 @@
 ﻿namespace BullOak.Test.Benchmark.Behavioural
 {
     using BenchmarkDotNet.Attributes;
-    using BenchmarkDotNet.Attributes.Jobs;
 
     [ShortRunJob]
     public class LoadAggregateOneEventNoChildsBenchmark

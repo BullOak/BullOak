@@ -4,71 +4,12 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.EventPublisher;
     using BullOak.Repositories.Middleware;
     using BullOak.Repositories.StateEmit;
-    using BullOak.Repositories.Upconverting;
-
-    public interface IValidateState<in TState>
-    {
-        ValidationResults Validate(TState state);
-    }
-
-    public struct ValidationResults
-    {
-        public bool IsSuccess { get; }
-        public IEnumerable<IValidationError> ValidationErrors { get; }
-
-        private ValidationResults(bool isSuccess, IEnumerable<IValidationError> validationErrors)
-        {
-            IsSuccess = isSuccess;
-            ValidationErrors = validationErrors ?? new IValidationError[0];
-        }
-
-        public static ValidationResults Success()
-            => new ValidationResults(true, null);
-
-        public static ValidationResults Errors(IEnumerable<IValidationError> validationErrors)
-            => new ValidationResults(false, validationErrors);
-    }
-
-    public interface IValidationError
-    {
-        string Message { get; }
-        Exception GetAsException();
-    }
-
-    public sealed class BasicValidationError : IValidationError
-    {
-        public string Message { get; }
-
-        public BasicValidationError(string reason)
-            => Message = reason ?? throw new ArgumentNullException(nameof(reason));
-
-        public Exception GetAsException()
-            => new BusinessException(Message);
-
-        public static implicit operator BasicValidationError(string reason)
-            => new BasicValidationError(reason);
-    }
-
-    public class BusinessException : Exception
-    {
-        public BusinessException(string message)
-            :base(message)
-        { }
-    }
-
-    internal class AlwaysPassValidator<T> : IValidateState<T>
-    {
-        /// <inheritdoc />
-        public ValidationResults Validate(T state)
-            => ValidationResults.Success();
-    }
 
     public abstract class BaseRepoSession<TState> : IManageSessionOf<TState>
     {

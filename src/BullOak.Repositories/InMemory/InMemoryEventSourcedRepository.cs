@@ -15,6 +15,8 @@
         private ConcurrentDictionary<TId, List<ItemWithType>> eventStore = new ConcurrentDictionary<TId, List<ItemWithType>>();
         private readonly IHoldAllConfiguration configuration;
         private static bool useThreadSafeOps;
+        private readonly IValidateState<TState> stateValidator = new AlwaysPassValidator<TState>();
+        public IValidateState<TState> StateValidator => stateValidator;
 
         public ItemWithType[] this[TId id]
         {
@@ -34,6 +36,12 @@
             useThreadSafeOps = configuration.ThreadSafetySelector(typeof(TState));
         }
 
+        public InMemoryEventSourcedRepository(IValidateState<TState> stateValidator, IHoldAllConfiguration configuration)
+            : this(configuration)
+        {
+            this.stateValidator = stateValidator;
+        }
+
         public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
         {
             List<ItemWithType> eventStream;
@@ -46,7 +54,9 @@
 
             lock (eventStream)
             {
-                var session = new InMemoryEventStoreSession<TState, TId>(configuration, eventStream, id);
+                var session = stateValidator == null
+                    ? new InMemoryEventStoreSession<TState, TId>(configuration, eventStream, id)
+                    : new InMemoryEventStoreSession<TState, TId>(stateValidator, configuration, eventStream, id);
                 session.LoadFromEvents(eventStream.ToArray(), eventStream.Count);
 
                 return Task.FromResult((IManageSessionOf<TState>)session);

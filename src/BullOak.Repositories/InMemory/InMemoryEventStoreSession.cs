@@ -14,6 +14,14 @@
         private readonly int initialVersion;
         private readonly List<ItemWithType> stream;
 
+        public InMemoryEventStoreSession(IValidateState<TState> stateValidator, IHoldAllConfiguration configuration, List<ItemWithType> stream, TId id)
+            : base(stateValidator, configuration)
+        {
+            this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
+            initialVersion = stream.Count;
+            Id = id;
+        }
+
         public InMemoryEventStoreSession(IHoldAllConfiguration configuration, List<ItemWithType> stream, TId id)
             : base(configuration)
         {

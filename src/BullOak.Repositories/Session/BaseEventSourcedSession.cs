@@ -14,6 +14,10 @@
 
         protected readonly IApplyEventsToStates eventApplier;
 
+        public BaseEventSourcedSession(IValidateState<TState> validator, IHoldAllConfiguration configuration, IDisposable disposableHandle = null)
+            : base(validator, configuration, disposableHandle)
+            => eventApplier = configuration.EventApplier;
+
         public BaseEventSourcedSession(IHoldAllConfiguration configuration, IDisposable disposableHandle = null)
             : base(configuration, disposableHandle)
             => eventApplier = configuration.EventApplier;

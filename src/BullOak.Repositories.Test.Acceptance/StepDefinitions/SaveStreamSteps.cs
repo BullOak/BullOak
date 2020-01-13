@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.Test.Acceptance.StepDefinitions
 {
     using System;
+    using System.ComponentModel.Design;
     using System.Threading.Tasks;
     using BullOak.Repositories.Test.Acceptance.Contexts;
     using FluentAssertions;
@@ -53,10 +54,21 @@
             }
         }
 
-        [Then(@"the save process should succeed")]
-        public void ThenTheSaveProcessShouldSucceed()
+        [Then(@"the save process should (.*)")]
+        public void ThenTheSaveProcessShould(string outcome)
         {
-            recordedException.Should().BeNull();
+            if (outcome.Equals("succeed", StringComparison.CurrentCultureIgnoreCase))
+            {
+                recordedException.Should().BeNull();
+            }
+            else if (outcome.Equals("fail", StringComparison.CurrentCultureIgnoreCase))
+            {
+                recordedException.Should().NotBeNull();
+            }
+            else
+            {
+                throw new ArgumentException(outcome);
+            }
         }
     }
 }

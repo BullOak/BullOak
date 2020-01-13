@@ -3,6 +3,7 @@
     using System;
     using System.Reflection;
     using BullOak.Repositories.Config;
+    using BullOak.Repositories.InMemory;
     using BullOak.Repositories.Test.Acceptance.Contexts;
     using TechTalk.SpecFlow;
 
@@ -12,14 +13,17 @@
         private readonly StreamInfoContainer streamInfoContainer;
         private readonly InMemoryStoreSessionContainer sessionContainer;
         private readonly InterceptorContext interceptorContext;
+        private readonly PassThroughValidator passThroughValidator;
 
         public ScenarioSetupAndTeardown(StreamInfoContainer streamInfoContainer,
             InMemoryStoreSessionContainer sessionContainer,
-            InterceptorContext interceptorContext)
+            InterceptorContext interceptorContext,
+            PassThroughValidator passThroughValidator)
         {
             this.streamInfoContainer = streamInfoContainer;
             this.sessionContainer = sessionContainer;
             this.interceptorContext = interceptorContext;
+            this.passThroughValidator = passThroughValidator;
         }
 
         private bool isAlreadySetup = false;
@@ -40,7 +44,11 @@
             var configuration = upconverterSetup(upconverterConfig)
                 .Build();
 
-            sessionContainer.Setup(configuration);
+            var tempInMemRepo = new InMemoryEventSourcedRepository<int, IHoldHigherOrder>(configuration);
+            var defaultValidator = tempInMemRepo.StateValidator;
+            passThroughValidator.CurrentValidator = defaultValidator;
+
+            sessionContainer.Setup(passThroughValidator, configuration);
             isAlreadySetup = true;
         }
 

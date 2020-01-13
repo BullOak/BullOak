@@ -4,6 +4,7 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
@@ -11,6 +12,63 @@
     using BullOak.Repositories.Middleware;
     using BullOak.Repositories.StateEmit;
     using BullOak.Repositories.Upconverting;
+
+    public interface IValidateState<in TState>
+    {
+        ValidationResults Validate(TState state);
+    }
+
+    public struct ValidationResults
+    {
+        public bool IsSuccess { get; }
+        public IEnumerable<IValidationError> ValidationErrors { get; }
+
+        private ValidationResults(bool isSuccess, IEnumerable<IValidationError> validationErrors)
+        {
+            IsSuccess = isSuccess;
+            ValidationErrors = validationErrors ?? new IValidationError[0];
+        }
+
+        public static ValidationResults Success()
+            => new ValidationResults(true, null);
+
+        public static ValidationResults Errors(IEnumerable<IValidationError> validationErrors)
+            => new ValidationResults(false, validationErrors);
+    }
+
+    public interface IValidationError
+    {
+        string Message { get; }
+        Exception GetAsException();
+    }
+
+    public sealed class BasicValidationError : IValidationError
+    {
+        public string Message { get; }
+
+        public BasicValidationError(string reason)
+            => Message = reason ?? throw new ArgumentNullException(nameof(reason));
+
+        public Exception GetAsException()
+            => new BusinessException(Message);
+
+        public static implicit operator BasicValidationError(string reason)
+            => new BasicValidationError(reason);
+    }
+
+    public class BusinessException : Exception
+    {
+        public BusinessException(string message)
+            :base(message)
+        { }
+    }
+
+    internal class AlwaysPassValidator<T> : IValidateState<T>
+    {
+        /// <inheritdoc />
+        public ValidationResults Validate(T state)
+            => ValidationResults.Success();
+    }
 
     public abstract class BaseRepoSession<TState> : IManageSessionOf<TState>
     {
@@ -22,12 +80,21 @@
         private TState currentState;
         public TState GetCurrentState() => currentState;
 
+        protected readonly IValidateState<TState> stateValidator = new AlwaysPassValidator<TState>();
+        public IValidateState<TState> StateValidator => stateValidator;
+
         protected readonly IPublishEvents eventPublisher;
 
         private static readonly Type stateType = typeof(TState);
         protected readonly IApplyEventsToStates EventApplier;
 
         public bool IsNewState { get; private set; }
+
+        protected BaseRepoSession(IValidateState<TState> validator,
+            IHoldAllConfiguration configuration,
+            IDisposable disposableHandle)
+            :this(configuration, disposableHandle)
+            => stateValidator = validator ?? throw new ArgumentNullException(nameof(validator));
 
         protected BaseRepoSession(IHoldAllConfiguration configuration, IDisposable disposableHandle)
         {
@@ -111,6 +178,8 @@
             var newEvents = NewEventsCollection.ToArray();
             var sendEventsBeforeSaving = targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce;
 
+            ValidateStateOrThrow(stateValidator, currentState);
+
             if (sendEventsBeforeSaving) await PublishEvents(configuration, newEvents, cancellationToken);
 
             bool hasInterceptors = configuration.HasInterceptors;
@@ -133,6 +202,18 @@
             if (!sendEventsBeforeSaving) await PublishEvents(configuration, newEvents, cancellationToken);
 
             return retVal;
+        }
+
+        private static void ValidateStateOrThrow(IValidateState<TState> validator, TState state)
+        {
+            var valResults = validator.Validate(state);
+
+            if (!valResults.IsSuccess)
+            {
+                var errors = valResults.ValidationErrors.ToArray();
+
+                throw new AggregateException(errors.Select(e => e.GetAsException()));
+            }
         }
 
         protected abstract Task<int> SaveChanges(ItemWithType[] newEvents,

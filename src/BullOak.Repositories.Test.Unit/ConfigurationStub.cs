@@ -8,7 +8,9 @@
     using BullOak.Repositories.InMemory;
     using BullOak.Repositories.Middleware;
     using BullOak.Repositories.Rehydration;
+    using BullOak.Repositories.Session;
     using BullOak.Repositories.StateEmit;
+    using BullOak.Repositories.Test.Unit.Session;
     using BullOak.Repositories.Upconverting;
     using FakeItEasy;
 
@@ -136,8 +138,11 @@
             return this;
         }
 
-        internal InMemoryEventSourcedRepository<TStateId, TState> GetNewSUT<TStateId>()
-            => new InMemoryEventSourcedRepository<TStateId, TState>(this);
+        internal InMemoryEventSourcedRepository<TStateId, TState> GetNewSUT<TStateId>(
+            IValidateState<TState> stateValidator = null)
+            => stateValidator == null
+                ? new InMemoryEventSourcedRepository<TStateId, TState>(this)
+                : new InMemoryEventSourcedRepository<TStateId, TState>(stateValidator, this);
 
         public ConfigurationStub<TState> WithEventPublisher(IPublishEvents eventPublisher)
         {

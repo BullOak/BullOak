@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Exceptions;
@@ -397,5 +398,66 @@
             //Assert
             exists.Should().BeFalse();
         }
+
+        [Fact]
+        public async Task WhenAValidatorIsProvided_StartSession_ShouldProvideSessionWithValidator()
+        {
+            //Arrange
+            int id = 42;
+            var repo = new ConfigurationStub<TestState>()
+                .WithDefaultSetup()
+                .GetNewSUT<int>(new AlwaysFailValidator<TestState>());
+            var sut = await repo.BeginSessionFor(id);
+
+            //Act
+            var exception = await Record.ExceptionAsync(() => sut.SaveChanges());
+
+            //Assert
+            exception.Should().NotBeNull();
+            exception.Should().BeOfType<AggregateException>();
+            (exception as AggregateException).InnerExceptions[0].Should().BeOfType<BusinessException>();
+        }
+
+        [Fact]
+        public void WhenAValidatorIsNotProvided_RepositoryShouldHaveAlwaysPassValidator()
+        {
+            //Arrange
+            var sut = new ConfigurationStub<TestState>()
+                .WithDefaultSetup()
+                .GetNewSUT<int>();
+
+            //Act
+            var defaultValidator = sut.GetType()
+                .GetField("stateValidator", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(sut);
+
+            //Assert
+            defaultValidator.Should().NotBeNull();
+            defaultValidator.GetType().Should().Be<AlwaysPassValidator<TestState>>();
+        }
+
+        [Fact]
+        public async Task WhenAValidatorIsNotProvided_StartSession_ShouldProvideSessionWithAlwaysPassValidator()
+        {
+            //Arrange
+            var repo = new ConfigurationStub<TestState>()
+                .WithDefaultSetup()
+                .GetNewSUT<int>();
+            var sut = await repo.BeginSessionFor(42);
+
+            //Act
+            var defaultValidator = (sut as InMemoryEventStoreSession<TestState, int>).StateValidator;
+
+            //Assert
+            defaultValidator.Should().NotBeNull();
+            defaultValidator.GetType().Should().Be<AlwaysPassValidator<TestState>>();
+        }
+
+        public class AlwaysFailValidator<TState> : IValidateState<TState>
+        {
+            /// <inheritdoc />
+            public ValidationResults Validate(TState state)
+                => ValidationResults.Errors(new BasicValidationError[] {"BasicErrorInYourValidation."});
+        }
+
     }
 }

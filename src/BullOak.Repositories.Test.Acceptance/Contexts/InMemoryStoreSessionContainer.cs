@@ -16,11 +16,11 @@
         public InMemoryStoreSessionContainer()
         { }
 
-        public void Setup(IHoldAllConfiguration configuration)
+        public void Setup(PassThroughValidator passThroughValidator, IHoldAllConfiguration configuration)
         {
             if (repository != null) throw new Exception($"{nameof(repository)} already setup");
 
-            repository = new InMemoryEventSourcedRepository<string, IHoldHigherOrder>(configuration);
+            repository = new InMemoryEventSourcedRepository<string, IHoldHigherOrder>(passThroughValidator, configuration);
         }
 
         public IManageSessionOf<IHoldHigherOrder> StartSession(string streamId)

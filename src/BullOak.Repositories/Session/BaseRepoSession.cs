@@ -31,13 +31,13 @@
 
         public bool IsNewState { get; private set; }
 
+        protected BaseRepoSession(IHoldAllConfiguration configuration, IDisposable disposableHandle)
+            : this(new AlwaysPassValidator<TState>(), configuration, disposableHandle)
+        { }
+
         protected BaseRepoSession(IValidateState<TState> validator,
             IHoldAllConfiguration configuration,
             IDisposable disposableHandle)
-            :this(configuration, disposableHandle)
-            => stateValidator = validator ?? throw new ArgumentNullException(nameof(validator));
-
-        protected BaseRepoSession(IHoldAllConfiguration configuration, IDisposable disposableHandle)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
@@ -50,6 +50,7 @@
             this.eventPublisher = configuration.EventPublisher;
 
             EventApplier = this.configuration.EventApplier;
+            stateValidator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
 
         public void AddEvents(IEnumerable<object> events)
@@ -116,10 +117,10 @@
                 DeliveryTargetGuarntee.AtLeastOnce,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            ValidateStateOrThrow(stateValidator, currentState);
+
             var newEvents = NewEventsCollection.ToArray();
             var sendEventsBeforeSaving = targetGuarantee == DeliveryTargetGuarntee.AtLeastOnce;
-
-            ValidateStateOrThrow(stateValidator, currentState);
 
             if (sendEventsBeforeSaving) await PublishEvents(configuration, newEvents, cancellationToken);
 

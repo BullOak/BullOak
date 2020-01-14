@@ -20,13 +20,14 @@
     <PackageProjectUrl>https://github.com/BullOak/BullOak</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
     <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
-    <Version>2.4.1</Version>
-    <AssemblyVersion>2.4.1</AssemblyVersion>
-    <FileVersion>2.4.1</FileVersion>
-    <PackageIcon>icon256.png</PackageIcon>
+    <Version>2.4.2</Version>
+    <AssemblyVersion>2.4.2</AssemblyVersion>
+    <FileVersion>2.4.2</FileVersion>
+    <PackageIcon>icon128.png</PackageIcon>
+    <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
   </PropertyGroup>
   <ItemGroup>
-      <None Include="..\..\icons\icon256.png" Pack="true" PackagePath="\"/>
+      <None Include="..\..\icons\icon128.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <ItemGroup>

@@ -14,8 +14,6 @@
 
     public class ImmutableImplementationEmitterTests
     {
-        private EmittedTypeFactory sut => EmittedTypeFactory.Instance;
-
         [Fact]
         public void GetState_ShouldReturnAValueType()
         {
@@ -23,7 +21,7 @@
 
             var exception = Record.Exception(() =>
             {
-                result = sut.GetState<TestInterface>();
+                result = StateEmit.GetState<TestInterface>();
             });
 
             result.Should().BeAssignableTo<TestInterface>();
@@ -33,7 +31,7 @@
         [Fact]
         public void With_CreatesAShallowCopy()
         {
-            var original = sut.GetState<TestInterface>();
+            var original = StateEmit.GetState<TestInterface>();
             var copyWithValue = original.With(t => t.Value, 5);
 
             original.Should().NotBeSameAs(copyWithValue);
@@ -43,7 +41,7 @@
         [Fact]
         public void With_CreatesACopyWithNewSpecifiedValue()
         {
-            var original = sut.GetState<TestInterface>();
+            var original = StateEmit.GetState<TestInterface>();
             var expectedValue = 3;
             var expectedName = "newName";
 

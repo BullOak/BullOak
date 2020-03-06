@@ -7,21 +7,18 @@
     using System.Reflection.Emit;
     using BullOak.Repositories.StateEmit.Emitters;
 
-    public class StateEmit
+    public static class StateEmit
     {
+        private static readonly EmittedTypeFactory emittedTypeFactory = new EmittedTypeFactory();
+
         public static T GetState<T>()
-            => EmittedTypeFactory.Instance.GetState<T>();
+            => emittedTypeFactory.GetState<T>();
 
     }
 
     internal class EmittedTypeFactory : BaseTypeFactory
     {
         private ConcurrentDictionary<Type, Func<object>> TypeFactories = new ConcurrentDictionary<Type, Func<object>>();
-
-        public static readonly EmittedTypeFactory Instance = new EmittedTypeFactory();
-
-        private EmittedTypeFactory()
-        { }
 
         public override void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)
         {

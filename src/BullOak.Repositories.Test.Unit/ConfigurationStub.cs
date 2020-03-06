@@ -134,7 +134,7 @@
 
         public ConfigurationStub<TState> WithDefaultStateFactory()
         {
-            this.stateFactory = EmittedTypeFactory.Instance;
+            this.stateFactory = new EmittedTypeFactory();
             return this;
         }
 

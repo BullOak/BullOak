@@ -58,7 +58,7 @@ namespace BullOak.Repositories
         }
 
         IConfigureThreadSafety IConfigureStateFactory.WithDefaultStateFactory()
-            => (this as IConfigureStateFactory).WithStateFactory(new EmittedTypeFactory());
+            => (this as IConfigureStateFactory).WithStateFactory(EmittedTypeFactory.Instance);
 
         IConfigureThreadSafety IConfigureStateFactory.WithStateFactory(ICreateStateInstances stateFactory)
         {

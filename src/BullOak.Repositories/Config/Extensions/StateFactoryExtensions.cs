@@ -15,7 +15,7 @@
 
     internal class ActivatorStateFactory : BaseTypeFactory
     {
-        private EmittedTypeFactory typeFactory = new EmittedTypeFactory();
+        private EmittedTypeFactory typeFactory = EmittedTypeFactory.Instance;
 
         public override object GetState(Type type)
             => Activator.CreateInstance(type);

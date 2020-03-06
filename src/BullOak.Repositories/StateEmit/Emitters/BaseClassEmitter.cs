@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.StateEmit.Emitters
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
@@ -30,18 +31,34 @@
             var typeBuilder = modelBuilder.DefineType("StateGen_" + (string.IsNullOrWhiteSpace(nameToUseForType) ? typeToMake.Name : nameToUseForType),
                 TypeAttributes.Public | TypeAttributes.Class);
             typeBuilder.AddInterfaceImplementation(typeof(ICanSwitchBackAndToReadOnly));
-            typeBuilder.AddInterfaceImplementation(typeToMake);
+            typeBuilder.AddInterfaceImplementation(InterfaceType);
+
+            var vti = typeof(ValueType<>);
+            var nonGenericVTType = vti.MakeGenericType(typeToMake);
+
+            if (CanEmitWith)
+            {
+                typeBuilder.AddInterfaceImplementation(nonGenericVTType);
+            }
 
             ClassSetup(typeBuilder);
             EmitCtor(typeBuilder);
 
             var canEditField = AddCanEditFieldAndProp(typeBuilder);
 
+            var propertiesAndFields = new List<Tuple<FieldBuilder, Type, PropertyInfo>>();
+
             foreach (var prop in InterfaceFlattener.Dedup(InterfaceFlattener.GetAllProperties(typeToMake)))
             {
-                    EmitProperty(prop.Item2, canEditField, typeBuilder);
+                var fieldBuilder = EmitProperty(prop.Item2, canEditField, typeBuilder);
+                propertiesAndFields.Add(new Tuple<FieldBuilder, Type, PropertyInfo>(fieldBuilder, prop.Item1, prop.Item2));
             }
 
+            if (CanEmitWith)
+            {
+                EmitWithMethod(typeBuilder, typeToMake, nonGenericVTType, propertiesAndFields);
+            }
+            
             return typeBuilder.CreateTypeInfo();
         }
 
@@ -69,7 +86,7 @@
             return canEditField;
         }
 
-        private void EmitProperty(PropertyInfo prop, FieldBuilder canEdit, TypeBuilder typeBuilder)
+        private FieldBuilder EmitProperty(PropertyInfo prop, FieldBuilder canEdit, TypeBuilder typeBuilder)
         {
             var propertyBuilder = typeBuilder.DefineProperty(prop.Name, PropertyAttributes.None, prop.PropertyType,
                 new[] { prop.PropertyType });
@@ -89,28 +106,33 @@
                                                                                 | MethodAttributes.SpecialName,
                 CallingConventions.Standard, typeof(void), new[] { prop.PropertyType });
 
-            PropertySetup(typeBuilder, prop);
+            var backingField = PropertySetup(typeBuilder, prop);
 
-            EmitGetValueOpCodes(getMethodBuilder.GetILGenerator());
+            EmitGetValueOpCodes(getMethodBuilder.GetILGenerator(), backingField);
 
             var setMethodGenerator = setMethodBuilder.GetILGenerator();
             var cannotEditLabel = setMethodGenerator.DefineLabel();
             setMethodGenerator.Emit(OpCodes.Ldarg_0);
             setMethodGenerator.Emit(OpCodes.Ldfld, canEdit);
             setMethodGenerator.Emit(OpCodes.Brfalse_S, cannotEditLabel);
-            EmitSetValueOpCodes(setMethodGenerator);
+            EmitSetValueOpCodes(setMethodGenerator, backingField);
             setMethodGenerator.MarkLabel(cannotEditLabel);
             setMethodGenerator.Emit(OpCodes.Ldstr, "You can only edit this item during reconstitution");
             setMethodGenerator.ThrowException(typeof(Exception));
 
             propertyBuilder.SetSetMethod(setMethodBuilder);
             propertyBuilder.SetGetMethod(getMethodBuilder);
+
+            return backingField;
         }
 
         public abstract void EmitCtor(TypeBuilder typeBuilder);
         public abstract void ClassSetup(TypeBuilder typeBuilder);
-        public abstract void PropertySetup(TypeBuilder typeBuilder, PropertyInfo propInfo);
-        public abstract void EmitGetValueOpCodes(ILGenerator getMethodGenerator);
-        public abstract void EmitSetValueOpCodes(ILGenerator setMethodGenerator);
+        public abstract FieldBuilder PropertySetup(TypeBuilder typeBuilder, PropertyInfo propInfo);
+        public abstract void EmitGetValueOpCodes(ILGenerator getMethodGenerator, FieldBuilder fieldToStoreValue);
+        public abstract void EmitSetValueOpCodes(ILGenerator setMethodGenerator, FieldBuilder fieldToStoreValue);
+        internal abstract bool CanEmitWith { get; }
+        public abstract void EmitWithMethod(TypeBuilder typeBuilder, Type typeToMake, Type valueTypeType,
+            List<Tuple<FieldBuilder, Type, PropertyInfo>> propertiesAndFields);
     }
 }

@@ -3,14 +3,25 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Linq.Expressions;
     using System.Reflection;
     using System.Reflection.Emit;
     using BullOak.Repositories.StateEmit.Emitters;
 
+    public class StateEmit
+    {
+        public static T GetState<T>()
+            => EmittedTypeFactory.Instance.GetState<T>();
+
+    }
+
     internal class EmittedTypeFactory : BaseTypeFactory
     {
         private ConcurrentDictionary<Type, Func<object>> TypeFactories = new ConcurrentDictionary<Type, Func<object>>();
+
+        public static readonly EmittedTypeFactory Instance = new EmittedTypeFactory();
+
+        private EmittedTypeFactory()
+        { }
 
         public override void WarmupWith(IEnumerable<Type> typesToCreateFactoriesFor)
         {
@@ -25,6 +36,11 @@
                     }
                 }
             }
+        }
+
+        public T GetState<T>()
+        {
+            return (T)GetState(typeof(T));
         }
 
         public override object GetState(Type type)

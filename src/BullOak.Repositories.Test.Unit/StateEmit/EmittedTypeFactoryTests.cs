@@ -25,7 +25,7 @@
             public string name;
         }
 
-        private EmittedTypeFactory sut => new EmittedTypeFactory();
+        private EmittedTypeFactory sut => EmittedTypeFactory.Instance;
 
         [Fact]
         public void GetState_OfInterface_ShouldSucceed()

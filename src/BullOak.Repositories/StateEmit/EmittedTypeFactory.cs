@@ -3,10 +3,18 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Linq.Expressions;
     using System.Reflection;
     using System.Reflection.Emit;
     using BullOak.Repositories.StateEmit.Emitters;
+
+    public static class StateEmit
+    {
+        private static readonly EmittedTypeFactory emittedTypeFactory = new EmittedTypeFactory();
+
+        public static T GetState<T>()
+            => emittedTypeFactory.GetState<T>();
+
+    }
 
     internal class EmittedTypeFactory : BaseTypeFactory
     {
@@ -25,6 +33,11 @@
                     }
                 }
             }
+        }
+
+        public T GetState<T>()
+        {
+            return (T)GetState(typeof(T));
         }
 
         public override object GetState(Type type)

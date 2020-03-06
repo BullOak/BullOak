@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.StateEmit.Emitters
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
     using System.Reflection.Emit;
 
@@ -9,6 +10,11 @@
         private FieldBuilder fieldToStoreValue;
         private ConstructorBuilder constructorBuilder;
         private PropertyInfo property;
+        internal override bool CanEmitWith => false;
+
+        /// <inheritdoc />
+        public override void EmitWithMethod(TypeBuilder typeBuilder, Type typeToMake, Type constructed, List<Tuple<FieldBuilder, Type, PropertyInfo>> propertiesAndFields)
+        { }
 
         public override Type EmitType(ModuleBuilder modelBuilder, Type typeToMake, string nameToUseForType = null)
             => base.EmitType(modelBuilder, typeToMake, "WrapperEmitter_" + (string.IsNullOrWhiteSpace(
@@ -37,12 +43,14 @@
                 .ILEmit(OpCodes.Ret);
         }
 
-        public sealed override void PropertySetup(TypeBuilder typeBuilder, PropertyInfo property)
+        public sealed override FieldBuilder PropertySetup(TypeBuilder typeBuilder, PropertyInfo property)
         {
             this.property = property;
+
+            return fieldToStoreValue;
         }
 
-        public sealed override void EmitGetValueOpCodes(ILGenerator getMethodGenerator)
+        public sealed override void EmitGetValueOpCodes(ILGenerator getMethodGenerator, FieldBuilder field)
         {
             getMethodGenerator.ILEmit(OpCodes.Ldarg_0)
                 .ILEmit(OpCodes.Ldfld, fieldToStoreValue)
@@ -50,7 +58,7 @@
                 .ILEmit(OpCodes.Ret);
         }
 
-        public sealed override void EmitSetValueOpCodes(ILGenerator setMethodGenerator)
+        public sealed override void EmitSetValueOpCodes(ILGenerator setMethodGenerator, FieldBuilder field)
         {
             setMethodGenerator.ILEmit(OpCodes.Ldarg_0)
                 .ILEmit(OpCodes.Ldfld, fieldToStoreValue)
@@ -58,5 +66,6 @@
                 .ILEmit(OpCodes.Callvirt, property.SetMethod)
                 .ILEmit(OpCodes.Ret);
         }
+
     }
 }

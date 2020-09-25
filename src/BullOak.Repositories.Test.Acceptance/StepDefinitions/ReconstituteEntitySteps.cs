@@ -30,6 +30,15 @@
             }
         }
 
+        [When(@"I load my entity up to '(.*)'")]
+        public void WhenILoadMyEntityUpTo(string upTo)
+        {
+            using (var session = sessionContainer.StartSession(streamInfo.Id, DateTime.Parse(upTo)))
+            {
+                lastStateContainer.LatestLoadedState = session.GetCurrentState();
+            }
+        }
+
         [Then(@"HighOrder property should be (.*)")]
         public void ThenHighOrderPropertyShouldBe(int expectedHighOrder)
         {

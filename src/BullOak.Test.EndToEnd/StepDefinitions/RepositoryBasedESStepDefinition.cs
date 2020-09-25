@@ -108,23 +108,23 @@
         [Then(@"a CinemaCreatedEvent should exist")]
         public void ThenACinemaCreatedEventShouldExist()
         {
-            CinemaRepo[CinemaId].FirstOrDefault().instance.Should().NotBeNull();
-            CinemaRepo[CinemaId].FirstOrDefault().instance.Should().BeAssignableTo<CinemaCreated>();
+            CinemaRepo[CinemaId].FirstOrDefault().Item1.instance.Should().NotBeNull();
+            CinemaRepo[CinemaId].FirstOrDefault().Item1.instance.Should().BeAssignableTo<CinemaCreated>();
         }
 
         [Then(@"the cinema creation event should have seats set to (.*)")]
         public void ThenTheCinemaCreationEventShouldHaveSeatsSetTo(int capacity)
         {
             CinemaRepo[CinemaId].FirstOrDefault().Should().NotBeNull();
-            CinemaRepo[CinemaId].FirstOrDefault().instance.As<CinemaCreated>()
+            CinemaRepo[CinemaId].FirstOrDefault().Item1.instance.As<CinemaCreated>()
                 .Capacity.Should().Be(capacity);
         }
 
         [Then(@"the cinema creation event should have a cinema name of ""(.*)""")]
         public void ThenTheCinemaCreationEventShouldHaveACinemaNameOf(string name)
         {
-            CinemaRepo[CinemaId].FirstOrDefault().instance.Should().NotBeNull();
-            CinemaRepo[CinemaId].FirstOrDefault().instance.As<CinemaCreated>()
+            CinemaRepo[CinemaId].FirstOrDefault().Item1.instance.Should().NotBeNull();
+            CinemaRepo[CinemaId].FirstOrDefault().Item1.instance.As<CinemaCreated>()
                 .CinemaId.Name.Should().Be(name);
         }
 

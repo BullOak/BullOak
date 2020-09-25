@@ -1,15 +1,15 @@
 ﻿namespace BullOak.Repositories.Test.Unit.Session
 {
+    using Appliers;
+    using BullOak.Repositories.Session;
+    using Exceptions;
+    using FluentAssertions;
+    using InMemory;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using BullOak.Repositories.Appliers;
-    using BullOak.Repositories.Exceptions;
-    using BullOak.Repositories.InMemory;
-    using BullOak.Repositories.Session;
-    using FluentAssertions;
     using Xunit;
 
     public static class InMemoryEventSourcedRepositoryTestExtensions
@@ -19,8 +19,8 @@
             object @event,
             TId streamId)
         {
-            var currentEvents = sut[streamId]?.ToList() ?? new List<ItemWithType>();
-            currentEvents.Add(new ItemWithType(@event));
+            var currentEvents = sut[streamId]?.ToList() ?? new List<(ItemWithType, DateTime)>();
+            currentEvents.Add((new ItemWithType(@event), DateTime.UtcNow));
             sut[streamId] = currentEvents.ToArray();
             return sut;
         }
@@ -149,7 +149,7 @@
             //Assert
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
-            sut[id][0].instance.Should().Be(@event);
+            sut[id][0].Item1.instance.Should().Be(@event);
         }
 
         [Fact]
@@ -175,8 +175,8 @@
             //Assert
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
-            sut[id][0].instance.Should().BeAssignableTo<ICountChangedInterfaceEvent>();
-            sut[id][0].instance.As<ICountChangedInterfaceEvent>().NewCount.Should().Be(newCount);
+            sut[id][0].Item1.instance.Should().BeAssignableTo<ICountChangedInterfaceEvent>();
+            sut[id][0].Item1.instance.As<ICountChangedInterfaceEvent>().NewCount.Should().Be(newCount);
         }
 
         [Fact]
@@ -201,8 +201,8 @@
             //Assert
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
-            sut[id][0].instance.Should().BeOfType<CountChangedClassEvent>();
-            sut[id][0].instance.As<CountChangedClassEvent>().NewCount.Should().Be(newCount);
+            sut[id][0].Item1.instance.Should().BeOfType<CountChangedClassEvent>();
+            sut[id][0].Item1.instance.As<CountChangedClassEvent>().NewCount.Should().Be(newCount);
         }
 
         [Fact]
@@ -324,7 +324,7 @@
 
             //Assert
             sut[id].Length.Should().Be(2);
-            sut[id][1].instance.Should().Be(newEvent);
+            sut[id][1].Item1.instance.Should().Be(newEvent);
         }
 
         [Fact]

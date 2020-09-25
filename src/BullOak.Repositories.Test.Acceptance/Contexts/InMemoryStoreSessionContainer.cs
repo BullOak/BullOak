@@ -23,17 +23,17 @@
             repository = new InMemoryEventSourcedRepository<string, IHoldHigherOrder>(passThroughValidator, configuration);
         }
 
-        public IManageSessionOf<IHoldHigherOrder> StartSession(string streamId)
+        public IManageSessionOf<IHoldHigherOrder> StartSession(string streamId, DateTime? upTo = null)
         {
-            LastSession = repository.BeginSessionFor(streamId).Result;
+            LastSession = repository.BeginSessionFor(streamId, upTo: upTo).Result;
 
             return LastSession;
         }
 
-        public ItemWithType[] GetStream(string id)
+        public (ItemWithType, DateTime)[] GetStream(string id)
             => repository[id];
 
-        public void SaveStream(string id, ItemWithType[] events)
+        public void SaveStream(string id, (ItemWithType, DateTime)[] events)
             => repository[id] = events;
 
         public void Dispose()

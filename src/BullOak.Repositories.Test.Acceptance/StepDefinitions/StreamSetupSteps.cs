@@ -25,7 +25,7 @@
         [Given(@"a new stream")]
         public void GivenANewStream()
         {
-            sessionContainer.SaveStream(streamInfo.Id, new ItemWithType[0]);
+            sessionContainer.SaveStream(streamInfo.Id, new (ItemWithType, DateTime)[0]);
         }
 
         [Given(@"a stream with (.*) events?")]
@@ -35,11 +35,29 @@
             var events = eventGenerator.GenerateEvents(eventCount);
             var originalEvents = sessionContainer.GetStream(streamInfo.Id);
 
-            var combined = new List<ItemWithType>(originalEvents);
-            combined.AddRange(events.Select(x=> new ItemWithType(x)));
+            var combined = new List<(ItemWithType,DateTime)>(originalEvents);
+            combined.AddRange(events.Select(x=> (new ItemWithType(x), DateTime.UtcNow)));
 
             sessionContainer.SaveStream(streamInfo.Id, combined.ToArray());
         }
+
+        [Given(@"an existing stream with (.*) events with timestamps")]
+        public void GivenAnExistingStreamWithEventsWithTimestamps(int eventCount, Table timestamps)
+        {
+            var events = eventGenerator.GenerateEvents(eventCount);
+            var originalEvents = sessionContainer.GetStream(streamInfo.Id);
+
+            var combined = new List<(ItemWithType, DateTime)>(originalEvents);
+            int index = 0;
+            foreach (var ev in events)
+            {
+                var datetime = DateTime.Parse(timestamps.Rows[index++].Values.ElementAt(0));
+                combined.Add((new ItemWithType(ev), datetime));
+            }
+
+            sessionContainer.SaveStream(streamInfo.Id, combined.ToArray());
+        }
+
 
         [Given(@"a buyer name set event")]
         [Given(@"a buyer name set event which can be upconverted as below in the stream")]
@@ -52,8 +70,8 @@
                 FullName = $"{nameInfo.Title} {nameInfo.Name} {nameInfo.Surname}"
             };
             var originalEvents = sessionContainer.GetStream(streamInfo.Id);
-            var combined = new List<ItemWithType>(originalEvents);
-            combined.Add(new ItemWithType(@event));
+            var combined = new List<(ItemWithType, DateTime)>(originalEvents);
+            combined.Add((new ItemWithType(@event), DateTime.UtcNow));
 
             sessionContainer.SaveStream(streamInfo.Id, combined.ToArray());
         }
@@ -63,7 +81,7 @@
         {
             var @event = table.CreateInstance<BuyerNameSetEvent>();
 
-            sessionContainer.SaveStream(streamInfo.Id, new[] {new ItemWithType(@event)});
+            sessionContainer.SaveStream(streamInfo.Id, new[] {(new ItemWithType(@event), DateTime.UtcNow)});
         }
 
         [Given(@"a balance set event with balance (.*) and date (.*)")]
@@ -75,7 +93,7 @@
                 UpdatedDate = timestamp,
             };
 
-            sessionContainer.SaveStream(streamInfo.Id, new [] {new ItemWithType(@event) });
+            sessionContainer.SaveStream(streamInfo.Id, new [] {(new ItemWithType(@event), DateTime.UtcNow) });
         }
     }
 }

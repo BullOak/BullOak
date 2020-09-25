@@ -18,10 +18,10 @@
         private readonly IValidateState<TState> stateValidator = new AlwaysPassValidator<TState>();
         public IValidateState<TState> StateValidator => stateValidator;
 
-        public ItemWithType[] this[TId id]
+        public (ItemWithType, DateTime)[] this[TId id]
         {
-            get => eventStore.TryGetValue(id, out var value) ? value.Select(x => x.Item1).ToArray() : new ItemWithType[0];
-            set => eventStore[id] = new List<(ItemWithType, DateTime)>((value ?? new ItemWithType[0]).Select(x => (x, DateTime.UtcNow)));
+            get => eventStore.TryGetValue(id, out var value) ? value.ToArray() : new (ItemWithType, DateTime)[0];
+            set => eventStore[id] = new List<(ItemWithType, DateTime)>(value ?? new (ItemWithType,DateTime)[0]);
         }
 
         public TId[] IdsOfStreamsWithEvents =>

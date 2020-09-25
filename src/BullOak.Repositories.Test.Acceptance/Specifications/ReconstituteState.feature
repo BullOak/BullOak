@@ -16,7 +16,7 @@ Scenario: Reconstitute state up to a date
 		| 2020-09-20 11:10:00 |
 		| 2020-09-25 11:10:00 |
 		| 2020-10-01 11:10:00 |
-        | 2020-10-02 11:10:00 |
+		| 2020-10-02 11:10:00 |
 	When I load my entity up to '2020-09-30 11:10:00'
 	Then HighOrder property should be 2
 

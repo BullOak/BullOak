@@ -12,9 +12,9 @@
     {
         private readonly TId Id;
         private readonly int initialVersion;
-        private readonly List<ItemWithType> stream;
+        private readonly List<(ItemWithType, DateTime)> stream;
 
-        public InMemoryEventStoreSession(IValidateState<TState> stateValidator, IHoldAllConfiguration configuration, List<ItemWithType> stream, TId id)
+        public InMemoryEventStoreSession(IValidateState<TState> stateValidator, IHoldAllConfiguration configuration, List<(ItemWithType, DateTime)> stream, TId id)
             : base(stateValidator, configuration)
         {
             this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -22,7 +22,7 @@
             Id = id;
         }
 
-        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, List<ItemWithType> stream, TId id)
+        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, List<(ItemWithType, DateTime)> stream, TId id)
             : base(configuration)
         {
             this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -40,7 +40,10 @@
                 if (stream.Count != initialVersion)
                     throw new ConcurrencyException(Id.ToString(), null);
 
-                stream.AddRange(newEvents ?? new ItemWithType[0]);
+                if(newEvents == null)
+                    newEvents = new ItemWithType[0];
+
+                stream.AddRange(newEvents.Select(x => (x, DateTime.UtcNow)));
 
                 return Task.FromResult(stream.Count);
             }

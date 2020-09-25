@@ -12,16 +12,16 @@
 
     public class InMemoryEventSourcedRepository<TId, TState> : IStartSessions<TId, TState>
     {
-        private ConcurrentDictionary<TId, List<ItemWithType>> eventStore = new ConcurrentDictionary<TId, List<ItemWithType>>();
+        private ConcurrentDictionary<TId, List<(ItemWithType, DateTime)>> eventStore = new ConcurrentDictionary<TId, List<(ItemWithType, DateTime)>>();
         private readonly IHoldAllConfiguration configuration;
         private static bool useThreadSafeOps;
         private readonly IValidateState<TState> stateValidator = new AlwaysPassValidator<TState>();
         public IValidateState<TState> StateValidator => stateValidator;
 
-        public ItemWithType[] this[TId id]
+        public (ItemWithType, DateTime)[] this[TId id]
         {
-            get => eventStore.TryGetValue(id, out var value) ? value.ToArray() : new ItemWithType[0];
-            set => eventStore[id] = new List<ItemWithType>(value ?? new ItemWithType[0]);
+            get => eventStore.TryGetValue(id, out var value) ? value.ToArray() : new (ItemWithType, DateTime)[0];
+            set => eventStore[id] = new List<(ItemWithType, DateTime)>(value ?? new (ItemWithType,DateTime)[0]);
         }
 
         public TId[] IdsOfStreamsWithEvents =>
@@ -42,14 +42,12 @@
             this.stateValidator = stateValidator;
         }
 
-        public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false)
+        public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false, DateTime? appliesAt = null)
         {
-            List<ItemWithType> eventStream;
-
-            if (!eventStore.TryGetValue(id, out eventStream))
+            if (!eventStore.TryGetValue(id, out var eventStream))
             {
                 if (throwIfNotExists) throw new StreamNotFoundException(id.ToString());
-                eventStream = eventStore.GetOrAdd(id, new List<ItemWithType>());
+                eventStream = eventStore.GetOrAdd(id, new List<(ItemWithType, DateTime)>());
             }
 
             lock (eventStream)
@@ -57,7 +55,13 @@
                 var session = stateValidator == null
                     ? new InMemoryEventStoreSession<TState, TId>(configuration, eventStream, id)
                     : new InMemoryEventStoreSession<TState, TId>(stateValidator, configuration, eventStream, id);
-                session.LoadFromEvents(eventStream.ToArray(), eventStream.Count);
+
+                var streamData = eventStream
+                    .TakeWhile(x => !appliesAt.HasValue || x.Item2 <= appliesAt.Value)
+                    .Select(x => x.Item1)
+                    .ToArray();
+
+                session.LoadFromEvents(streamData, eventStream.Count);
 
                 return Task.FromResult((IManageSessionOf<TState>)session);
             }

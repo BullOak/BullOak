@@ -23,9 +23,9 @@
             repository = new InMemoryEventSourcedRepository<string, IHoldHigherOrder>(passThroughValidator, configuration);
         }
 
-        public IManageSessionOf<IHoldHigherOrder> StartSession(string streamId, DateTime? upTo = null)
+        public IManageSessionOf<IHoldHigherOrder> StartSession(string streamId, DateTime? appliesAt = null)
         {
-            LastSession = repository.BeginSessionFor(streamId, upTo: upTo).Result;
+            LastSession = repository.BeginSessionFor(streamId, appliesAt: appliesAt).Result;
 
             return LastSession;
         }

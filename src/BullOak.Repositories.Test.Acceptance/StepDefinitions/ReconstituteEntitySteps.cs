@@ -31,9 +31,9 @@
         }
 
         [When(@"I load my entity up to '(.*)'")]
-        public void WhenILoadMyEntityUpTo(string upTo)
+        public void WhenILoadMyEntityUpTo(string appliesAt)
         {
-            using (var session = sessionContainer.StartSession(streamInfo.Id, DateTime.Parse(upTo)))
+            using (var session = sessionContainer.StartSession(streamInfo.Id, DateTime.Parse(appliesAt)))
             {
                 lastStateContainer.LatestLoadedState = session.GetCurrentState();
             }

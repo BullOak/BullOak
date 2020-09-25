@@ -9,7 +9,7 @@ Scenario: Load stored entity with two events
 	When I load my entity
 	Then HighOrder property should be 1
 
-Scenario: Reconstitute state up to a date
+Scenario: Apply state at a date
 	Given an existing stream with 5 events with timestamps
 		| Datetime            |
 		| 2020-09-10 11:10:00 |

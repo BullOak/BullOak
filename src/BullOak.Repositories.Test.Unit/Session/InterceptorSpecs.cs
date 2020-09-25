@@ -70,7 +70,7 @@
                 Configuration = config;
             }
 
-            public Task<IManageSessionOf<IState>> BeginSessionFor(int id, bool throwIfNotExists, DateTime? upTo = null)
+            public Task<IManageSessionOf<IState>> BeginSessionFor(int id, bool throwIfNotExists, DateTime? appliesAt = null)
                 => Task.FromResult<IManageSessionOf<IState>>(new StubSession(Configuration, OnSave));
 
             public Task<bool> Contains(int selector) => throw new NotImplementedException();

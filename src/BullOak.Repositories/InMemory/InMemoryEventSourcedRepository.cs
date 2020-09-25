@@ -42,7 +42,7 @@
             this.stateValidator = stateValidator;
         }
 
-        public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false, DateTime? upTo = null)
+        public Task<IManageSessionOf<TState>> BeginSessionFor(TId id, bool throwIfNotExists = false, DateTime? appliesAt = null)
         {
             if (!eventStore.TryGetValue(id, out var eventStream))
             {
@@ -57,7 +57,7 @@
                     : new InMemoryEventStoreSession<TState, TId>(stateValidator, configuration, eventStream, id);
 
                 var streamData = eventStream
-                    .TakeWhile(x => !upTo.HasValue || x.Item2 <= upTo.Value)
+                    .TakeWhile(x => !appliesAt.HasValue || x.Item2 <= appliesAt.Value)
                     .Select(x => x.Item1)
                     .ToArray();
 

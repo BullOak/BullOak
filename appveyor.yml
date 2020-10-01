@@ -22,7 +22,7 @@ branches:
     - develop
 
 environment:
-  standard_version: '2.6.0'
+  standard_version: '2.6.1'
 
 # blacklist
 #  except:

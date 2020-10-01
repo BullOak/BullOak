@@ -19,7 +19,6 @@
 
         public virtual Type EmitType(ModuleBuilder modelBuilder, Type typeToMake, string nameToUseForType = null)
         {
-            //var typeToMake = typeof(TState);
             if (!typeToMake.IsInterface)
                 throw new ArgumentException($"Parameter must be type of an interface", nameof(typeToMake));
             if (typeToMake.GetMethods().Any(x => !x.IsHideBySig))
@@ -32,14 +31,6 @@
                 TypeAttributes.Public | TypeAttributes.Class);
             typeBuilder.AddInterfaceImplementation(typeof(ICanSwitchBackAndToReadOnly));
             typeBuilder.AddInterfaceImplementation(InterfaceType);
-
-            var vti = typeof(ValueType<>);
-            var nonGenericVTType = vti.MakeGenericType(typeToMake);
-
-            if (CanEmitWith)
-            {
-                typeBuilder.AddInterfaceImplementation(nonGenericVTType);
-            }
 
             ClassSetup(typeBuilder);
             EmitCtor(typeBuilder);
@@ -54,11 +45,6 @@
                 propertiesAndFields.Add(new Tuple<FieldBuilder, Type, PropertyInfo>(fieldBuilder, prop.Item1, prop.Item2));
             }
 
-            if (CanEmitWith)
-            {
-                EmitWithMethod(typeBuilder, typeToMake, nonGenericVTType, propertiesAndFields);
-            }
-            
             return typeBuilder.CreateTypeInfo();
         }
 
@@ -68,7 +54,7 @@
                 typeBuilder.DefineField("canEdit", typeof(bool), FieldAttributes.Public | FieldAttributes.HasDefault);
 
             typeBuilder.DefineProperty("CanEdit", PropertyAttributes.None, typeof(void),
-                new[] {typeof(bool)});
+                new[] { typeof(bool) });
 
             var setMethodBuilder = typeBuilder.DefineMethod("set_CanEdit", MethodAttributes.Public
                                                                            | MethodAttributes.Final
@@ -76,7 +62,7 @@
                                                                            | MethodAttributes.Virtual
                                                                            | MethodAttributes.NewSlot
                                                                            | MethodAttributes.SpecialName,
-                CallingConventions.HasThis, typeof(void), new[] {typeof(bool)});
+                CallingConventions.HasThis, typeof(void), new[] { typeof(bool) });
 
             var setMethodGenerator = setMethodBuilder.GetILGenerator();
             setMethodGenerator.Emit(OpCodes.Ldarg_0);
@@ -131,8 +117,5 @@
         public abstract FieldBuilder PropertySetup(TypeBuilder typeBuilder, PropertyInfo propInfo);
         public abstract void EmitGetValueOpCodes(ILGenerator getMethodGenerator, FieldBuilder fieldToStoreValue);
         public abstract void EmitSetValueOpCodes(ILGenerator setMethodGenerator, FieldBuilder fieldToStoreValue);
-        internal abstract bool CanEmitWith { get; }
-        public abstract void EmitWithMethod(TypeBuilder typeBuilder, Type typeToMake, Type valueTypeType,
-            List<Tuple<FieldBuilder, Type, PropertyInfo>> propertiesAndFields);
     }
 }

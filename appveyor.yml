@@ -341,7 +341,7 @@ deploy:
     # Deploying to NuGet feed
   - provider: NuGet
     api_key:
-      secure: qTUJuiOZcGz/5ZjxlDdMbpOrFy+jifEgSJebflyaWe2FSIfu/V2I5zEXhThhXBvJ
+      secure: gls6JFP20BgXWDjC3K9krhbLkXDn6JTJ4gUxgGfDJqyihb/pdeAp5yuWGCJmp7gj
     skip_symbols: false
     artifact: /.*\.nupkg/
 
@@ -375,9 +375,6 @@ after_deploy:
         Write-Output "APPVEYOR_PULL_REQUEST_NUMBER = $APPVEYOR_PULL_REQUEST_NUMBER"
         Write-Output "env.APPVEYOR_PULL_REQUEST_NUMBER = $env:APPVEYOR_PULL_REQUEST_NUMBER"
 
-        $postParams = @{ value1 = "BullOak.Repositories"; value2 = "$env:standard_version"; value3="https://www.nuget.org/packages/BullOak.Repositories/"  }
-        Invoke-WebRequest -Uri https://maker.ifttt.com/trigger/bo_release/with/key/kSg0JPLZLcht1NDoihgjW -Method POST -Body $postParams
-
 # to run your custom scripts instead of provider deployments
 deploy_script:
 
@@ -404,4 +401,13 @@ on_finish:
 
 notifications:
   - provider: Slack
-    incoming_webhook: https://hooks.slack.com/services/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
+    incoming_webhook: https://hooks.slack.com/services/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
+  - provider: Webhook
+    url: https://maker.ifttt.com/trigger/bo_release/with/key/kSg0JPLZLcht1NDoihgjW
+    method: POST
+    body: >-
+      {
+          "Value1":  "BullOak base library"
+          "Value2":  "$env:standard_version"
+          "Value3":  "https://www.nuget.org/packages/BullOak.Repositories/"
+      }    

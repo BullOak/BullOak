@@ -23,6 +23,8 @@ branches:
 
 environment:
   standard_version: '2.6.2'
+  slack_webhook: 
+    secure: 'vU/ZYR/7BEjB3LeoauvCBjeofaA6miKcRE3F7EWt/NaPwuG1o6dLMqSXtijjYeHINBHpqsdeHAeDIqMCnZj8rb4jGAtbDzWPwK1+fSlo0qQ='
 
 # blacklist
 #  except:
@@ -374,6 +376,16 @@ after_deploy:
         Write-Output "env.APPVEYOR_BUILD_NUMBER = $env:APPVEYOR_BUILD_NUMBER"
         Write-Output "APPVEYOR_PULL_REQUEST_NUMBER = $APPVEYOR_PULL_REQUEST_NUMBER"
         Write-Output "env.APPVEYOR_PULL_REQUEST_NUMBER = $env:APPVEYOR_PULL_REQUEST_NUMBER"
+        Write-Output "env.slack_webhook = $env:slack_webhook"
+        $slackWebhookUrl = $env:slack_webhook
+        $slackRequestBody = @{ 
+           text="New version ($env:standard_version) of BO released"
+        } | ConvertTo-Json
+        Invoke-RestMethod -Method 'Post' -Uri $slackWebhookUrl -Body $slackRequestBody
+
+        $postParams = @{ value1 = "BullOak.Repositories.EventStore"; value2 = "$env:standard_version"; value3="https://www.nuget.org/packages/BullOak.Repositories/$env:standard_version"  }
+        Invoke-WebRequest -Uri https://maker.ifttt.com/trigger/bo_release/with/key/kSg0JPLZLcht1NDoihgjW -Method POST -Body $postParams
+
 
 # to run your custom scripts instead of provider deployments
 deploy_script:
@@ -381,33 +393,3 @@ deploy_script:
 # to disable deployment
 #deploy: off
 
-#---------------------------------#
-#        global handlers          #
-#---------------------------------#
-
-# on successful build
-on_success:
-
-# on build failure
-on_failure:
-
-# after build failure or success
-on_finish:
-
-
-#---------------------------------#
-#         notifications           #
-#---------------------------------#
-
-notifications:
-  - provider: Slack
-    incoming_webhook: https://hooks.slack.com/services/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
-  - provider: Webhook
-    url: https://maker.ifttt.com/trigger/bo_release/with/key/kSg0JPLZLcht1NDoihgjW
-    method: POST
-    body: >-
-      {
-          "Value1":  "BullOak base library"
-          "Value2":  "$env:standard_version"
-          "Value3":  "https://www.nuget.org/packages/BullOak.Repositories/"
-      }    

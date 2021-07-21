@@ -383,7 +383,7 @@ after_deploy:
         } | ConvertTo-Json
         Invoke-RestMethod -Method 'Post' -Uri $slackWebhookUrl -Body $slackRequestBody
 
-        $postParams = @{ value1 = "BullOak.Repositories.EventStore"; value2 = "$env:standard_version"; value3="https://www.nuget.org/packages/BullOak.Repositories/$env:standard_version"  }
+        $postParams = @{ value1 = "BullOak.Repositories"; value2 = "$env:standard_version"; value3="https://www.nuget.org/packages/BullOak.Repositories/$env:standard_version"  }
         Invoke-WebRequest -Uri https://maker.ifttt.com/trigger/bo_release/with/key/kSg0JPLZLcht1NDoihgjW -Method POST -Body $postParams
 
 

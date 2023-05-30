@@ -1,6 +1,7 @@
 ﻿namespace BullOak.Repositories.Session
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Upconverting;
@@ -23,10 +24,13 @@
             => eventApplier = configuration.EventApplier;
 
         public void LoadFromEvents(ItemWithType[] storedEvents, TConcurrencyId concurrencyId)
+            => LoadFromEvents(storedEvents, storedEvents.Length == 0, concurrencyId);
+
+        public void LoadFromEvents(IEnumerable<ItemWithType> storedEvents, bool isNew, TConcurrencyId concurrencyId)
         {
             var initialState = configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
 
-            Initialize((TState) initialState, storedEvents.Length == 0);
+            Initialize((TState)initialState, isNew);
             this.concurrencyId = concurrencyId;
         }
     }

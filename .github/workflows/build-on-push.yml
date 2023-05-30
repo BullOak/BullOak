@@ -1,0 +1,33 @@
+name: Build ON push
+
+on:
+  push:
+    branches: [ master, main ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Tcp ESDB image
+        run: docker run -d --name tcp_esdbnode -it -p 2113:2113 -p 1113:1113 eventstore/eventstore:release-5.0.11 --runprojections all --startstandardprojections
+      - name: Run Grpc ESDB image
+        run: docker run -d --name grpc_esdbnode -it -p 2114:2113 -p 1114:1113 eventstore/eventstore:21.10.1-bionic --insecure --runprojections all --startstandardprojections
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: |
+          echo "$PATH"
+          dotnet restore
+        working-directory: ./src
+      - name: Build
+        run: dotnet build --no-restore /p:VersionPrefix=1.0.0 /p:VersionSuffix=testbuild
+        working-directory: ./src
+      - name: Test
+        run: dotnet test --no-build --verbosity minimal
+        working-directory: ./src
+

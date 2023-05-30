@@ -1,0 +1,70 @@
+name: Build and release when release tag is applied
+
+on:
+  push:
+    tags:
+    - "v[0-9]+.[0-9]+.[0-9]+"
+    - "v[0-9]+.[0-9]+.[0-9]+-[a-zA-Z]+*"
+
+
+jobs:
+
+  parse-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.parsed-version.outputs.version }}
+      version-suffix: ${{ steps.parsed-version.outputs.version-suffix }}
+    steps:
+      - name: Echo github ref
+        run: echo $GITHUB_REF
+      - name: Parse version
+        run:  grep -Po "v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z][0-9a-zA-Z]*([.-][0-9a-zA-Z]+)*)?$" <<< $GITHUB_REF | awk '{print "TAG_VERSION="$1}' >> $GITHUB_ENV
+        shell: bash
+      - name: fail if version couldn't be parsed
+        run: |
+          echo "Tag version is: $TAG_VERSION"
+          if [[ -z "$TAG_VERSION" ]]; then exit 50 ;fi
+        shell: bash
+      - name: Extract prefix from tag version
+        run: grep -Po "[0-9]+\.[0-9]+\.[0-9]+" <<< $GITHUB_REF | awk '{print "VERSION_PREFIX="$1}' >> $GITHUB_ENV
+        shell: bash
+      - name: Extract suffix from tag version
+        run:  |
+          SUFFIX=$(grep -Po '(?<=-)([a-zA-Z][0-9a-zA-Z]*([.-][0-9a-zA-Z]+)*)+$' <<< "$GITHUB_REF") || true
+          echo "VERSION_SUFFIX=$SUFFIX" >> $GITHUB_ENV
+        shell: bash
+      - name: emit from parsed
+        id: parsed-version
+        run: |
+          echo "::set-output name=version::$VERSION_PREFIX"
+          echo "::set-output name=version-suffix::$VERSION_SUFFIX"
+        shell: bash
+
+  build:
+    needs: [parse-version]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Tcp ESDB image
+        run: docker run -d --name tcp_esdbnode -it -p 2113:2113 -p 1113:1113 eventstore/eventstore:release-5.0.11 --runprojections all --startstandardprojections
+      - name: Run Grpc ESDB image
+        run: docker run -d --name grpc_esdbnode -it -p 2114:2113 -p 1114:1113 eventstore/eventstore:21.10.1-bionic --insecure --runprojections all --startstandardprojections
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - name: Pull code
+        uses: actions/checkout@v2
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./src
+      - name: Build and pack
+        run: dotnet build -c Release --no-restore /p:VersionPrefix="${{ needs.parse-version.outputs.version }}" /p:VersionSuffix="${{ needs.parse-version.outputs.version-suffix }}"
+        working-directory: ./src
+      - name: Test
+        run: dotnet test -c Release --no-build --verbosity minimal
+        working-directory: ./src
+      - name: Nuget push
+        env:
+          nuget_key: ${{ secrets.PUBLISH_BO_EVENTSTORE }}
+        run: dotnet nuget push "./BullOak.Repositories.EventStore/bin/Any CPU/release/BullOak.Repositories.EventStore*.nupkg" --api-key "$nuget_key"  -s https://api.nuget.org/v3/index.json --skip-duplicate
+        working-directory: ./src

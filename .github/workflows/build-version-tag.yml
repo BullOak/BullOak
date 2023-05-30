@@ -49,11 +49,11 @@ jobs:
       - name: Run Grpc ESDB image
         run: docker run -d --name grpc_esdbnode -it -p 2114:2113 -p 1114:1113 eventstore/eventstore:21.10.1-bionic --insecure --runprojections all --startstandardprojections
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 6.0.x
       - name: Pull code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Restore dependencies
         run: dotnet restore
         working-directory: ./src
@@ -66,5 +66,5 @@ jobs:
       - name: Nuget push
         env:
           nuget_key: ${{ secrets.PUBLISH_BO_EVENTSTORE }}
-        run: dotnet nuget push "./BullOak.Repositories.EventStore/bin/Any CPU/release/BullOak.Repositories.EventStore*.nupkg" --api-key "$nuget_key"  -s https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push "./BullOak.Repositories/bin/Any CPU/release/BullOak.Repositories*.nupkg" --api-key "$nuget_key"  -s https://api.nuget.org/v3/index.json --skip-duplicate
         working-directory: ./src

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{AE0922CC-D3B9-4084-87DE-9B831201034C}"
 EndProject
@@ -15,17 +15,26 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildsScripts", "BuildsScri
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EndToEndTests", "EndToEndTests", "{C0C8E3D4-5A5D-45C4-BC9B-6B5093F6E964}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Test.EndToEnd", "BullOak.Test.EndToEnd\BullOak.Test.EndToEnd.csproj", "{76145EE3-3F46-4D54-9B55-BFFB40229EDE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BullOak.Test.EndToEnd", "BullOak.Test.EndToEnd\BullOak.Test.EndToEnd.csproj", "{76145EE3-3F46-4D54-9B55-BFFB40229EDE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BullOak.Repositories", "BullOak.Repositories\BullOak.Repositories.csproj", "{5934536F-FB5D-42AD-841B-3395B4C1D76D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Test.Benchmark", "BullOak.Test.Benchmark\BullOak.Test.Benchmark.csproj", "{00939149-097C-4A99-9A8D-1DC6DE596B4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BullOak.Test.Benchmark", "BullOak.Test.Benchmark\BullOak.Test.Benchmark.csproj", "{00939149-097C-4A99-9A8D-1DC6DE596B4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.Test.Unit", "BullOak.Repositories.Test.Unit\BullOak.Repositories.Test.Unit.csproj", "{F66F86D4-3668-4994-92BA-58EC92D6A67E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BullOak.Repositories.Test.Unit", "BullOak.Repositories.Test.Unit\BullOak.Repositories.Test.Unit.csproj", "{F66F86D4-3668-4994-92BA-58EC92D6A67E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.Test.Acceptance", "BullOak.Repositories.Test.Acceptance\BullOak.Repositories.Test.Acceptance.csproj", "{0B6BF506-83EE-476D-9766-63C62724FAC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BullOak.Repositories.Test.Acceptance", "BullOak.Repositories.Test.Acceptance\BullOak.Repositories.Test.Acceptance.csproj", "{0B6BF506-83EE-476D-9766-63C62724FAC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BullOak.Repositories.Test.Unit.UpconverterContainer", "BullOak.Repositories.Test.Unit.UpconverterContainer\BullOak.Repositories.Test.Unit.UpconverterContainer.csproj", "{E31A2507-6AC6-4281-960F-7CEBD96EEF30}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BullOak.Repositories.Test.Unit.UpconverterContainer", "BullOak.Repositories.Test.Unit.UpconverterContainer\BullOak.Repositories.Test.Unit.UpconverterContainer.csproj", "{E31A2507-6AC6-4281-960F-7CEBD96EEF30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2A8D4883-F5A3-496D-8DB9-687432AA3FD2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GithubActions", "GithubActions", "{BD21CCDE-652E-4763-91CA-165E32DDD529}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\build-on-push.yml = ..\.github\workflows\build-on-push.yml
+		..\.github\workflows\build-pr.yml = ..\.github\workflows\build-pr.yml
+		..\.github\workflows\build-version-tag.yml = ..\.github\workflows\build-version-tag.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +104,7 @@ Global
 		{F66F86D4-3668-4994-92BA-58EC92D6A67E} = {A51AB156-2974-4B61-9C91-D45DC4F41367}
 		{0B6BF506-83EE-476D-9766-63C62724FAC3} = {A51AB156-2974-4B61-9C91-D45DC4F41367}
 		{E31A2507-6AC6-4281-960F-7CEBD96EEF30} = {A51AB156-2974-4B61-9C91-D45DC4F41367}
+		{BD21CCDE-652E-4763-91CA-165E32DDD529} = {2A8D4883-F5A3-496D-8DB9-687432AA3FD2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {85F7A59E-70F4-40CD-888E-8DDF38C2B760}

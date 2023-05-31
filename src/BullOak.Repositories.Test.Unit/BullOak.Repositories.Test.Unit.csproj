@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BullOak.Repositories\BullOak.Repositories.csproj" />
     <ProjectReference Include="..\BullOak.Repositories.Test.Unit.UpconverterContainer\BullOak.Repositories.Test.Unit.UpconverterContainer.csproj" />
+    <ProjectReference Include="..\BullOak.Repositories\BullOak.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

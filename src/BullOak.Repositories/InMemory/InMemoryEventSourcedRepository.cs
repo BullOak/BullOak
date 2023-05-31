@@ -16,6 +16,7 @@
         private readonly IHoldAllConfiguration configuration;
         private static bool useThreadSafeOps;
         private readonly IValidateState<TState> stateValidator = new AlwaysPassValidator<TState>();
+        public readonly bool IsLoadedAsynchronously;
         public IValidateState<TState> StateValidator => stateValidator;
 
         public (ItemWithType, DateTime)[] this[TId id]
@@ -30,14 +31,15 @@
                 .Select(x => x.Key)
                 .ToArray();
 
-        public InMemoryEventSourcedRepository(IHoldAllConfiguration configuration)
+        public InMemoryEventSourcedRepository(IHoldAllConfiguration configuration, bool loadAsynchronously = false)
         {
             this.configuration = configuration;
             useThreadSafeOps = configuration.ThreadSafetySelector(typeof(TState));
+            IsLoadedAsynchronously = loadAsynchronously;
         }
 
-        public InMemoryEventSourcedRepository(IValidateState<TState> stateValidator, IHoldAllConfiguration configuration)
-            : this(configuration)
+        public InMemoryEventSourcedRepository(IValidateState<TState> stateValidator, IHoldAllConfiguration configuration, bool loadAsynchronously = false)
+            : this(configuration, loadAsynchronously)
         {
             this.stateValidator = stateValidator;
         }
@@ -61,10 +63,30 @@
                     .Select(x => x.Item1)
                     .ToArray();
 
-                session.LoadFromEvents(streamData, eventStream.Count);
+                if (IsLoadedAsynchronously)
+                    return LoadAsyncAndReturnSession(session, streamData);
+                else
+                {
+                    session.LoadFromEvents(streamData, eventStream.Count);
 
-                return Task.FromResult((IManageSessionOf<TState>)session);
+                    return Task.FromResult((IManageSessionOf<TState>)session);
+                }
             }
+        }
+
+        private async Task<IManageSessionOf<TState>> LoadAsyncAndReturnSession(InMemoryEventStoreSession<TState, TId> inMemSession, ItemWithType[] events)
+        {
+            await inMemSession.LoadFromEvents(ToAsyncEnumerable(events), events.Length == 0, events.Length);
+
+            return inMemSession;
+        }
+
+        private async IAsyncEnumerable<ItemWithType> ToAsyncEnumerable(ItemWithType[] streamData)
+        {
+            for (int i = 0; i < streamData.Length; i++)
+                yield return streamData[i];
+
+            await Task.CompletedTask;
         }
 
         public Task Delete(TId id)

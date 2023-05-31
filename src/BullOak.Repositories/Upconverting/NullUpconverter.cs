@@ -9,5 +9,8 @@
 
         public IEnumerable<ItemWithType> Upconvert(IEnumerable<ItemWithType> eventsToUpconvert)
             => eventsToUpconvert;
+
+        public IAsyncEnumerable<ItemWithType> Upconvert(IAsyncEnumerable<ItemWithType> eventsToUpconvert)
+            => eventsToUpconvert;
     }
 }

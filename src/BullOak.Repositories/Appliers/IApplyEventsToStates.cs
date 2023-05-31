@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using BullOak.Repositories.Upconverting;
 
     public interface IApplyEventsToStates
@@ -10,6 +11,7 @@
 
         object Apply(Type stateType, object state, ItemWithType[] events);
         object Apply(Type stateType, object state, IEnumerable<ItemWithType> events);
+        Task<object> Apply(Type stateType, object state, IAsyncEnumerable<ItemWithType> events);
         object ApplyEvent(Type stateType, object state, ItemWithType @event);
     }
 }

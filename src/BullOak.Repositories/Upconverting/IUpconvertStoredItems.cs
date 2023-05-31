@@ -4,6 +4,7 @@
 
     public interface IUpconvertStoredItems
     {
+        IAsyncEnumerable<ItemWithType> Upconvert(IAsyncEnumerable<ItemWithType> eventsToUpconvert);
         IEnumerable<ItemWithType> Upconvert(IEnumerable<ItemWithType> eventsToUpconvert);
         IEnumerable<ItemWithType> Upconvert(ItemWithType[] eventsToUpconvert);
     }

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Upconverting;
 
@@ -29,6 +30,14 @@
         public void LoadFromEvents(IEnumerable<ItemWithType> storedEvents, bool isNew, TConcurrencyId concurrencyId)
         {
             var initialState = configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
+
+            Initialize((TState)initialState, isNew);
+            this.concurrencyId = concurrencyId;
+        }
+
+        public async Task LoadFromEvents(IAsyncEnumerable<ItemWithType> storedEvents, bool isNew, TConcurrencyId concurrencyId)
+        {
+            var initialState = await configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
 
             Initialize((TState)initialState, isNew);
             this.concurrencyId = concurrencyId;

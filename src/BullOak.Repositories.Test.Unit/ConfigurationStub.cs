@@ -51,11 +51,15 @@
 
         public IRehydrateState StateRehydrator { get; private set; }
 
+        public bool IsLoadedAsynchronously { get; private set; }
+
         public ConfigurationStub()
         {
             mockStateFactory = new Fake<ICreateStateInstances>();
             mockEventApplier = new Fake<IApplyEventsToStates>();
             EventUpconverter = new NullUpconverter();
+
+            IsLoadedAsynchronously = false;
 
             typesForWhichEventCollectionHasBeenAskedFor = new List<Type>();
             eventsThatHaveBeenPublished = new List<object>();
@@ -107,6 +111,12 @@
             return this;
         }
 
+        public ConfigurationStub<TState> AndLoadedAsynchronously()
+        {
+            this.IsLoadedAsynchronously = true;
+            return this;
+        }
+
         public ConfigurationStub<TState> WithInterceptor(IInterceptEvents interceptor)
         {
             InterceptorList.Add(interceptor);
@@ -141,8 +151,8 @@
         internal InMemoryEventSourcedRepository<TStateId, TState> GetNewSUT<TStateId>(
             IValidateState<TState> stateValidator = null)
             => stateValidator == null
-                ? new InMemoryEventSourcedRepository<TStateId, TState>(this)
-                : new InMemoryEventSourcedRepository<TStateId, TState>(stateValidator, this);
+                ? new InMemoryEventSourcedRepository<TStateId, TState>(this, IsLoadedAsynchronously)
+                : new InMemoryEventSourcedRepository<TStateId, TState>(stateValidator, this, IsLoadedAsynchronously);
 
         public ConfigurationStub<TState> WithEventPublisher(IPublishEvents eventPublisher)
         {

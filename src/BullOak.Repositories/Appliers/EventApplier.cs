@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using BullOak.Repositories.StateEmit;
 
     internal class EventApplier : IApplyEventsToStates
@@ -25,7 +26,22 @@
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
 
-            foreach(var @event in events)
+            foreach (var @event in events)
+            {
+                state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
+            }
+
+            if (switchable != null) switchable.CanEdit = false;
+
+            return state;
+        }
+
+        public async Task<object> Apply(Type stateType, object state, IAsyncEnumerable<ItemWithType> events)
+        {
+            var switchable = state as ICanSwitchBackAndToReadOnly;
+            if (switchable != null) switchable.CanEdit = true;
+
+            await foreach (var @event in events)
             {
                 state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
             }

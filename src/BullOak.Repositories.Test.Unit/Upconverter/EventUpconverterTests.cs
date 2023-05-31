@@ -39,7 +39,7 @@
             var sut = new Arrangements().BuildAndGetSUT();
 
             // Act
-            var exception = Record.Exception(() => sut.Upconvert(null));
+            var exception = Record.Exception(() => sut.Upconvert((ItemWithType[])null));
 
             // Assert
             exception.Should().NotBeNull();

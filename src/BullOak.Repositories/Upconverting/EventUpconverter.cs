@@ -27,6 +27,22 @@
             return upconverted;
         }
 
+        public async IAsyncEnumerable<ItemWithType> Upconvert(IAsyncEnumerable<ItemWithType> eventsToUpconvert)
+        {
+            if (eventsToUpconvert == null) throw new ArgumentNullException(nameof(eventsToUpconvert));
+
+            var upconverted = new List<ItemWithType>();
+
+            await foreach (var @event in eventsToUpconvert)
+            {
+                upconverted.Clear();
+                UpconvertWithRecursion(@event, upconverted);
+
+                foreach (var converted in upconverted)
+                    yield return converted;
+            }
+        }
+
         /// <summary>
         /// Recursively upconverts each item. This uses recursion but also a provided List so as to avoid situation where we either create
         ///  enums or collections for each step in the recursion. Some of the problem here is because one event can upconvert to multiple.
@@ -43,11 +59,33 @@
             {
                 var result = upconverter(item);
 
-                if(result.isSingleItem) UpconvertWithRecursion(result.single, collection);
+                if (result.isSingleItem) UpconvertWithRecursion(result.single, collection);
                 else
                 {
-                    foreach(var upconverted in result.multiple)
+                    foreach (var upconverted in result.multiple)
                         UpconvertWithRecursion(upconverted, collection);
+                }
+            }
+        }
+
+        private IEnumerable<ItemWithType> UpconvertWithRecursion(ItemWithType item)
+        {
+            if (!upconverters.TryGetValue(item.type, out var upconverter))
+                yield return item;
+            else
+            {
+                var result = upconverter(item);
+
+                if (result.isSingleItem)
+                {
+                    foreach(var e in UpconvertWithRecursion(result.single))
+                        yield return e;
+                }
+                else
+                {
+                    foreach (var upconverted in result.multiple)
+                        foreach (var e in UpconvertWithRecursion(upconverted))
+                            yield return e;
                 }
             }
         }

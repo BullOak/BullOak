@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
@@ -21,7 +21,7 @@
     <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
     <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
     <Version>$(VersionPrefix)</Version>
-    <AssemblyVersion>2.5.1</AssemblyVersion>
+    <AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
     <FileVersion>$(VersionPrefix)</FileVersion>
     <PackageIcon>icon128.png</PackageIcon>
     <PackageIconUrl>https://raw.githubusercontent.com/BullOak/BullOak/master/icons/Icon128.png</PackageIconUrl>
@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />

@@ -12,5 +12,8 @@
 
         public IAsyncEnumerable<ItemWithType> Upconvert(IAsyncEnumerable<ItemWithType> eventsToUpconvert)
             => eventsToUpconvert;
+
+        public IEnumerable<ItemWithType> Upconvert(ItemWithType eventToUpconvert)
+        { yield return eventToUpconvert; }
     }
 }

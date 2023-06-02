@@ -74,7 +74,28 @@
             var expected = new EventB(source.Name, source.Count);
 
             // Act
-            var upconverted = sut.Upconvert(new ItemWithType[] {new ItemWithType(source)});
+            var upconverted = sut.Upconvert(new ItemWithType[] { new ItemWithType(source) });
+
+            // Assert
+            upconverted.Should().NotBeNullOrEmpty();
+            upconverted.Count().Should().Be(1);
+            upconverted.First().type.Should().Be<EventB>();
+            upconverted.First().instance.As<EventB>().MyName.Should().Be(expected.MyName);
+            upconverted.First().instance.As<EventB>().Count.Should().Be(expected.Count);
+        }
+
+        [Fact]
+        public void UpconvertGivenUpconverterAToB_WithSingleEventA_ShouldReturnEventB()
+        {
+            // Arrange
+            var sut = new Arrangements()
+                .AddUpconverter<EventA, EventB>(a => new EventB(a.Name, a.Count))
+                .BuildAndGetSUT();
+            var source = new EventA("Mr. Silly Name", 5);
+            var expected = new EventB(source.Name, source.Count);
+
+            // Act
+            var upconverted = sut.Upconvert(new ItemWithType(source));
 
             // Assert
             upconverted.Should().NotBeNullOrEmpty();

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     internal class EventUpconverter : IUpconvertStoredItems
     {
@@ -13,33 +14,26 @@
         public IEnumerable<ItemWithType> Upconvert(ItemWithType[] eventsToUpconvert)
             => Upconvert((IEnumerable<ItemWithType>) eventsToUpconvert);
 
+        public IEnumerable<ItemWithType> Upconvert(ItemWithType eventToUpconvert)
+        {
+            return UpconvertWithRecursion(eventToUpconvert);
+        }
+
         public IEnumerable<ItemWithType> Upconvert(IEnumerable<ItemWithType> eventsToUpconvert)
         {
             if (eventsToUpconvert == null) throw new ArgumentNullException(nameof(eventsToUpconvert));
 
-            var upconverted = new List<ItemWithType>();
-
-            foreach(var @event in eventsToUpconvert)
-            {
-                UpconvertWithRecursion(@event, upconverted);
-            }
-
-            return upconverted;
+            return eventsToUpconvert.SelectMany(x=> UpconvertWithRecursion(x));
         }
 
         public async IAsyncEnumerable<ItemWithType> Upconvert(IAsyncEnumerable<ItemWithType> eventsToUpconvert)
         {
             if (eventsToUpconvert == null) throw new ArgumentNullException(nameof(eventsToUpconvert));
 
-            var upconverted = new List<ItemWithType>();
-
             await foreach (var @event in eventsToUpconvert)
             {
-                upconverted.Clear();
-                UpconvertWithRecursion(@event, upconverted);
-
-                foreach (var converted in upconverted)
-                    yield return converted;
+                foreach(var e in UpconvertWithRecursion(@event))
+                    yield return e;
             }
         }
 

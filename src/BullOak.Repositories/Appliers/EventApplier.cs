@@ -21,37 +21,41 @@
             SupportedStateTypes = unindexedAppliers.Select(x => x.StateType);
         }
 
-        public object Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
+        public ApplyResult Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
         {
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
+            bool anyEvents = false;
 
             foreach (var @event in events)
             {
+                anyEvents = true;
                 state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
             }
 
             if (switchable != null) switchable.CanEdit = false;
 
-            return state;
+            return new ApplyResult(state, !anyEvents);
         }
 
-        public async Task<object> Apply(Type stateType, object state, IAsyncEnumerable<ItemWithType> events)
+        public async Task<ApplyResult> Apply(Type stateType, object state, IAsyncEnumerable<ItemWithType> events)
         {
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
+            bool anyEvents = false;
 
             await foreach (var @event in events)
             {
+                anyEvents = true;
                 state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
             }
 
             if (switchable != null) switchable.CanEdit = false;
 
-            return state;
+            return new ApplyResult(state, !anyEvents);
         }
 
-        public object Apply(Type stateType, object state, ItemWithType[] events)
+        public ApplyResult Apply(Type stateType, object state, ItemWithType[] events)
         {
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
@@ -66,7 +70,7 @@
 
             if (switchable != null) switchable.CanEdit = false;
 
-            return state;
+            return new ApplyResult(state, events.Length > 0);
         }
 
         public object ApplyEvent(Type stateType, object state, ItemWithType @event)

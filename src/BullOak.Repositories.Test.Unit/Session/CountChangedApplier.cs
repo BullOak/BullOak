@@ -39,20 +39,22 @@ namespace BullOak.Repositories.Test.Unit.Session
             return state;
         }
 
-        public object Apply(Type stateType, object state, ItemWithType[] events)
-            => events.Aggregate(state, (s, e) => ApplyEvent(stateType, s, e));
+        public ApplyResult Apply(Type stateType, object state, ItemWithType[] events)
+            => new ApplyResult(events.Aggregate(state, (s, e) => ApplyEvent(stateType, s, e)), events.Length > 0);
 
-        public object Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
-            => events.Aggregate(state, (s, e) => ApplyEvent(stateType, s, e));
+        public ApplyResult Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
+            => Apply(stateType, state, events.ToArray());
 
-        public async Task<object> Apply(Type stateType, object state, IAsyncEnumerable<ItemWithType> events)
+        public async Task<ApplyResult> Apply(Type stateType, object state, IAsyncEnumerable<ItemWithType> events)
         {
+            bool anyEvent = false;
             await foreach (var e in events)
             {
-                ApplyEvent(stateType, state, e);
+                anyEvent = true;
+                state = ApplyEvent(stateType, state, e);
             }
 
-            return state;
+            return new ApplyResult(state, anyEvent);
         }
 
 

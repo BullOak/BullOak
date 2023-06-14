@@ -11,20 +11,24 @@
         public Rehydrator(IHoldAllConfiguration config)
             => this.config = config ?? throw new ArgumentNullException(nameof(config));
 
-        public TState RehydrateFrom<TState>(IEnumerable<ItemWithType> events, TState initialState = default)
+        public RehydrateFromResult<TState> RehydrateFrom<TState>(IEnumerable<ItemWithType> events, TState initialState = default)
         {
             events = config.EventUpconverter.Upconvert(events);
             (Type stateType, TState initial) = Setup(initialState);
 
-            return (TState)config.EventApplier.Apply(stateType, initial, events);
+            var applyResult = config.EventApplier.Apply(stateType, initial, events);
+
+            return new RehydrateFromResult<TState>((TState)applyResult.State, applyResult.IsStateDefault);
         }
 
-        public async Task<TState> RehydrateFrom<TState>(IAsyncEnumerable<ItemWithType> events, TState initialState = default)
+        public async Task<RehydrateFromResult<TState>> RehydrateFrom<TState>(IAsyncEnumerable<ItemWithType> events, TState initialState = default)
         {
             events = config.EventUpconverter.Upconvert(events);
             (Type stateType, TState initial) = Setup(initialState);
 
-            return (TState)(await config.EventApplier.Apply(stateType, initial, events));
+            var applyResult = await config.EventApplier.Apply(stateType, initial, events);
+
+            return new RehydrateFromResult<TState>((TState)applyResult.State, applyResult.IsStateDefault);
         }
 
         private (Type stateType, TState initialState) Setup<TState>(TState initialState = default)

@@ -76,7 +76,7 @@
 
         private async Task<IManageSessionOf<TState>> LoadAsyncAndReturnSession(InMemoryEventStoreSession<TState, TId> inMemSession, ItemWithType[] events)
         {
-            await inMemSession.LoadFromEvents(ToAsyncEnumerable(events), events.Length == 0, events.Length);
+            await inMemSession.LoadFromEvents(ToAsyncEnumerable(events), events.Length);
 
             return inMemSession;
         }

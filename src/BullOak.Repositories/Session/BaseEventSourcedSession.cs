@@ -25,21 +25,21 @@
             => eventApplier = configuration.EventApplier;
 
         public void LoadFromEvents(ItemWithType[] storedEvents, TConcurrencyId concurrencyId)
-            => LoadFromEvents(storedEvents, storedEvents.Length == 0, concurrencyId);
+            => LoadFromEvents((IEnumerable<ItemWithType>)storedEvents, concurrencyId);
 
-        public void LoadFromEvents(IEnumerable<ItemWithType> storedEvents, bool isNew, TConcurrencyId concurrencyId)
+        public void LoadFromEvents(IEnumerable<ItemWithType> storedEvents, TConcurrencyId concurrencyId)
         {
-            var initialState = configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
+            var rehydrateResult = configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
 
-            Initialize((TState)initialState, isNew);
+            Initialize(rehydrateResult.State, rehydrateResult.IsStateDefault);
             this.concurrencyId = concurrencyId;
         }
 
-        public async Task LoadFromEvents(IAsyncEnumerable<ItemWithType> storedEvents, bool isNew, TConcurrencyId concurrencyId)
+        public async Task LoadFromEvents(IAsyncEnumerable<ItemWithType> storedEvents, TConcurrencyId concurrencyId)
         {
-            var initialState = await configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
+            var rehydrateResult = await configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
 
-            Initialize((TState)initialState, isNew);
+            Initialize(rehydrateResult.State, rehydrateResult.IsStateDefault);
             this.concurrencyId = concurrencyId;
         }
     }

@@ -37,10 +37,21 @@
 
         public async Task LoadFromEvents(IAsyncEnumerable<ItemWithType> storedEvents, TConcurrencyId concurrencyId)
         {
+            await LoadFromEventsInternal(storedEvents);
+            this.concurrencyId = concurrencyId;
+        }
+
+        public async Task LoadFromEvents(IAsyncEnumerable<ItemWithType> storedEvents, Func<TConcurrencyId> concurrencyIdFunc)
+        {
+            await LoadFromEventsInternal(storedEvents);
+            this.concurrencyId = concurrencyIdFunc();
+        }
+
+        private async Task LoadFromEventsInternal(IAsyncEnumerable<ItemWithType> storedEvents)
+        {
             var rehydrateResult = await configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
 
             Initialize(rehydrateResult.State, rehydrateResult.IsStateDefault);
-            this.concurrencyId = concurrencyId;
         }
     }
 }

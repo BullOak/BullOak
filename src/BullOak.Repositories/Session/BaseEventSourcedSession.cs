@@ -7,12 +7,12 @@
     using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Upconverting;
 
-    public abstract class BaseEventSourcedSession<TState, TConcurrencyId> : BaseRepoSession<TState>
+    public abstract class BaseEventSourcedSession<TState> : BaseRepoSession<TState>
     {
         private static readonly Type typeOfState = typeof(TState);
 
-        private TConcurrencyId concurrencyId;
-        public TConcurrencyId ConcurrencyId => concurrencyId;
+        private long concurrencyId;
+        public long ConcurrencyId => concurrencyId;
 
         protected readonly IApplyEventsToStates eventApplier;
 
@@ -24,34 +24,37 @@
             : base(configuration, disposableHandle)
             => eventApplier = configuration.EventApplier;
 
-        public void LoadFromEvents(ItemWithType[] storedEvents, TConcurrencyId concurrencyId)
-            => LoadFromEvents((IEnumerable<ItemWithType>)storedEvents, concurrencyId);
-
-        public void LoadFromEvents(IEnumerable<ItemWithType> storedEvents, TConcurrencyId concurrencyId)
+        public void LoadFromEvents(StoredEvent[] storedEvents)
         {
             var rehydrateResult = configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
 
-            Initialize(rehydrateResult.State, rehydrateResult.IsStateDefault);
-            this.concurrencyId = concurrencyId;
+            Initialize(rehydrateResult.State, !rehydrateResult.LastEventIndex.HasValue);
+            this.concurrencyId = rehydrateResult.LastEventIndex ?? -1;
         }
 
-        public async Task LoadFromEvents(IAsyncEnumerable<ItemWithType> storedEvents, TConcurrencyId concurrencyId)
+        public void LoadFromEvents(IEnumerable<StoredEvent> storedEvents)
         {
-            await LoadFromEventsInternal(storedEvents);
-            this.concurrencyId = concurrencyId;
+            var rehydrateResult = configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
+
+            Initialize(rehydrateResult.State, !rehydrateResult.LastEventIndex.HasValue);
+            this.concurrencyId = rehydrateResult.LastEventIndex ?? -1;
         }
 
-        public async Task LoadFromEvents(IAsyncEnumerable<ItemWithType> storedEvents, Func<TConcurrencyId> concurrencyIdFunc)
+        public Task LoadFromEvents(IAsyncEnumerable<StoredEvent> storedEvents)
+            => LoadFromEventsInternal(storedEvents);
+
+        public async Task LoadFromEvents(IAsyncEnumerable<StoredEvent> storedEvents, Func<long> concurrencyIdFunc)
         {
             await LoadFromEventsInternal(storedEvents);
             this.concurrencyId = concurrencyIdFunc();
         }
 
-        private async Task LoadFromEventsInternal(IAsyncEnumerable<ItemWithType> storedEvents)
+        private async Task LoadFromEventsInternal(IAsyncEnumerable<StoredEvent> storedEvents)
         {
             var rehydrateResult = await configuration.StateRehydrator.RehydrateFrom<TState>(storedEvents);
 
-            Initialize(rehydrateResult.State, rehydrateResult.IsStateDefault);
+            Initialize(rehydrateResult.State, !rehydrateResult.LastEventIndex.HasValue);
+            this.concurrencyId = rehydrateResult.LastEventIndex ?? -1;
         }
     }
 }

@@ -59,9 +59,9 @@
 
             foreach (var @event in events.Select(x=> new ItemWithType(x)))
                 NewEventsCollection.Add(@event);
-
+            
             currentState =
-                (TState) EventApplier.Apply(stateType, currentState, events.Select(x => new ItemWithType(x))).State;
+                (TState) EventApplier.Apply(stateType, currentState, events.Select(x => new ItemWithType(x)));
         }
 
         public void AddEvents(object[] events)
@@ -72,7 +72,7 @@
                 NewEventsCollection.Add(new ItemWithType(events[i]));
 
             currentState =
-                (TState) EventApplier.Apply(stateType, currentState, events.Select(x => new ItemWithType(x))).State;
+                (TState) EventApplier.Apply(stateType, currentState, events.Select(x => new ItemWithType(x)));
         }
 
         public void AddEvent(object @event)

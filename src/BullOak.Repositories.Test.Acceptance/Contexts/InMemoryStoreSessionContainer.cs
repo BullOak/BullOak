@@ -1,6 +1,8 @@
 ﻿namespace BullOak.Repositories.Test.Acceptance.Contexts
 {
     using System;
+    using System.Linq;
+    using BullOak.Repositories.Appliers;
     using BullOak.Repositories.InMemory;
     using BullOak.Repositories.Session;
     using TechTalk.SpecFlow;
@@ -31,10 +33,17 @@
         }
 
         public (ItemWithType, DateTime)[] GetStream(string id)
-            => repository[id];
+            => repository[id].Select(x => (x.Item1.ToItemWithType(), x.Item2)).ToArray();
 
         public void SaveStream(string id, (ItemWithType, DateTime)[] events)
-            => repository[id] = events;
+        {
+            var stream = new (StoredEvent, DateTime)[events.Length];
+
+            for(int i = 0;i<events.Length;i++)
+                stream[i] = (events[i].Item1.ToStoredEvent(i), events[i].Item2);
+
+            repository[id] = stream;
+        }
 
         public void Dispose()
         {

@@ -21,56 +21,60 @@
             SupportedStateTypes = unindexedAppliers.Select(x => x.StateType);
         }
 
-        public ApplyResult Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
+        public ApplyResult Apply(Type stateType, object state, IEnumerable<StoredEvent> events)
         {
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
-            bool anyEvents = false;
+            long? lastIndex = null;
 
             foreach (var @event in events)
-            {
-                anyEvents = true;
-                state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
-            }
+                state = ApplyEvent(stateType, state, @event, ref lastIndex);
 
             if (switchable != null) switchable.CanEdit = false;
 
-            return new ApplyResult(state, !anyEvents);
+            return new ApplyResult(state, lastIndex);
         }
 
-        public async Task<ApplyResult> Apply(Type stateType, object state, IAsyncEnumerable<ItemWithType> events)
+        public async Task<ApplyResult> Apply(Type stateType, object state, IAsyncEnumerable<StoredEvent> events)
         {
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
-            bool anyEvents = false;
+            long? lastIndex = null;
 
             await foreach (var @event in events)
-            {
-                anyEvents = true;
-                state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
-            }
+                state = ApplyEvent(stateType, state, @event, ref lastIndex);
 
             if (switchable != null) switchable.CanEdit = false;
 
-            return new ApplyResult(state, !anyEvents);
+            return new ApplyResult(state, lastIndex);
         }
 
-        public ApplyResult Apply(Type stateType, object state, ItemWithType[] events)
+        public ApplyResult Apply(Type stateType, object state, StoredEvent[] events)
+        {
+            var switchable = state as ICanSwitchBackAndToReadOnly;
+            if (switchable != null) switchable.CanEdit = true;
+            long? lastIndex = null;
+
+            int length = events.Length;
+            for (int i = 0; i < length; i++)
+                state = ApplyEvent(stateType, state, events[i], ref lastIndex);
+
+            if (switchable != null) switchable.CanEdit = false;
+
+            return new ApplyResult(state, lastIndex);
+        }
+
+        public object Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
         {
             var switchable = state as ICanSwitchBackAndToReadOnly;
             if (switchable != null) switchable.CanEdit = true;
 
-            int length = events.Length;
-            ItemWithType @event;
-            for (int i = 0; i < length; i++)
-            {
-                @event = events[i];
+            foreach (var @event in events)
                 state = ApplyAssumeWritable(stateType, state, @event.type, @event.instance);
-            }
 
             if (switchable != null) switchable.CanEdit = false;
 
-            return new ApplyResult(state, events.Length > 0);
+            return state;
         }
 
         public object ApplyEvent(Type stateType, object state, ItemWithType @event)
@@ -83,6 +87,12 @@
             if (switchable != null) switchable.CanEdit = false;
 
             return state;
+        }
+
+        private object ApplyEvent(Type stateType, object state, StoredEvent @event, ref long? lastIndex)
+        {
+            lastIndex = lastIndex.HasValue ? Math.Max(@event.EventIndex, lastIndex.Value) : @event.EventIndex;
+            return ApplyAssumeWritable(stateType, state, @event.EventType, @event.Event);
         }
 
         private object ApplyAssumeWritable(Type stateType, object state, Type eventType, object @event)

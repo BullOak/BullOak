@@ -1,5 +1,6 @@
 ﻿namespace BullOak.Repositories
 {
+    using BullOak.Repositories.Appliers;
     using System;
 
     public struct ItemWithType
@@ -21,5 +22,8 @@
             if (!type.IsInstanceOfType(instance))
                 throw new ArgumentException($"The provided instance was of type {instance.GetType()} but it must be subclass of or implement type {type.Name}");
         }
+
+        public StoredEvent ToStoredEvent(long index)
+            => StoredEvent.FromItemWithType(this, index);
     }
 }

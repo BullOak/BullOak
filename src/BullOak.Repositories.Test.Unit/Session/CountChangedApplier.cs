@@ -39,24 +39,27 @@ namespace BullOak.Repositories.Test.Unit.Session
             return state;
         }
 
-        public ApplyResult Apply(Type stateType, object state, ItemWithType[] events)
-            => new ApplyResult(events.Aggregate(state, (s, e) => ApplyEvent(stateType, s, e)), events.Length > 0);
+        public ApplyResult Apply(Type stateType, object state, StoredEvent[] events)
+            => new ApplyResult(events.Aggregate(state, (s, e) => ApplyEvent(stateType, s, e)), events.Length > 0 ? events.Last().EventIndex : (long?)null);
 
-        public ApplyResult Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
+        public ApplyResult Apply(Type stateType, object state, IEnumerable<StoredEvent> events)
             => Apply(stateType, state, events.ToArray());
 
-        public async Task<ApplyResult> Apply(Type stateType, object state, IAsyncEnumerable<ItemWithType> events)
+        public async Task<ApplyResult> Apply(Type stateType, object state, IAsyncEnumerable<StoredEvent> events)
         {
-            bool anyEvent = false;
+            long? lastEventIndex = null;
+
             await foreach (var e in events)
             {
-                anyEvent = true;
                 state = ApplyEvent(stateType, state, e);
+                lastEventIndex = lastEventIndex.HasValue ? Math.Max(e.EventIndex, lastEventIndex.Value) : e.EventIndex;
             }
 
-            return new ApplyResult(state, anyEvent);
+            return new ApplyResult(state, lastEventIndex);
         }
 
+        public object Apply(Type stateType, object state, IEnumerable<ItemWithType> events)
+            => events.Aggregate(state, (s, e) => ApplyEvent(stateType, s, e));
 
         public object ApplyEvent(Type stateType, object state, ItemWithType @event)
         {

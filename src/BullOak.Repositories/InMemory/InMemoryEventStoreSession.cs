@@ -5,16 +5,17 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.Session;
 
-    internal class InMemoryEventStoreSession<TState, TId> : BaseEventSourcedSession<TState, int>
+    internal class InMemoryEventStoreSession<TState, TId> : BaseEventSourcedSession<TState>
     {
         private readonly TId Id;
         private readonly int initialVersion;
-        private readonly List<(ItemWithType, DateTime)> stream;
+        private readonly List<(StoredEvent, DateTime)> stream;
 
-        public InMemoryEventStoreSession(IValidateState<TState> stateValidator, IHoldAllConfiguration configuration, List<(ItemWithType, DateTime)> stream, TId id)
+        public InMemoryEventStoreSession(IValidateState<TState> stateValidator, IHoldAllConfiguration configuration, List<(StoredEvent, DateTime)> stream, TId id)
             : base(stateValidator, configuration)
         {
             this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -22,7 +23,7 @@
             Id = id;
         }
 
-        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, List<(ItemWithType, DateTime)> stream, TId id)
+        public InMemoryEventStoreSession(IHoldAllConfiguration configuration, List<(StoredEvent, DateTime)> stream, TId id)
             : base(configuration)
         {
             this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -42,8 +43,10 @@
 
                 if(newEvents == null)
                     newEvents = new ItemWithType[0];
+                var count = stream.Count;
 
-                stream.AddRange(newEvents.Select(x => (x, DateTime.UtcNow)));
+                foreach (var newEvent in newEvents)
+                    stream.Add((StoredEvent.FromItemWithType(newEvent, count++), DateTime.Now));
 
                 return Task.FromResult(stream.Count);
             }

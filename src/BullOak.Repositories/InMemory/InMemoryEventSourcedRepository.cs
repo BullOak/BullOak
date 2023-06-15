@@ -6,23 +6,24 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using BullOak.Repositories.Appliers;
     using BullOak.Repositories.Exceptions;
     using BullOak.Repositories.Repository;
     using BullOak.Repositories.Session;
 
     public class InMemoryEventSourcedRepository<TId, TState> : IStartSessions<TId, TState>
     {
-        private ConcurrentDictionary<TId, List<(ItemWithType, DateTime)>> eventStore = new ConcurrentDictionary<TId, List<(ItemWithType, DateTime)>>();
+        private ConcurrentDictionary<TId, List<(StoredEvent, DateTime)>> eventStore = new ConcurrentDictionary<TId, List<(StoredEvent, DateTime)>>();
         private readonly IHoldAllConfiguration configuration;
         private static bool useThreadSafeOps;
         private readonly IValidateState<TState> stateValidator = new AlwaysPassValidator<TState>();
         public readonly bool IsLoadedAsynchronously;
         public IValidateState<TState> StateValidator => stateValidator;
 
-        public (ItemWithType, DateTime)[] this[TId id]
+        public (StoredEvent, DateTime)[] this[TId id]
         {
-            get => eventStore.TryGetValue(id, out var value) ? value.ToArray() : new (ItemWithType, DateTime)[0];
-            set => eventStore[id] = new List<(ItemWithType, DateTime)>(value ?? new (ItemWithType,DateTime)[0]);
+            get => eventStore.TryGetValue(id, out var value) ? value.ToArray() : new (StoredEvent, DateTime)[0];
+            set => eventStore[id] = new List<(StoredEvent, DateTime)>(value ?? new (StoredEvent, DateTime)[0]);
         }
 
         public TId[] IdsOfStreamsWithEvents =>
@@ -49,7 +50,7 @@
             if (!eventStore.TryGetValue(id, out var eventStream))
             {
                 if (throwIfNotExists) throw new StreamNotFoundException(id.ToString());
-                eventStream = eventStore.GetOrAdd(id, new List<(ItemWithType, DateTime)>());
+                eventStream = eventStore.GetOrAdd(id, new List<(StoredEvent, DateTime)>());
             }
 
             lock (eventStream)
@@ -67,21 +68,21 @@
                     return LoadAsyncAndReturnSession(session, streamData);
                 else
                 {
-                    session.LoadFromEvents(streamData, eventStream.Count);
+                    session.LoadFromEvents(streamData);
 
                     return Task.FromResult((IManageSessionOf<TState>)session);
                 }
             }
         }
 
-        private async Task<IManageSessionOf<TState>> LoadAsyncAndReturnSession(InMemoryEventStoreSession<TState, TId> inMemSession, ItemWithType[] events)
+        private async Task<IManageSessionOf<TState>> LoadAsyncAndReturnSession(InMemoryEventStoreSession<TState, TId> inMemSession, StoredEvent[] events)
         {
-            await inMemSession.LoadFromEvents(ToAsyncEnumerable(events), events.Length);
+            await inMemSession.LoadFromEvents(ToAsyncEnumerable(events));
 
             return inMemSession;
         }
 
-        private async IAsyncEnumerable<ItemWithType> ToAsyncEnumerable(ItemWithType[] streamData)
+        private async IAsyncEnumerable<StoredEvent> ToAsyncEnumerable(StoredEvent[] streamData)
         {
             for (int i = 0; i < streamData.Length; i++)
                 yield return streamData[i];

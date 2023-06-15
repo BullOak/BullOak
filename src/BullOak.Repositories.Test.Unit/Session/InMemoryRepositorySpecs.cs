@@ -19,8 +19,8 @@
             object @event,
             TId streamId)
         {
-            var currentEvents = sut[streamId]?.ToList() ?? new List<(ItemWithType, DateTime)>();
-            currentEvents.Add((new ItemWithType(@event), DateTime.UtcNow));
+            var currentEvents = sut[streamId]?.ToList() ?? new List<(StoredEvent, DateTime)>();
+            currentEvents.Add((new StoredEvent(@event.GetType(), @event, currentEvents.Count), DateTime.UtcNow));
             sut[streamId] = currentEvents.ToArray();
             return sut;
         }
@@ -95,7 +95,7 @@
             //Assert
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
-            sut[id][0].Item1.instance.Should().Be(@event);
+            sut[id][0].Item1.Event.Should().Be(@event);
         }
 
         [Fact]
@@ -121,8 +121,8 @@
             //Assert
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
-            sut[id][0].Item1.instance.Should().BeAssignableTo<ICountChangedInterfaceEvent>();
-            sut[id][0].Item1.instance.As<ICountChangedInterfaceEvent>().NewCount.Should().Be(newCount);
+            sut[id][0].Item1.Event.Should().BeAssignableTo<ICountChangedInterfaceEvent>();
+            sut[id][0].Item1.Event.As<ICountChangedInterfaceEvent>().NewCount.Should().Be(newCount);
         }
 
         [Fact]
@@ -147,8 +147,8 @@
             //Assert
             sut[id].Should().NotBeNull();
             sut[id].Length.Should().Be(1);
-            sut[id][0].Item1.instance.Should().BeOfType<CountChangedClassEvent>();
-            sut[id][0].Item1.instance.As<CountChangedClassEvent>().NewCount.Should().Be(newCount);
+            sut[id][0].Item1.Event.Should().BeOfType<CountChangedClassEvent>();
+            sut[id][0].Item1.Event.As<CountChangedClassEvent>().NewCount.Should().Be(newCount);
         }
 
         [Fact]
@@ -270,7 +270,7 @@
 
             //Assert
             sut[id].Length.Should().Be(2);
-            sut[id][1].Item1.instance.Should().Be(newEvent);
+            sut[id][1].Item1.Event.Should().Be(newEvent);
         }
 
         [Fact]

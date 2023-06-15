@@ -95,10 +95,10 @@
                 .ReturnsLazily(c => c.Arguments.ToArray()[1]);
             mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new ItemWithType[0]))
                 .WithAnyArguments()
-                .ReturnsLazily(c => new ApplyResult(c.Arguments.ToArray()[1], ((ItemWithType[])c.Arguments.ToArray()[2]).Length > 0));
+                .ReturnsLazily(c => new ApplyResult(c.Arguments.ToArray()[1], ((ItemWithType[])c.Arguments.ToArray()[2]).Length > 0 ? 1: (long?)null));
             mockEventApplier.CallsTo(a => a.Apply(typeof(object), new object(), new List<ItemWithType>()))
                 .WithAnyArguments()
-                .ReturnsLazily(c => new ApplyResult(c.Arguments.ToArray()[1], (((ItemWithType[])c.Arguments.ToArray()[2]).Length > 0)));
+                .ReturnsLazily(c => new ApplyResult(c.Arguments.ToArray()[1], ((ItemWithType[])c.Arguments.ToArray()[2]).Length > 0 ? 1 : (long?)null));
         }
 
         public ConfigurationStub<TState> WithCollectionType<TCollection>()

@@ -26,18 +26,12 @@ jobs:
           if [[ -z "$TAG_VERSION" ]]; then exit 50 ;fi
         shell: bash
       - name: Extract prefix from tag version
-        run: grep -Po "[0-9]+\.[0-9]+\.[0-9]+" <<< $GITHUB_REF | awk '{print "VERSION_PREFIX="$1}' >> $GITHUB_ENV
-        shell: bash
-      - name: Extract suffix from tag version
-        run:  |
-          SUFFIX=$(grep -Po '(?<=-)([a-zA-Z][0-9a-zA-Z]*([.-][0-9a-zA-Z]+)*)+$' <<< "$GITHUB_REF") || true
-          echo "VERSION_SUFFIX=$SUFFIX" >> $GITHUB_ENV
+        run: grep -Po "[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z][0-9a-zA-Z]*([.-][0-9a-zA-Z]+)*)?$" <<< $GITHUB_REF | awk '{print "VERSION_PREFIX="$1}' >> $GITHUB_ENV
         shell: bash
       - name: emit from parsed
         id: parsed-version
         run: |
           echo "::set-output name=version::$VERSION_PREFIX"
-          echo "::set-output name=version-suffix::$VERSION_SUFFIX"
         shell: bash
 
   build:

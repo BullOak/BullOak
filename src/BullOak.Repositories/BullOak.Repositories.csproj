@@ -20,7 +20,7 @@
     <PackageProjectUrl>https://github.com/BullOak/BullOak</PackageProjectUrl>
     <RepositoryUrl>https://github.com/BullOak/BullOak</RepositoryUrl>
     <PackageTags>CQRS EventStourcing event-driven repository repositories DDD domain-driven-design</PackageTags>
-    <Version>$(VersionPrefix)</Version>
+    <Version>$(Version)</Version>
     <AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
     <FileVersion>$(VersionPrefix)</FileVersion>
     <PackageIcon>icon128.png</PackageIcon>

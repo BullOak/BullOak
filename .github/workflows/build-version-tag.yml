@@ -26,12 +26,18 @@ jobs:
           if [[ -z "$TAG_VERSION" ]]; then exit 50 ;fi
         shell: bash
       - name: Extract prefix from tag version
-        run: grep -Po "[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z][0-9a-zA-Z]*([.-][0-9a-zA-Z]+)*)?$" <<< $GITHUB_REF | awk '{print "VERSION_PREFIX="$1}' >> $GITHUB_ENV
+        run: grep -Po "[0-9]+\.[0-9]+\.[0-9]+" <<< $GITHUB_REF | awk '{print "VERSION_PREFIX="$1}' >> $GITHUB_ENV
+        shell: bash
+      - name: Extract full version from tag version
+        run:  |
+          VERSION=$(grep -Po '[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z][0-9a-zA-Z]*([.-][0-9a-zA-Z]+)*)?$' <<< "$GITHUB_REF") || true
+          echo "FULL_VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
       - name: emit from parsed
         id: parsed-version
         run: |
-          echo "::set-output name=version::$VERSION_PREFIX"
+          echo "::set-output name=version-prefix::$VERSION_PREFIX"
+          echo "::set-output name=version::$FULL_VERSION"
         shell: bash
 
   build:
@@ -52,7 +58,7 @@ jobs:
         run: dotnet restore
         working-directory: ./src
       - name: Build and pack
-        run: dotnet build -c Release --no-restore /p:VersionPrefix="${{ needs.parse-version.outputs.version }}" /p:VersionSuffix="${{ needs.parse-version.outputs.version-suffix }}"
+        run: dotnet build -c Release --no-restore /p:VersionPrefix="${{ needs.parse-version.outputs.version-prefix }}" /p:Version="${{ needs.parse-version.outputs.version }}"
         working-directory: ./src
       - name: Test
         run: dotnet test -c Release --no-build --verbosity minimal

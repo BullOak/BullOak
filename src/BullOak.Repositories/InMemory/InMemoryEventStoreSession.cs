@@ -12,7 +12,7 @@
     internal class InMemoryEventStoreSession<TState, TId> : BaseEventSourcedSession<TState>
     {
         private readonly TId Id;
-        private readonly int initialVersion;
+        private int initialVersion;
         private readonly List<(StoredEvent, DateTime)> stream;
 
         public InMemoryEventStoreSession(IValidateState<TState> stateValidator, IHoldAllConfiguration configuration, List<(StoredEvent, DateTime)> stream, TId id)
@@ -47,6 +47,9 @@
 
                 foreach (var newEvent in newEvents)
                     stream.Add((StoredEvent.FromItemWithType(newEvent, count++), DateTime.Now));
+
+                //Update concurrency check
+                initialVersion = count;
 
                 return Task.FromResult(stream.Count);
             }

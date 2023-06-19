@@ -133,6 +133,7 @@
             }
 
             var retVal = await SaveChanges(newEvents, currentState, cancellationToken);
+            NewEventsCollection.Clear();
 
             for (int i = 0; i < newEvents.Length; i++)
             {

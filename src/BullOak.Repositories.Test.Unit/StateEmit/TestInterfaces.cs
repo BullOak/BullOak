@@ -1,4 +1,6 @@
-﻿namespace BullOak.Repositories.Test.Unit.StateEmit
+﻿using System;
+
+namespace BullOak.Repositories.Test.Unit.StateEmit
 {
     public interface MyInterface
     {
@@ -38,4 +40,10 @@
     {
     }
 
+    public interface MyBaseWithRecordStruct
+    {
+        public MyTimes Times { get; set; }
+    }
+
+    public readonly record struct MyTimes(TimeOnly ReadyTime, TimeOnly CloseTime);
 }

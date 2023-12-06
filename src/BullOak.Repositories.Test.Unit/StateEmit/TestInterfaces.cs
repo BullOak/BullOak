@@ -42,12 +42,12 @@ namespace BullOak.Repositories.Test.Unit.StateEmit
 
     public interface MyBaseWithGetSet
     {
-        public string Message { get; set; }
+        string Message { get; set; }
     }
 
     public interface MyBaseWithRecordStruct
     {
-        public MyTimes Times { get; set; }
+        MyTimes Times { get; set; }
     }
 
     public readonly record struct MyTimes(TimeOnly ReadyTime, TimeOnly CloseTime);

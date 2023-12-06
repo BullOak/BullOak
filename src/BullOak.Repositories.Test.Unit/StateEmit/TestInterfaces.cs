@@ -40,6 +40,11 @@ namespace BullOak.Repositories.Test.Unit.StateEmit
     {
     }
 
+    public interface MyBaseWithGetSet
+    {
+        public string Message { get; set; }
+    }
+
     public interface MyBaseWithRecordStruct
     {
         public MyTimes Times { get; set; }

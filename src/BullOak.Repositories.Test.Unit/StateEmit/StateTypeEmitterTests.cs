@@ -129,15 +129,15 @@
         }
 
         [Fact]
-        public void EmitType_OfInterfaceContainingRecordStruct_ShouldImplementRecordStructSetter()
+        public void EmitType_OfInterfaceWithGetSetProperty_ShouldImplementSetter()
         {
             //Arrange
             var emitter = new OwnedStateClassEmitter();
-            var myType = StateTypeEmitter.EmitType(typeof(MyBaseWithRecordStruct), emitter);
-            var instance = Activator.CreateInstance(myType) as MyBaseWithRecordStruct;
+            var myType = StateTypeEmitter.EmitType(typeof(MyBaseWithGetSet), emitter);
+            var instance = Activator.CreateInstance(myType) as MyBaseWithGetSet;
 
             //Act
-            var exceptionSetter = Record.Exception((Action) (() => instance!.Times = new MyTimes(new TimeOnly(6, 0), new TimeOnly(18, 0))));
+            var exceptionSetter = Record.Exception((Action) (() => instance!.Message = "yo!"));
 
             //Assert
             exceptionSetter.Should().BeNull();

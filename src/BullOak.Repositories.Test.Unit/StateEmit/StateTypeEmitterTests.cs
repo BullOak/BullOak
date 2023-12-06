@@ -95,7 +95,7 @@
         }
 
         [Fact]
-        public void EmitType_OfInterfaceDerivingFromTwoInterfaceWithSameNamedButDifferntTypeProperty_ShouldImplementPropertiesExplicitly()
+        public void EmitType_OfInterfaceDerivingFromTwoInterfaceWithSameNamedButDifferentTypeProperty_ShouldImplementPropertiesExplicitly()
         {
             //Arrange
             var emitter = new OwnedStateClassEmitter();
@@ -110,6 +110,37 @@
             myType.Should().Implement(typeof(MyDerivedOfIntAndStringValues));
             myType.Should().Implement(typeof(MyBaseWithStringValue));
             myType.Should().Implement(typeof(MyBaseWithIntValue));
+        }
+
+        [Fact]
+        public void EmitType_OfInterfaceContainingRecordStruct_ShouldImplementProperties()
+        {
+            //Arrange
+            var emitter = new OwnedStateClassEmitter();
+            Type myType = null;
+
+            //Act
+            var exception = Record.Exception((Action) (() => myType = StateTypeEmitter.EmitType(typeof(MyBaseWithRecordStruct), emitter)));
+
+            //Assert
+            exception.Should().BeNull();
+            myType.Should().NotBeNull();
+            myType.Should().Implement(typeof(MyBaseWithRecordStruct));
+        }
+
+        [Fact]
+        public void EmitType_OfInterfaceWithGetSetProperty_ShouldImplementSetter()
+        {
+            //Arrange
+            var emitter = new OwnedStateClassEmitter();
+            var myType = StateTypeEmitter.EmitType(typeof(MyBaseWithGetSet), emitter);
+            var instance = Activator.CreateInstance(myType) as MyBaseWithGetSet;
+
+            //Act
+            var exceptionSetter = Record.Exception((Action) (() => instance!.Message = "yo!"));
+
+            //Assert
+            exceptionSetter.Should().BeNull();
         }
     }
 }
